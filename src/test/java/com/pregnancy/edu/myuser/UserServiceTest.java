@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +31,7 @@ class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    List<MyUser> hogwartsUsers;
+    List<MyUser> pregUsers;
 
     @BeforeEach
     void setUp() {
@@ -57,10 +56,10 @@ class UserServiceTest {
         u3.setEnabled(false);
         u3.setRole("user");
 
-        this.hogwartsUsers = new ArrayList<>();
-        this.hogwartsUsers.add(u1);
-        this.hogwartsUsers.add(u2);
-        this.hogwartsUsers.add(u3);
+        this.pregUsers = new ArrayList<>();
+        this.pregUsers.add(u1);
+        this.pregUsers.add(u2);
+        this.pregUsers.add(u3);
     }
 
     @AfterEach
@@ -70,13 +69,13 @@ class UserServiceTest {
     @Test
     void testFindAllSuccess() {
         // Given
-        given(userRepository.findAll()).willReturn(hogwartsUsers);
+        given(userRepository.findAll()).willReturn(pregUsers);
 
         // When
         List<MyUser> users = userService.findAll();
 
         // Then
-        assertThat(users.size()).isEqualTo(hogwartsUsers.size());
+        assertThat(users.size()).isEqualTo(pregUsers.size());
 
         verify(this.userRepository, times(1)).findAll();
     }

@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
@@ -31,35 +31,35 @@ public class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    List<MyUser> users;
+    List<MyUser> pregUsers;
 
     @BeforeEach
     void setUp() {
-        MyUser user1 = new MyUser();
-        user1.setId(1L);
-        user1.setEmail("user1@example.com");
-        user1.setUsername("user1");
-        user1.setPassword("password1");
-        user1.setPhoneNumber("1234567890");
-        user1.setFullName("User One");
+        MyUser u1 = new MyUser();
+        u1.setId(1L);
+        u1.setUsername("john");
+        u1.setPassword("123456");
+        u1.setEnabled(true);
+        u1.setRole("admin");
 
-        MyUser user2 = new MyUser();
-        user2.setId(2L);
-        user2.setEmail("user2@example.com");
-        user2.setUsername("user2");
-        user2.setPassword("password2");
-        user2.setPhoneNumber("0987654321");
-        user2.setFullName("User Two");
+        MyUser u2 = new MyUser();
+        u2.setId(2L);
+        u2.setUsername("eric");
+        u2.setPassword("654321");
+        u2.setEnabled(true);
+        u2.setRole("user");
 
-        MyUser user3 = new MyUser();
-        user3.setId(3L);
-        user3.setEmail("user3@example.com");
-        user3.setUsername("user3");
-        user3.setPassword("password3");
-        user3.setPhoneNumber("1122334455");
-        user3.setFullName("User Three");
+        MyUser u3 = new MyUser();
+        u3.setId(3L);
+        u3.setUsername("tom");
+        u3.setPassword("qwerty");
+        u3.setEnabled(false);
+        u3.setRole("user");
 
-        users = Arrays.asList(user1, user2, user3);
+        this.pregUsers = new ArrayList<>();
+        this.pregUsers.add(u1);
+        this.pregUsers.add(u2);
+        this.pregUsers.add(u3);
     }
 
     @AfterEach
@@ -69,13 +69,13 @@ public class UserServiceTest {
     @Test
     void testFindAllSuccess() {
         // Given
-        given(userRepository.findAll()).willReturn(users);
+        given(userRepository.findAll()).willReturn(pregUsers);
 
         // When
-        List<MyUser> myUsers = userService.findAll();
+        List<MyUser> users = userService.findAll();
 
         // Then
-        assertThat(myUsers.size()).isEqualTo(this.users.size());
+        assertThat(users.size()).isEqualTo(pregUsers.size());
 
         verify(this.userRepository, times(1)).findAll();
     }
@@ -85,29 +85,32 @@ public class UserServiceTest {
         // Given
         MyUser u = new MyUser();
         u.setId(1L);
-        u.setEmail("user@example.com");
-        u.setUsername("user");
-        u.setPassword("password");
-        u.setPhoneNumber("1234567890");
-        u.setFullName("My User");
+        u.setUsername("john");
+        u.setPassword("123456");
+        u.setEnabled(true);
+        u.setRole("admin");
 
-        given(this.userRepository.findById(1L)).willReturn(Optional.of(u));
+        given(userRepository.findById(1L)).willReturn(Optional.of(u));
 
         // When
-        MyUser user = this.userService.findById(1L);
+        MyUser user = userService.findById(1L);
 
         // Then
-        assertThat(user.getId()).isEqualTo(u.getId());
+        assertThat(user.getId()).isEqualTo(1);
+        assertThat(user.getUsername()).isEqualTo("john");
+        assertThat(user.getPassword()).isEqualTo("123456");
+        assertThat(user.getEnabled()).isEqualTo(true);
+        assertThat(user.getRole()).isEqualTo("admin");
         verify(this.userRepository, times(1)).findById(1L);
     }
 
     @Test
     void testFindByIdNotFound() {
         // Given
-        given(this.userRepository.findById(10L)).willReturn(Optional.empty());
+        given(userRepository.findById(10L)).willReturn(Optional.empty());
 
         // When
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> this.userService.findById(10L));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> userService.findById(10L));
 
         // Then
         assertThat(ex.getMessage()).isEqualTo("Could not find user with Id 10 :(");
@@ -118,24 +121,23 @@ public class UserServiceTest {
     void testSaveSuccess() {
         // Given
         MyUser u = new MyUser();
-        u.setEmail("user@example.com");
-        u.setUsername("user");
-        u.setPassword("password");
-        u.setPhoneNumber("1234567890");
-        u.setFullName("My User");
+        u.setUsername("john");
+        u.setPassword("123456");
+        u.setEnabled(true);
+        u.setRole("admin");
 
-        given(this.passwordEncoder.encode(u.getPassword())).willReturn("encodedPassword");
+        given(this.passwordEncoder.encode(u.getPassword())).willReturn("Encoded Password");
         given(this.userRepository.save(u)).willReturn(u);
 
         // When
-        MyUser newUser = userService.save(u);
+        MyUser user = userService.save(u);
 
         // Then
-        assertThat(newUser.getEmail()).isEqualTo("user@example.com");
-        assertThat(newUser.getUsername()).isEqualTo("user");
-        assertThat(newUser.getPassword()).isEqualTo("encodedPassword");
-        assertThat(newUser.getPhoneNumber()).isEqualTo("1234567890");
-        assertThat(newUser.getFullName()).isEqualTo("My User");
+        assertThat(user.getUsername()).isEqualTo("john");
+        assertThat(user.getPassword()).isEqualTo("Encoded Password");
+        assertThat(user.getEnabled()).isEqualTo(true);
+        assertThat(user.getRole()).isEqualTo("admin");
+        verify(this.userRepository, times(1)).save(u);
     }
 
     @Test
@@ -143,34 +145,40 @@ public class UserServiceTest {
         // Given
         MyUser u = new MyUser();
         u.setId(1L);
-        u.setEmail("user@example.com");
-        u.setUsername("user");
-        u.setPassword("password");
-        u.setPhoneNumber("1234567890");
-        u.setFullName("My User");
+        u.setUsername("john");
+        u.setPassword("123456");
+        u.setEnabled(true);
+        u.setRole("admin");
 
         MyUser update = new MyUser();
-        update.setFullName("My User-update");
+        update.setUsername("john-update");
+        update.setEnabled(true);
+        update.setRole("admin");
 
-        given(this.userRepository.findById(1L)).willReturn(Optional.of(u));
-        given(this.userRepository.save(u)).willReturn(u);
+        given(userRepository.findById(1L)).willReturn(Optional.of(u));
+        given(userRepository.save(u)).willReturn(u);
 
         // When
-        MyUser updatedUser = this.userService.update(1L, update);
+        MyUser updatedUser = userService.update(1L, update);
 
         // Then
-        assertThat(updatedUser.getFullName()).isEqualTo("My User-update");
-        verify(this.userRepository, times(1)).findById(1L);
-        verify(this.userRepository, times(1)).save(u);
+        assertThat(updatedUser.getId()).isEqualTo(1);
+        assertThat(updatedUser.getUsername()).isEqualTo("john-update");
+        assertThat(updatedUser.getEnabled()).isEqualTo(true);
+        assertThat(updatedUser.getRole()).isEqualTo("admin");
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).save(u);
     }
 
     @Test
     void testUpdateNotFound() {
         // Given
         MyUser update = new MyUser();
-        update.setFullName("My User-update");
+        update.setUsername("john-update");
+        update.setEnabled(true);
+        update.setRole("admin");
 
-        given(this.userRepository.findById(10L)).willReturn(Optional.empty());
+        given(userRepository.findById(10L)).willReturn(Optional.empty());
 
         // When
         ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> userService.update(10L, update));

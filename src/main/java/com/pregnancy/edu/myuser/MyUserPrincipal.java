@@ -1,4 +1,4 @@
-package com.pregnancy.edu.preguser;
+package com.pregnancy.edu.myuser;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

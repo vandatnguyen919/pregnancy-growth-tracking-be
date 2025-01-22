@@ -1,4 +1,4 @@
-package com.pregnancy.edu.preguser;
+package com.pregnancy.edu.myuser;
 
 import com.pregnancy.edu.system.consts.BloodType;
 import jakarta.persistence.*;

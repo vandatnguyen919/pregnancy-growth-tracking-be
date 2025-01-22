@@ -1,8 +1,8 @@
-package com.pregnancy.edu.preguser;
+package com.pregnancy.edu.myuser;
 
-import com.pregnancy.edu.preguser.converter.UserDtoToUserConverter;
-import com.pregnancy.edu.preguser.converter.UserToUserDtoConverter;
-import com.pregnancy.edu.preguser.dto.UserDto;
+import com.pregnancy.edu.myuser.converter.UserDtoToUserConverter;
+import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
+import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;

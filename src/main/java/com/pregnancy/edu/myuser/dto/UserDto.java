@@ -1,4 +1,4 @@
-package com.pregnancy.edu.preguser.dto;
+package com.pregnancy.edu.myuser.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 

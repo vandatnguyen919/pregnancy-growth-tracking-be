@@ -1,6 +1,5 @@
 package com.pregnancy.edu.security;
 
-import com.pregnancy.edu.preguser.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +10,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {

@@ -1,4 +1,4 @@
-package com.pregnancy.edu.preguser;
+package com.pregnancy.edu.myuser;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

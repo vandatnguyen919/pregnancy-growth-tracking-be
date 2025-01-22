@@ -1,0 +1,13 @@
+package com.pregnancy.edu;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PregnancyGrowthTrackingSystemApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(PregnancyGrowthTrackingSystemApplication.class, args);
+    }
+
+}

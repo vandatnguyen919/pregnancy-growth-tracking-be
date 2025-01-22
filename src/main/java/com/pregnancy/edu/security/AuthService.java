@@ -1,10 +1,10 @@
 package com.pregnancy.edu.security;
 
-import com.pregnancy.edu.preguser.MyUser;
-import com.pregnancy.edu.preguser.MyUserPrincipal;
-import com.pregnancy.edu.preguser.UserRepository;
-import com.pregnancy.edu.preguser.converter.UserToUserDtoConverter;
-import com.pregnancy.edu.preguser.dto.UserDto;
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.MyUserPrincipal;
+import com.pregnancy.edu.myuser.UserRepository;
+import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
+import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.security.dto.RegisterDto;
 import com.pregnancy.edu.system.consts.Role;
 import com.pregnancy.edu.system.exception.RegisterIllegalArgumentException;

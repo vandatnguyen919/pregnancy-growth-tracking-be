@@ -1,7 +1,7 @@
-package com.pregnancy.edu.preguser.converter;
+package com.pregnancy.edu.myuser.converter;
 
-import com.pregnancy.edu.preguser.MyUser;
-import com.pregnancy.edu.preguser.dto.UserDto;
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.dto.UserDto;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

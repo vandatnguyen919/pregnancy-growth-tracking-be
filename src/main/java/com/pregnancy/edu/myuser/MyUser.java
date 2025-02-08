@@ -19,12 +19,13 @@ public class MyUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "email is required.")
     private String email;
 
-    @NotEmpty(message = "Username is required.")
+    @NotEmpty(message = "username is required.")
     private String username;
 
-    @NotEmpty(message = "Password is required.")
+    @NotEmpty(message = "password is required.")
     private String password;
 
     private String phoneNumber;
@@ -54,6 +55,7 @@ public class MyUser {
 
     private Boolean enabled;
 
+    @NotEmpty(message = "role is required.")
     private String role;
 }
 

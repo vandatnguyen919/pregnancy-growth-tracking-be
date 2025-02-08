@@ -31,7 +31,7 @@ class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    List<MyUser> pregUsers;
+    List<MyUser> myUsers;
 
     @BeforeEach
     void setUp() {
@@ -56,10 +56,10 @@ class UserServiceTest {
         u3.setEnabled(false);
         u3.setRole("user");
 
-        this.pregUsers = new ArrayList<>();
-        this.pregUsers.add(u1);
-        this.pregUsers.add(u2);
-        this.pregUsers.add(u3);
+        this.myUsers = new ArrayList<>();
+        this.myUsers.add(u1);
+        this.myUsers.add(u2);
+        this.myUsers.add(u3);
     }
 
     @AfterEach
@@ -69,13 +69,13 @@ class UserServiceTest {
     @Test
     void testFindAllSuccess() {
         // Given
-        given(userRepository.findAll()).willReturn(pregUsers);
+        given(userRepository.findAll()).willReturn(myUsers);
 
         // When
         List<MyUser> users = userService.findAll();
 
         // Then
-        assertThat(users.size()).isEqualTo(pregUsers.size());
+        assertThat(users.size()).isEqualTo(myUsers.size());
 
         verify(this.userRepository, times(1)).findAll();
     }
@@ -88,7 +88,7 @@ class UserServiceTest {
         u.setUsername("john");
         u.setPassword("123456");
         u.setEnabled(true);
-        u.setRole("admin");
+        u.setRole("admin user");
 
         given(userRepository.findById(1L)).willReturn(Optional.of(u));
 

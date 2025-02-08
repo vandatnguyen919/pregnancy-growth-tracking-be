@@ -13,7 +13,7 @@ public class UserDtoToUserConverter implements Converter<UserDto, MyUser> {
         MyUser user = new MyUser();
         user.setUsername(source.username());
         user.setEnabled(source.enabled());
-        user.setRole("admin");
+        user.setRole(source.role());
         return user;
     }
 }

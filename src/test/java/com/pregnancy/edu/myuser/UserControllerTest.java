@@ -133,6 +133,7 @@ class UserControllerTest {
         // Given
         MyUser u = new MyUser();
         u.setId(10L);
+        u.setEmail("john@example.com");
         u.setUsername("john");
         u.setPassword("123456");
         u.setEnabled(true);

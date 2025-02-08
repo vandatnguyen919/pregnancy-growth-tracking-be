@@ -88,7 +88,7 @@ class UserServiceTest {
         u.setUsername("john");
         u.setPassword("123456");
         u.setEnabled(true);
-        u.setRole("admin user");
+        u.setRole("admin");
 
         given(userRepository.findById(1L)).willReturn(Optional.of(u));
 

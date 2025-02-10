@@ -2,6 +2,7 @@ package com.pregnancy.edu.system.exception;
 
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Hidden
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 

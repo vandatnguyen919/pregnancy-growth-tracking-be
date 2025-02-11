@@ -1,4 +1,6 @@
 package com.pregnancy.edu.blogpost;
 
-public interface BlogPostRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
 }

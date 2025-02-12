@@ -42,7 +42,7 @@ public class UserControllerIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         // User john has all permissions.
-        ResultActions resultActions = this.mockMvc.perform(post(this.baseUrl + "/auth/login").with(httpBasic("john", "123456"))); // httpBasic() is from spring-security-test.
+        ResultActions resultActions = this.mockMvc.perform(post(this.baseUrl + "/auth/login").with(httpBasic("john@example.com", "123456"))); // httpBasic() is from spring-security-test.
         MvcResult mvcResult = resultActions.andDo(print()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         JSONObject json = new JSONObject(contentAsString);
@@ -227,7 +227,7 @@ public class UserControllerIntegrationTest {
     @Test
     @DisplayName("Check deleteUser with insufficient permission (DELETE)")
     void testDeleteUserNoAccessAsRoleUser() throws Exception {
-        ResultActions resultActions = this.mockMvc.perform(post(this.baseUrl + "/auth/login").with(httpBasic("eric", "654321"))); // httpBasic() is from spring-security-test.
+        ResultActions resultActions = this.mockMvc.perform(post(this.baseUrl + "/auth/login").with(httpBasic("eric@example.com", "654321"))); // httpBasic() is from spring-security-test.
         MvcResult mvcResult = resultActions.andDo(print()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         JSONObject json = new JSONObject(contentAsString);

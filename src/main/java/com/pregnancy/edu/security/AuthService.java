@@ -9,6 +9,7 @@ import com.pregnancy.edu.security.dto.RegisterDto;
 import com.pregnancy.edu.system.consts.Role;
 import com.pregnancy.edu.system.exception.RegisterIllegalArgumentException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,11 +22,14 @@ public class AuthService {
 
     private final JwtProvider jwtProvider;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final UserRepository userRepository;
 
-    public AuthService(UserToUserDtoConverter userToUserDtoConverter, JwtProvider jwtProvider, UserRepository userRepository) {
+    public AuthService(UserToUserDtoConverter userToUserDtoConverter, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.userToUserDtoConverter = userToUserDtoConverter;
         this.jwtProvider = jwtProvider;
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
@@ -65,11 +69,12 @@ public class AuthService {
         MyUser myUser = new MyUser();
         myUser.setEmail(registerDto.email());
         myUser.setUsername(registerDto.username());
-        myUser.setPassword(registerDto.password());
+        myUser.setPassword(passwordEncoder.encode(registerDto.password()));
         myUser.setEnabled(false);
         myUser.setRole(Role.USER.getDisplayName()); // Default role is user
 
         MyUser newUser = userRepository.save(myUser);
+
         return userToUserDtoConverter.convert(newUser);
     }
 }

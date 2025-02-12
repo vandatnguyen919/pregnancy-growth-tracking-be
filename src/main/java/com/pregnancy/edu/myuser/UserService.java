@@ -63,8 +63,8 @@ public class UserService implements BaseCrudService<MyUser, Long>, UserDetailsSe
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return this.userRepository.findByUsername(username) // First, we need to find this user from database.
+        return this.userRepository.findByEmail(username) // First, we need to find this user from database.
                 .map(MyUserPrincipal::new)  // If found, wrap the returned user instance in a MyUserPrinciple instance.
-                .orElseThrow(() -> new UsernameNotFoundException("username " + username + " is not found.")); // Otherwise, throw an exception.
+                .orElseThrow(() -> new UsernameNotFoundException("email " + username + " is not found.")); // Otherwise, throw an exception.
     }
 }

@@ -1,8 +1,8 @@
-package com.pregnancy.edu.blogpost;
+package com.pregnancy.edu.blog.blogpost;
 
-import com.pregnancy.edu.blogpost.converter.BlogPostDtoToBlogPostConverter;
-import com.pregnancy.edu.blogpost.converter.BlogPostToBlogPostDtoConverter;
-import com.pregnancy.edu.blogpost.dto.BlogPostDto;
+import com.pregnancy.edu.blog.blogpost.converter.BlogPostDtoToBlogPostConverter;
+import com.pregnancy.edu.blog.blogpost.converter.BlogPostToBlogPostDtoConverter;
+import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;

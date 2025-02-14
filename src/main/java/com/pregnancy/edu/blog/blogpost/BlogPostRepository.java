@@ -1,4 +1,4 @@
-package com.pregnancy.edu.blogpost;
+package com.pregnancy.edu.blog.blogpost;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

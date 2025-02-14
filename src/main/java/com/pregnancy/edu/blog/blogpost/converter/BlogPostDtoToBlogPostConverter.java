@@ -1,7 +1,7 @@
-package com.pregnancy.edu.blogpost.converter;
+package com.pregnancy.edu.blog.blogpost.converter;
 
-import com.pregnancy.edu.blogpost.BlogPost;
-import com.pregnancy.edu.blogpost.dto.BlogPostDto;
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

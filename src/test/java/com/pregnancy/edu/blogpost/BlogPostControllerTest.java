@@ -1,7 +1,9 @@
 package com.pregnancy.edu.blogpost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pregnancy.edu.blogpost.dto.BlogPostDto;
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpost.BlogPostService;
+import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import com.pregnancy.edu.system.StatusCode;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;

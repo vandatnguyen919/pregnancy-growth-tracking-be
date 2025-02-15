@@ -19,6 +19,6 @@ public class Tag {
 
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "tags")
     private List<BlogPost> blogPosts;
 }

@@ -16,8 +16,6 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private Long subscriptionId;
     private Double amount;
     private String provider;
     private String currency;

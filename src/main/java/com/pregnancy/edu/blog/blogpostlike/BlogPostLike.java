@@ -14,9 +14,6 @@ public class BlogPostLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long blogPostId;
-    private Long userId;
-
     @ManyToOne
     private MyUser user;
 

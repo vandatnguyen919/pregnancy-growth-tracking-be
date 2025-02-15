@@ -1,5 +1,9 @@
 package com.pregnancy.edu.system;
 
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpost.BlogPostService;
+import com.pregnancy.edu.blog.tag.Tag;
+import com.pregnancy.edu.blog.tag.TagService;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.system.consts.Role;
@@ -10,9 +14,11 @@ import org.springframework.stereotype.Component;
 public class DBDataInitializer implements CommandLineRunner {
 
     private final UserService userService;
+    private final BlogPostService blogPostService;
 
-    public DBDataInitializer(UserService userService) {
+    public DBDataInitializer(UserService userService, BlogPostService blogPostService) {
         this.userService = userService;
+        this.blogPostService = blogPostService;
     }
 
     @Override
@@ -43,8 +49,35 @@ public class DBDataInitializer implements CommandLineRunner {
         u3.setEnabled(false);
         u3.setRole("user");
 
+        BlogPost p1 = new BlogPost();
+        p1.setHeading("Heading 1");
+        p1.setContent("Content 1");
+
+        BlogPost p2 = new BlogPost();
+        p2.setHeading("Heading 2");
+        p2.setContent("Content 2");
+
+        BlogPost p3 = new BlogPost();
+        p3.setHeading("Heading 3");
+        p3.setContent("Content 3");
+
+//        Tag t1 = new Tag();
+//        t1.setName("Tag1");
+
+//        Tag t2 = new Tag();
+//        t2.setName("Tag2");
+
+//        Tag t3 = new Tag();
+//        t3.setName("Tag3");
+
         this.userService.save(u1);
         this.userService.save(u2);
         this.userService.save(u3);
+
+        this.blogPostService.save(p1);
+        this.blogPostService.save(p2);
+        this.blogPostService.save(p3);
+
+//        this.tagService.save(t1);
     }
 }

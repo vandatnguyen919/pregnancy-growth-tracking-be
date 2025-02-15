@@ -17,7 +17,6 @@ public class Pregnancy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
     private Integer maternalAge;
     private Date pregnancyStartDate;
     private Date estimatedDueDate;

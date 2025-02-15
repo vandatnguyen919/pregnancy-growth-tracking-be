@@ -18,8 +18,6 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private Long packageId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;

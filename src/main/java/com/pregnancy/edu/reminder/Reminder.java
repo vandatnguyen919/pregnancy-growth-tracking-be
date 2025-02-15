@@ -15,7 +15,6 @@ public class Reminder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reminderId;
 
-    private Long userId;
     private String reminderType;
     private String description;
     private LocalDateTime reminderDate;

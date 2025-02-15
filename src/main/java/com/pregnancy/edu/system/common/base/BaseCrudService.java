@@ -1,4 +1,4 @@
-package com.pregnancy.edu.system.base;
+package com.pregnancy.edu.system.common.base;
 
 import java.util.List;
 

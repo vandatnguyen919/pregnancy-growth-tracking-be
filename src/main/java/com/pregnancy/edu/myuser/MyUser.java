@@ -1,6 +1,6 @@
 package com.pregnancy.edu.myuser;
 
-import com.pregnancy.edu.system.consts.BloodType;
+import com.pregnancy.edu.system.common.BloodType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

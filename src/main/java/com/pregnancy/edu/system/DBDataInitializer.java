@@ -2,7 +2,6 @@ package com.pregnancy.edu.system;
 
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
-import com.pregnancy.edu.system.consts.Role;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

@@ -6,7 +6,7 @@ import com.pregnancy.edu.myuser.UserRepository;
 import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
 import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.security.dto.RegisterDto;
-import com.pregnancy.edu.system.consts.Role;
+import com.pregnancy.edu.system.common.Role;
 import com.pregnancy.edu.system.exception.RegisterIllegalArgumentException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -76,5 +76,11 @@ public class AuthService {
         MyUser newUser = userRepository.save(myUser);
 
         return userToUserDtoConverter.convert(newUser);
+    }
+
+    public void enableUser(String email) {
+        MyUser myUser = userRepository.findByEmail(email).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
+        myUser.setEnabled(true);
+        userRepository.save(myUser);
     }
 }

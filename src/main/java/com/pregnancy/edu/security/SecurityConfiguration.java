@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/login").authenticated() // Protect this endpoint
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint

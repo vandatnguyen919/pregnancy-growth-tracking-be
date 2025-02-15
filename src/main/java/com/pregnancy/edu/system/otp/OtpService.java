@@ -26,7 +26,8 @@ public class OtpService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
-    public OtpService(JavaMailSender mailSender) {
+    public OtpService(AuthService authService, JavaMailSender mailSender) {
+        this.authService = authService;
         this.mailSender = mailSender;
     }
 

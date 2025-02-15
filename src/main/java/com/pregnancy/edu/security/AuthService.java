@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -56,19 +57,15 @@ public class AuthService {
             throw new RegisterIllegalArgumentException("Email is already taken.");
         }
 
-        // If the username is already taken, throw an exception.
-        if (userRepository.findByUsername(registerDto.username()).isPresent()) {
-            throw new RegisterIllegalArgumentException("Username is already taken.");
-        }
-
         // If the password and confirm password do not match, throw an exception.
         if (!registerDto.password().equals(registerDto.confirmPassword())) {
             throw new RegisterIllegalArgumentException("New password and confirm new password do not match.");
         }
 
         MyUser myUser = new MyUser();
+        myUser.setFullName(registerDto.fullName());
         myUser.setEmail(registerDto.email());
-        myUser.setUsername(registerDto.username());
+        myUser.setUsername(UUID.randomUUID().toString());
         myUser.setPassword(passwordEncoder.encode(registerDto.password()));
         myUser.setEnabled(false);
         myUser.setRole(Role.USER.getDisplayName()); // Default role is user

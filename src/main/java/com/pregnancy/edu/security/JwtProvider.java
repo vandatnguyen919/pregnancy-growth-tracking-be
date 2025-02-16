@@ -1,5 +1,6 @@
 package com.pregnancy.edu.security;
 
+import com.pregnancy.edu.myuser.MyUserPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -34,6 +35,7 @@ public class JwtProvider {
                 .issuedAt(now)
                 .expiresAt(now.plus(expireIn, ChronoUnit.HOURS))
                 .subject(authentication.getName())
+                .claim("userId", ((MyUserPrincipal) authentication.getPrincipal()).getMyUser().getId())
                 .claim("authorities", authorities)
                 .build();
 

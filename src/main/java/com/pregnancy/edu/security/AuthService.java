@@ -67,7 +67,8 @@ public class AuthService {
         myUser.setEmail(registerDto.email());
         myUser.setUsername(UUID.randomUUID().toString());
         myUser.setPassword(passwordEncoder.encode(registerDto.password()));
-        myUser.setEnabled(false);
+        myUser.setEnabled(true);
+        myUser.setVerified(false);
         myUser.setRole(Role.USER.getDisplayName()); // Default role is user
 
         MyUser newUser = userRepository.save(myUser);
@@ -75,9 +76,15 @@ public class AuthService {
         return userToUserDtoConverter.convert(newUser);
     }
 
-    public void enableUser(String email) {
-        MyUser myUser = userRepository.findByEmail(email).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
+    public void enableUser(Long userId) {
+        MyUser myUser = userRepository.findById(userId).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
         myUser.setEnabled(true);
+        userRepository.save(myUser);
+    }
+
+    public void verifyUser(String email) {
+        MyUser myUser = userRepository.findByEmail(email).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
+        myUser.setVerified(true);
         userRepository.save(myUser);
     }
 }

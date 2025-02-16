@@ -10,6 +10,7 @@ public record UserDto(Long id,
                       @NotEmpty(message = "username is required.")
                       String username,
                       boolean enabled,
+                      boolean verified,
                       @NotEmpty(message = "role is required.")
                       String role) {
 }

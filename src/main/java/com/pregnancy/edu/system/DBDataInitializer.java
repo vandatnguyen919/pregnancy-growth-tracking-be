@@ -24,6 +24,7 @@ public class DBDataInitializer implements CommandLineRunner {
         u1.setUsername("john");
         u1.setPassword("123456");
         u1.setEnabled(true);
+        u1.setVerified(true);
         u1.setRole("admin");
 
         MyUser u2 = new MyUser();
@@ -32,6 +33,7 @@ public class DBDataInitializer implements CommandLineRunner {
         u2.setUsername("eric");
         u2.setPassword("654321");
         u2.setEnabled(true);
+        u2.setVerified(true);
         u2.setRole("user");
 
         MyUser u3 = new MyUser();
@@ -40,6 +42,7 @@ public class DBDataInitializer implements CommandLineRunner {
         u3.setUsername("tom");
         u3.setPassword("qwerty");
         u3.setEnabled(false);
+        u3.setVerified(true);
         u3.setRole("user");
 
         this.userService.save(u1);

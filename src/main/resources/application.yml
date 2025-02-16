@@ -35,10 +35,11 @@ spring:
     password: ${MAIL_PASSWORD:YOUR_MAIL_PASSWORD} # environment variable with a default value
     properties:
       mail:
-        transport:
-          protocol: smtp
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+        transport:
+          protocol: smtp
         debug: true

@@ -84,7 +84,7 @@ public class OtpService {
 
     public boolean validateEmail(String userEmail, String otp) {
         if (validateOTP(userEmail, otp)) {
-            authService.enableUser(userEmail);
+            authService.verifyUser(userEmail);
             return true;
         } else {
             return false;

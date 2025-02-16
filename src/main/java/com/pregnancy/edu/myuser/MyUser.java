@@ -51,9 +51,9 @@ public class MyUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private Boolean verified;
+    private Boolean verified = false;
 
-    private Boolean enabled;
+    private Boolean enabled = false;
 
     @NotEmpty(message = "role is required.")
     private String role;

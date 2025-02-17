@@ -1,4 +1,4 @@
-package com.pregnancy.edu.blogpost;
+package com.pregnancy.edu.blog.blogpost;
 
 import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpost.BlogPostRepository;

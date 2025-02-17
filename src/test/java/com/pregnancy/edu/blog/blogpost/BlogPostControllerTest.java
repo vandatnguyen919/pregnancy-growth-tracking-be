@@ -1,4 +1,4 @@
-package com.pregnancy.edu.blogpost;
+package com.pregnancy.edu.blog.blogpost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pregnancy.edu.blog.blogpost.BlogPost;

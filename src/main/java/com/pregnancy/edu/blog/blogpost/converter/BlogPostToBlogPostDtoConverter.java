@@ -20,8 +20,8 @@ public class BlogPostToBlogPostDtoConverter implements Converter<BlogPost, BlogP
                 source.getShortDescription(),
                 source.getFeaturedImageUrl(),
                 source.isVisible(),
-                source.getComments().size(),
-                source.getLikes().size(),
+                source.getComments().isEmpty() ? 0 : source.getComments().size(),
+                source.getLikes().isEmpty() ? 0 : source.getLikes().size(),
                 source.getTags().stream().map(Tag::getName).collect(Collectors.toList())
                 );
     }

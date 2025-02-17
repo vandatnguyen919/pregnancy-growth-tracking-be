@@ -39,14 +39,15 @@ public class BlogPostController {
     }
 
     @PostMapping
-    public Result addBlogPost(@Valid @RequestBody BlogPost newPost) {
-        BlogPost savedBlogPost = blogPostService.save(newPost);
+    public Result addBlogPost(@Valid @RequestBody BlogPostDto newPostDto) {
+        BlogPost newBlogPost = blogPostDtoToBlogPostConverter.convert(newPostDto);
+        BlogPost savedBlogPost = blogPostService.save(newBlogPost);
         BlogPostDto savedBlogPostDto = blogPostToBlogPostDtoConverter.convert(savedBlogPost);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedBlogPostDto);
     }
 
     @PutMapping("/{postId}")
-    public Result updateBlogPost(@PathVariable Long postId, @Valid @RequestBody BlogPostDto blogPostDto) {
+        public Result updateBlogPost(@PathVariable Long postId, @Valid @RequestBody BlogPostDto blogPostDto) {
         BlogPost update = blogPostDtoToBlogPostConverter.convert(blogPostDto);
         BlogPost updatedPost = blogPostService.update(postId, update);
         BlogPostDto updatedPostDto = blogPostToBlogPostDtoConverter.convert(updatedPost);

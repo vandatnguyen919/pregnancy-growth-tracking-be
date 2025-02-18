@@ -1,4 +1,4 @@
-package com.pregnancy.edu.blogpost;
+package com.pregnancy.edu.blog.blogpost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pregnancy.edu.blog.blogpost.BlogPost;
@@ -130,7 +130,7 @@ class BlogPostControllerTest {
 
     @Test
     void testUpdateBlogPostSuccess() throws Exception {
-        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true);
+        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true, 2, 2, new ArrayList<>(3));
         BlogPost updatedPost = new BlogPost();
         updatedPost.setId(2L);
         updatedPost.setHeading("Heading 2");

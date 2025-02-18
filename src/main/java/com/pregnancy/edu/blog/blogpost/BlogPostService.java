@@ -9,7 +9,6 @@ import java.util.List;
 
 @Service
 @Transactional
-
 public class BlogPostService implements BaseCrudService<BlogPost, Long> {
 
     private final BlogPostRepository blogPostRepository;

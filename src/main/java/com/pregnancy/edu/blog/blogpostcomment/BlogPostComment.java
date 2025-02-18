@@ -18,8 +18,6 @@ public class BlogPostComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long blogPostId;
-    private Long userId;
     private String content;
 
     @CreationTimestamp

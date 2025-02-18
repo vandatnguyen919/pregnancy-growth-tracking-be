@@ -15,7 +15,6 @@ public class FetusGrowthRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long fetusId;
     private Integer weekNumber;
     private Double fetalWeightGrams;
     private Double fetalLengthCm;

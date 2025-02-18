@@ -35,8 +35,7 @@ public class Standard {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private Long createdById;
-
+    //user(admin) tao data cho bang standard
     @OneToOne(mappedBy = "standard")
     private MyUser user;
 }

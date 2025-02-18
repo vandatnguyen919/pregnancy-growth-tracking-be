@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,8 +21,6 @@ public class BlogPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Long authorId;
 
     private String heading;
 
@@ -44,14 +43,19 @@ public class BlogPost {
     private LocalDateTime updatedDate;
 
     @ManyToOne
-    private MyUser users;
+    private MyUser user;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPosts")
-    private List<Tag> tags;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "blog_post_tag",
+            joinColumns = @JoinColumn(name = "blog_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
-    private List<BlogPostComment> comments;
+    private List<BlogPostComment> comments = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
-    private List<BlogPostLike> likes;
+    private List<BlogPostLike> likes = new ArrayList<>();
 }

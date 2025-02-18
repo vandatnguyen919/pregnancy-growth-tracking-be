@@ -18,8 +18,6 @@ public class Fetus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private Long pregnancyId;
     private String nickname;
     private String gender;
     private Integer fetusNumber;

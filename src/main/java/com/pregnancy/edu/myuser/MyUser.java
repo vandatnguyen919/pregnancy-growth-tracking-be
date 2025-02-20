@@ -1,6 +1,15 @@
 package com.pregnancy.edu.myuser;
 
-import com.pregnancy.edu.system.common.BloodType;
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
+import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
+import com.pregnancy.edu.fetusinfo.fetus.Fetus;
+import com.pregnancy.edu.fetusinfo.standard.Standard;
+import com.pregnancy.edu.membershippackages.payment.Payment;
+import com.pregnancy.edu.membershippackages.subscription.Subscription;
+import com.pregnancy.edu.pregnancy.Pregnancy;
+import com.pregnancy.edu.reminder.Reminder;
+import com.pregnancy.edu.system.consts.BloodType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -9,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -57,5 +67,32 @@ public class MyUser {
 
     @NotEmpty(message = "role is required.")
     private String role;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<Reminder> reminders;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<BlogPost> blogPosts;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<BlogPostComment> blogPostComments;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<BlogPostLike> blogPostLikes;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<Subscription> subscriptions;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<Payment> payments;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<Pregnancy> pregnancies;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Standard standard;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
+    private List<Fetus> fetuses;
 }
 

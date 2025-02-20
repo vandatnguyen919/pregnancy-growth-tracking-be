@@ -6,9 +6,12 @@ import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/blog-posts")
@@ -24,11 +27,20 @@ public class BlogPostController {
         this.blogPostDtoToBlogPostConverter = blogPostDtoToBlogPostConverter;
     }
 
+//    @GetMapping
+//    public Result getAllBlogPosts() {
+//        List<BlogPost> blogPosts = blogPostService.findAll();
+//        List<BlogPostDto> blogPostDtos = blogPosts.stream()
+//                .map(blogPostToBlogPostDtoConverter::convert)
+//                .collect(Collectors.toList());
+//        return new Result(true, StatusCode.SUCCESS, "Find All Success", blogPostDtos);
+//    }
+
     @GetMapping
-    public Result getAllBlogPosts() {
-        List<BlogPost> blogPosts = blogPostService.findAll();
-        List<BlogPostDto> blogPostDtos = blogPosts.stream().map(blogPostToBlogPostDtoConverter::convert).toList();
-        return new Result(true, StatusCode.SUCCESS, "Find All Success", blogPostDtos);
+    public Result getAllBlogPosts(Pageable pageable) {
+        Page<BlogPost> blogPostPage = blogPostService.findAll(pageable);
+        Page<BlogPostDto> blogPostDtoPage = blogPostPage.map(this.blogPostToBlogPostDtoConverter::convert);
+        return new Result(true, StatusCode.SUCCESS, "Find All Success", blogPostDtoPage);
     }
 
     @GetMapping("/{postId}")

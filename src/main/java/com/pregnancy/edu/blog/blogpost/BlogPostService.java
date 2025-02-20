@@ -3,6 +3,8 @@ package com.pregnancy.edu.blog.blogpost;
 import com.pregnancy.edu.system.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,5 +54,9 @@ public class BlogPostService implements BaseCrudService<BlogPost, Long> {
     public void delete(Long postId) {
         this.blogPostRepository.findById(postId).orElseThrow(() -> new ObjectNotFoundException("blogPost", postId));
         this.blogPostRepository.deleteById(postId);
+    }
+
+    public Page<BlogPost> findAll(Pageable pageable) {
+        return this.blogPostRepository.findAll(pageable);
     }
 }

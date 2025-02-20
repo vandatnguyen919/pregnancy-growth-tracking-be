@@ -9,7 +9,7 @@ import com.pregnancy.edu.membershippackages.payment.Payment;
 import com.pregnancy.edu.membershippackages.subscription.Subscription;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.reminder.Reminder;
-import com.pregnancy.edu.system.consts.BloodType;
+import com.pregnancy.edu.system.common.BloodType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

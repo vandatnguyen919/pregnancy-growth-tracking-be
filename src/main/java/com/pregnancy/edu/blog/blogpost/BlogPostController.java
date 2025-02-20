@@ -59,7 +59,7 @@ public class BlogPostController {
     }
 
     @PutMapping("/{postId}")
-        public Result updateBlogPost(@PathVariable Long postId, @Valid @RequestBody BlogPostDto blogPostDto) {
+    public Result updateBlogPost(@PathVariable Long postId, @Valid @RequestBody BlogPostDto blogPostDto) {
         BlogPost update = blogPostDtoToBlogPostConverter.convert(blogPostDto);
         BlogPost updatedPost = blogPostService.update(postId, update);
         BlogPostDto updatedPostDto = blogPostToBlogPostDtoConverter.convert(updatedPost);

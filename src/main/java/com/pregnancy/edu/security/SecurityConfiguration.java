@@ -75,6 +75,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments").permitAll()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").hasAuthority("ROLE_expert")

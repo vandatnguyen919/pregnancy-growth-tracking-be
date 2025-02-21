@@ -74,11 +74,11 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments").permitAll()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").hasAuthority("ROLE_expert")
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-comments").hasAuthority("ROLE_expert")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",

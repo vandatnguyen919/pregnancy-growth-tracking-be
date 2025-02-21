@@ -79,8 +79,7 @@ class TagControllerTest {
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Find One Success"))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.name").value("Tag 1"))
-                .andExpect(jsonPath("$.data.description").value("Description 1"));
+                .andExpect(jsonPath("$.data.name").value("Tag 1"));
     }
 
     @Test

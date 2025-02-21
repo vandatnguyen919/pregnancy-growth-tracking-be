@@ -1,7 +1,9 @@
 package com.pregnancy.edu.blog.blogpostlike;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpostlike.dto.BlogPostLikeDto;
+import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.system.StatusCode;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;
@@ -47,12 +49,29 @@ class BlogPostLikeControllerTest {
 
         BlogPostLike l1 = new BlogPostLike();
         l1.setId(1L);
+        // Set up relationships
+        BlogPost blogPost1 = new BlogPost();
+        blogPost1.setId(1L);
+        l1.setBlogPost(blogPost1);
+        MyUser user1 = new MyUser();
+        user1.setId(1L);
+        user1.setUsername("user1");
+        l1.setUser(user1);
 
         BlogPostLike l2 = new BlogPostLike();
         l2.setId(2L);
+        // Set up relationships
+        BlogPost blogPost2 = new BlogPost();
+        blogPost2.setId(1L);
+        l2.setBlogPost(blogPost2);
+        MyUser user2 = new MyUser();
+        user2.setId(1L);
+        user2.setUsername("user1");
+        l2.setUser(user2);
 
         this.likes.add(l1);
         this.likes.add(l2);
+
     }
 
     @Test
@@ -91,22 +110,36 @@ class BlogPostLikeControllerTest {
 
     @Test
     void testAddLikeSuccess() throws Exception {
-        BlogPostLikeDto likeDto = new BlogPostLikeDto(null, 1L, 1L, "user1");
-        String json = objectMapper.writeValueAsString(likeDto);
+        BlogPostLikeDto likeDto = new BlogPostLikeDto(
+                null,  // id will be generated
+                1L,    // blogPostId
+                1L,    // userId
+                "user1" // username
+        );
 
         BlogPostLike savedLike = new BlogPostLike();
         savedLike.setId(3L);
+        // Set up relationships
+        BlogPost blogPost = new BlogPost();
+        blogPost.setId(1L);
+        savedLike.setBlogPost(blogPost);
+        MyUser user = new MyUser();
+        user.setId(1L);
+        user.setUsername("user1");
+        savedLike.setUser(user);
 
         given(blogPostLikeService.save(any(BlogPostLike.class))).willReturn(savedLike);
 
         this.mockMvc.perform(post(baseUrl)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(likeDto)))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Add Success"))
-                .andExpect(jsonPath("$.data.id").value(3));
+                .andExpect(jsonPath("$.data.id").value(3))
+                .andExpect(jsonPath("$.data.blogPostId").value(1))
+                .andExpect(jsonPath("$.data.userId").value(1))
+                .andExpect(jsonPath("$.data.username").value("user1"));
     }
 
     @Test

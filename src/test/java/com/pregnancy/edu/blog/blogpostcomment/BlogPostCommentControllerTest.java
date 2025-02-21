@@ -1,8 +1,10 @@
 package com.pregnancy.edu.blog.blogpostcomment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpostcomment.dto.CommentDto;
+import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.system.StatusCode;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;
@@ -16,10 +18,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -50,10 +54,23 @@ class BlogPostCommentControllerTest {
         BlogPostComment c1 = new BlogPostComment();
         c1.setId(1L);
         c1.setContent("Comment 1");
+        c1.setCreatedAt(LocalDateTime.now());
+        c1.setUpdatedAt(LocalDateTime.now());
+        // Set required relationships
+        c1.setBlogPost(new BlogPost());
+        c1.getBlogPost().setId(1L);
+        c1.setUser(new MyUser());
+        c1.getUser().setId(1L);
 
         BlogPostComment c2 = new BlogPostComment();
         c2.setId(2L);
         c2.setContent("Comment 2");
+        c2.setCreatedAt(LocalDateTime.now());
+        c2.setUpdatedAt(LocalDateTime.now());
+        c2.setBlogPost(new BlogPost());
+        c2.getBlogPost().setId(1L);
+        c2.setUser(new MyUser());
+        c2.getUser().setId(1L);
 
         this.comments.add(c1);
         this.comments.add(c2);
@@ -96,46 +113,82 @@ class BlogPostCommentControllerTest {
 
     @Test
     void testAddCommentSuccess() throws Exception {
-        CommentDto commentDto = new CommentDto(null, "New Comment", "2022-12-12", "2022-12-31", 1L, 1L);
-        String json = objectMapper.writeValueAsString(commentDto);
+        CommentDto commentDto = new CommentDto(
+                null,
+                "New Comment",
+                null,
+                null,
+                1L,
+                1L
+        );
 
         BlogPostComment savedComment = new BlogPostComment();
         savedComment.setId(3L);
         savedComment.setContent("New Comment");
+        savedComment.setCreatedAt(LocalDateTime.now());
+        savedComment.setUpdatedAt(LocalDateTime.now());
 
-        given(blogPostCommentService.save(any(BlogPostComment.class))).willReturn(savedComment);
+        BlogPost blogPost = new BlogPost();
+        blogPost.setId(1L);
+        savedComment.setBlogPost(blogPost);
+
+        MyUser user = new MyUser();
+        user.setId(1L);
+        savedComment.setUser(user);
+
+        given(blogPostCommentService.save(any(BlogPostComment.class)))
+                .willReturn(savedComment);
 
         this.mockMvc.perform(post(baseUrl)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
+                        .content(objectMapper.writeValueAsString(commentDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Add Success"))
                 .andExpect(jsonPath("$.data.id").value(3))
-                .andExpect(jsonPath("$.data.content").value("New Comment"));
+                .andExpect(jsonPath("$.data.content").value("New Comment"))
+                .andExpect(jsonPath("$.data.blogPostId").value(1))
+                .andExpect(jsonPath("$.data.userId").value(1));
     }
 
     @Test
     void testUpdateCommentSuccess() throws Exception {
-        CommentDto updateDto = new CommentDto(1L, "Updated Comment", "2022", "2023", 1L, 1L);
-        String json = objectMapper.writeValueAsString(updateDto);
+        CommentDto updateDto = new CommentDto(
+                null,
+                "Update Comment",
+                null,
+                null,
+                1L,
+                1L
+        );
 
         BlogPostComment updatedComment = new BlogPostComment();
         updatedComment.setId(1L);
         updatedComment.setContent("Updated Comment");
 
-        given(blogPostCommentService.update(any(Long.class), any(BlogPostComment.class))).willReturn(updatedComment);
+        BlogPost blogPost = new BlogPost();
+        blogPost.setId(1L);
+        updatedComment.setBlogPost(blogPost);
+
+        MyUser user = new MyUser();
+        user.setId(1L);
+        updatedComment.setUser(user);
+
+        given(blogPostCommentService.update(eq(1L), any(BlogPostComment.class)))
+                .willReturn(updatedComment);
 
         this.mockMvc.perform(put(baseUrl + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
+                        .content(objectMapper.writeValueAsString(updateDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Update Success"))
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.content").value("Updated Comment"));
+                .andExpect(jsonPath("$.data.id").value(1))          // Remove [0]
+                .andExpect(jsonPath("$.data.content").value("Updated Comment"))
+                .andExpect(jsonPath("$.data.blogPostId").value(1))
+                .andExpect(jsonPath("$.data.userId").value(1));
     }
 
     @Test

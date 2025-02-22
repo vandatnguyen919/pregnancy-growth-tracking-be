@@ -66,7 +66,7 @@ public class DBDataInitializer implements CommandLineRunner {
         p1.setShortDescription("By Texas Health and Human services: If you experience any of these symptoms during or after");
         BlogPost p2 = new BlogPost();
         p2.setPageTitle("The Importance of Sleep for Moms and Babies: Tips to Rest Better");
-        p2.setContent("Content 2");
+        p2.setContent("<p>123<p/>");
         p2.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
         p2.setShortDescription("By Texas Health and Human services: If you experience any of these symptoms during or after");
         BlogPost p3 = new BlogPost();
@@ -89,6 +89,41 @@ public class DBDataInitializer implements CommandLineRunner {
         p6.setContent("Content 6");
         p6.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
         p6.setShortDescription("If you\\'re a first-time parent, and even if you\\'ve already been through it before");
+        BlogPost p7 = new BlogPost();
+        p7.setPageTitle("How to Prepare for Labor: A Guide for First-Time Moms");
+        p7.setContent("Content 7");
+        p7.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p7.setShortDescription("Understanding contractions, hospital bags, and when to call your doctor");
+
+        BlogPost p8 = new BlogPost();
+        p8.setPageTitle("Healthy Eating Tips for Breastfeeding Moms");
+        p8.setContent("Content 8");
+        p8.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p8.setShortDescription("Essential nutrients to boost milk supply and maintain your energy levels");
+
+        BlogPost p9 = new BlogPost();
+        p9.setPageTitle("Baby Sleep Training: When and How to Start");
+        p9.setContent("Content 9");
+        p9.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p9.setShortDescription("Helping your newborn establish healthy sleeping habits early on");
+
+        BlogPost p10 = new BlogPost();
+        p10.setPageTitle("Postpartum Recovery: What to Expect in the First 6 Weeks");
+        p10.setContent("Content 10");
+        p10.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p10.setShortDescription("Tips to recover physically and emotionally after giving birth");
+
+        BlogPost p11 = new BlogPost();
+        p11.setPageTitle("The Best Pregnancy Exercises for a Healthy Delivery");
+        p11.setContent("Content 11");
+        p11.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p11.setShortDescription("Safe and effective exercises to stay active during pregnancy");
+
+        BlogPost p12 = new BlogPost();
+        p12.setPageTitle("Choosing the Right Pediatrician for Your Newborn");
+        p12.setContent("Content 12");
+        p12.setFeaturedImageUrl("https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby");
+        p12.setShortDescription("Key factors to consider when selecting the best doctor for your baby");
 
         Tag t1 = new Tag();
         t1.setName("Tag1");
@@ -116,6 +151,12 @@ public class DBDataInitializer implements CommandLineRunner {
         this.blogPostService.save(p4);
         this.blogPostService.save(p5);
         this.blogPostService.save(p6);
+        this.blogPostService.save(p7);
+        this.blogPostService.save(p8);
+        this.blogPostService.save(p9);
+        this.blogPostService.save(p10);
+        this.blogPostService.save(p11);
+        this.blogPostService.save(p12);
 
 
         this.blogPostCommentService.save(bpComment1);

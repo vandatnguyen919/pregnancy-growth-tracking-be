@@ -11,9 +11,9 @@ public class BlogPostLikeToBlogPostLikeDtoConverter implements Converter<BlogPos
     public BlogPostLikeDto convert(BlogPostLike source) {
         return new BlogPostLikeDto(
                 source.getId(),
-                source.getBlogPost().getId(),
-                source.getUser().getId(),
-                source.getUser().getUsername()
+                source.getBlogPost() != null ? source.getBlogPost().getId() : null,
+                source.getUser() != null ? source.getUser().getId() : null,
+                source.getUser() != null ? source.getUser().getUsername() : null
         );
     }
 }

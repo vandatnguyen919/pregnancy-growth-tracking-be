@@ -1,9 +1,14 @@
 package com.pregnancy.edu.blog.blogpostcomment;
 
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpost.BlogPostService;
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -11,9 +16,15 @@ import java.util.List;
 public class BlogPostCommentService {
 
     private final BlogPostCommentRepository blogPostCommentRepository;
+    private final BlogPostService blogPostService;
+    private final UserService userService;
 
-    public BlogPostCommentService(BlogPostCommentRepository blogPostCommentRepository) {
-        this.blogPostCommentRepository = blogPostCommentRepository;
+    public BlogPostCommentService(BlogPostCommentRepository commentRepository,
+                                  BlogPostService blogPostService,
+                                  UserService userService) {
+        this.blogPostCommentRepository = commentRepository;
+        this.blogPostService = blogPostService;
+        this.userService = userService;
     }
 
     public List<BlogPostComment> findAll() {
@@ -26,14 +37,36 @@ public class BlogPostCommentService {
     }
 
     public BlogPostComment save(BlogPostComment comment) {
+        // Validate relationships
+        if (comment.getBlogPost() != null && comment.getBlogPost().getId() != null) {
+            BlogPost blogPost = blogPostService.findById(comment.getBlogPost().getId());
+            comment.setBlogPost(blogPost);
+        }
+
+        if (comment.getUser() != null && comment.getUser().getId() != null) {
+            MyUser user = userService.findById(comment.getUser().getId());
+            comment.setUser(user);
+        }
+
         return blogPostCommentRepository.save(comment);
     }
-
     public BlogPostComment update(Long id, BlogPostComment comment) {
         return blogPostCommentRepository.findById(id)
-                .map(oldComment -> {
-                    oldComment.setContent(comment.getContent());
-                    return blogPostCommentRepository.save(oldComment);
+                .map(existingComment -> {
+                    existingComment.setContent(comment.getContent());
+
+                    // Update relationships if provided
+                    if (comment.getBlogPost() != null && comment.getBlogPost().getId() != null) {
+                        BlogPost blogPost = blogPostService.findById(comment.getBlogPost().getId());
+                        existingComment.setBlogPost(blogPost);
+                    }
+
+                    if (comment.getUser() != null && comment.getUser().getId() != null) {
+                        MyUser user = userService.findById(comment.getUser().getId());
+                        existingComment.setUser(user);
+                    }
+
+                    return blogPostCommentRepository.save(existingComment);
                 })
                 .orElseThrow(() -> new ObjectNotFoundException("comment", id));
     }

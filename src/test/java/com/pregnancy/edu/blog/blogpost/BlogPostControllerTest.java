@@ -13,6 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,14 +76,49 @@ class BlogPostControllerTest {
     }
 
     @Test
-    void testGetAllBlogPostsSuccess() throws Exception {
-        given(blogPostService.findAll()).willReturn(blogPosts);
+    void testGetAllBlogPostsWithPaginationAndSortingSuccess() throws Exception {
+        int page = 0;
+        int size = 10;
+        String sortBy = "heading";
+        String sortDir = "asc";
 
-        this.mockMvc.perform(get(baseUrl).accept(MediaType.APPLICATION_JSON))
+        PageRequest pageRequest = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+        Page<BlogPost> blogPostPage = new PageImpl<>(blogPosts, pageRequest, blogPosts.size());
+
+        given(blogPostService.findAll(any(PageRequest.class))).willReturn(blogPostPage);
+
+        this.mockMvc.perform(get(baseUrl)
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size))
+                        .param("sortBy", sortBy)
+                        .param("sortDir", sortDir)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Find All Success"))
-                .andExpect(jsonPath("$.data", Matchers.hasSize(blogPosts.size())));
+                .andExpect(jsonPath("$.data.content", Matchers.hasSize(blogPosts.size())))
+                .andExpect(jsonPath("$.data.totalElements").value(blogPosts.size()))
+                .andExpect(jsonPath("$.data.totalPages").value(1))
+                .andExpect(jsonPath("$.data.number").value(0));
+    }
+
+    @Test
+    void testGetAllBlogPostsWithDefaultPaginationSuccess() throws Exception {
+        PageRequest defaultPageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Page<BlogPost> blogPostPage = new PageImpl<>(blogPosts, defaultPageRequest, blogPosts.size());
+
+        given(blogPostService.findAll(any(PageRequest.class))).willReturn(blogPostPage);
+
+        this.mockMvc.perform(get(baseUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Find All Success"))
+                .andExpect(jsonPath("$.data.content", Matchers.hasSize(blogPosts.size())))
+                .andExpect(jsonPath("$.data.totalElements").value(blogPosts.size()))
+                .andExpect(jsonPath("$.data.totalPages").value(1))
+                .andExpect(jsonPath("$.data.number").value(0));
     }
 
     @Test
@@ -111,21 +150,46 @@ class BlogPostControllerTest {
 
     @Test
     void testAddBlogPostSuccess() throws Exception {
-        BlogPost post = new BlogPost();
-        post.setId(4L);
-        post.setHeading("Heading 4");
-        post.setContent("Content 4");
-        String json = objectMapper.writeValueAsString(post);
+        BlogPostDto blogPostDto = new BlogPostDto(
+                null,
+                "Heading 4",
+                "Content 4",
+                "Page Title 4",
+                "Short Description 4",
+                "https://example.com/image4.jpg",
+                true,
+                0,
+                0,
+                List.of("health", "pregnancy")
+        );
 
-        given(blogPostService.save(any(BlogPost.class))).willReturn(post);
+        BlogPost savedBlogPost = new BlogPost();
+        savedBlogPost.setId(4L);
+        savedBlogPost.setHeading("Heading 4");
+        savedBlogPost.setContent("Content 4");
+        savedBlogPost.setPageTitle("Page Title 4");
+        savedBlogPost.setShortDescription("Short Description 4");
+        savedBlogPost.setFeaturedImageUrl("https://example.com/image4.jpg");
+        savedBlogPost.setVisible(true);
+        savedBlogPost.setComments(new ArrayList<>());
+        savedBlogPost.setLikes(new ArrayList<>());
+        savedBlogPost.setTags(new ArrayList<>());
 
-        this.mockMvc.perform(post(baseUrl).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json))
+        String json = objectMapper.writeValueAsString(blogPostDto);
+
+        given(blogPostService.save(any(BlogPost.class))).willReturn(savedBlogPost);
+
+        this.mockMvc.perform(post(baseUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Add Success"))
-                .andExpect(jsonPath("$.data.id").isNotEmpty())
+                .andExpect(jsonPath("$.data.id").value(4))
                 .andExpect(jsonPath("$.data.heading").value("Heading 4"))
-                .andExpect(jsonPath("$.data.content").value("Content 4"));
+                .andExpect(jsonPath("$.data.content").value("Content 4"))
+                .andExpect(jsonPath("$.data.isVisible").value(true));
     }
 
     @Test

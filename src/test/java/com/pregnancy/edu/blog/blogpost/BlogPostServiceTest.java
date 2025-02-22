@@ -94,14 +94,14 @@ class BlogPostServiceTest {
     @Test
     void testFindByIdNotFound() {
         // Given
-        given(blogPostRepository.findById(10L)).willReturn(Optional.empty());
+        Long nonExistentId = 10L;
+        given(blogPostRepository.findById(nonExistentId)).willReturn(Optional.empty());
 
-        // When
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> blogPostService.findById(10L));
-
-        // Then
-        assertThrows(RuntimeException.class, () -> blogPostService.findById(10L));
-        verify(blogPostRepository, times(1)).findById(10L);
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> {
+            blogPostService.findById(nonExistentId);
+        });
+        verify(blogPostRepository, times(1)).findById(nonExistentId);
     }
 
     @Test
@@ -145,17 +145,17 @@ class BlogPostServiceTest {
     @Test
     void testUpdateNotFound() {
         // Given
+        Long nonExistentId = 10L;
         BlogPost updateData = new BlogPost();
         updateData.setHeading("Updated Blog Post");
 
-        given(blogPostRepository.findById(10L)).willReturn(Optional.empty());
+        given(blogPostRepository.findById(nonExistentId)).willReturn(Optional.empty());
 
-        // When
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> blogPostService.findById(10L));
-
-        // Then
-        assertThrows(RuntimeException.class, () -> blogPostService.update(10L, updateData));
-        verify(blogPostRepository, times(1)).findById(10L);
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> {
+            blogPostService.update(nonExistentId, updateData);
+        });
+        verify(blogPostRepository, times(1)).findById(nonExistentId);
     }
 
     @Test
@@ -174,13 +174,13 @@ class BlogPostServiceTest {
     @Test
     void testDeleteNotFound() {
         // Given
-        given(blogPostRepository.findById(1L)).willReturn(Optional.empty());
+        Long nonExistentId = 10L;
+        given(blogPostRepository.findById(nonExistentId)).willReturn(Optional.empty());
 
-        // When
-        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> blogPostService.findById(10L));
-
-        //Then
-        assertThrows(RuntimeException.class, () -> blogPostService.delete(1L));
-        verify(blogPostRepository, times(1)).findById(1L);
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> {
+            blogPostService.delete(nonExistentId);
+        });
+        verify(blogPostRepository, times(1)).findById(nonExistentId);
     }
 }

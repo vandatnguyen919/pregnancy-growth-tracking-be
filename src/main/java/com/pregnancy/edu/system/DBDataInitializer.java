@@ -14,6 +14,8 @@ import com.pregnancy.edu.system.consts.Role;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DBDataInitializer implements CommandLineRunner {
 
@@ -134,6 +136,14 @@ public class DBDataInitializer implements CommandLineRunner {
         Tag t3 = new Tag();
         t3.setName("Tag3");
 
+//        p1.setTags(List.of(t1, t2));
+//        p2.setTags(List.of(t1, t3));
+//        p3.setTags(List.of(t2, t3));
+//
+//        t1.setBlogPosts(List.of(p2, p3));
+//        t2.setBlogPosts(List.of(p1, p3));
+//        t3.setBlogPosts(List.of(p1, p2));
+//
         BlogPostComment bpComment1 = new BlogPostComment();
         bpComment1.setContent("comment1");
         BlogPostComment bpComment2 = new BlogPostComment();
@@ -163,6 +173,8 @@ public class DBDataInitializer implements CommandLineRunner {
         this.blogPostCommentService.save(bpComment2);
         this.blogPostCommentService.save(bpComment3);
 
-
+//        this.tagService.save(t1);
+//        this.tagService.save(t2);
+//        this.tagService.save(t3);
     }
 }

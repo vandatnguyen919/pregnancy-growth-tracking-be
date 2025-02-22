@@ -4,6 +4,6 @@ public record CommentDto(Long id,
                          String content,
                          String createdAt,
                          String updatedAt,
-                         Long postId,
+                         Long blogPostId,
                          Long userId) {
 }

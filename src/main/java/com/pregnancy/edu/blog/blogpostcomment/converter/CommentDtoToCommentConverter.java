@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class CommentDtoToCommentConverter implements Converter<CommentDto, BlogPostComment> {
-    private final BlogPostComment blogPostComment = new BlogPostComment();
 
     @Override
     public BlogPostComment convert(CommentDto source) {
+        BlogPostComment blogPostComment = new BlogPostComment();
         blogPostComment.setContent(source.content());
         blogPostComment.setUpdatedAt(formatStringToDateTime(source.updatedAt()));
         blogPostComment.setCreatedAt(formatStringToDateTime(source.createdAt()));
@@ -24,6 +24,9 @@ public class CommentDtoToCommentConverter implements Converter<CommentDto, BlogP
     }
 
     public LocalDateTime formatStringToDateTime(String dateTime) {
+        if(dateTime == null || dateTime.equals("")) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(dateTime, formatter);
     }

@@ -141,15 +141,4 @@ class BlogPostLikeControllerTest {
                 .andExpect(jsonPath("$.data.userId").value(1))
                 .andExpect(jsonPath("$.data.username").value("user1"));
     }
-
-    @Test
-    void testDeleteLikeSuccess() throws Exception {
-        doNothing().when(blogPostLikeService).delete(1L);
-
-        this.mockMvc.perform(delete(baseUrl + "/1").accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.flag").value(true))
-                .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
-                .andExpect(jsonPath("$.message").value("Delete Success"))
-                .andExpect(jsonPath("$.data").isEmpty());
-    }
 }

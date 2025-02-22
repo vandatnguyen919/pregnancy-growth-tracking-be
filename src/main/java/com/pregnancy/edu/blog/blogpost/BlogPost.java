@@ -45,7 +45,15 @@ public class BlogPost {
     @ManyToOne
     private MyUser user;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
+    private List<BlogPostComment> comments = new ArrayList<>();
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
+    private List<BlogPostLike> likes = new ArrayList<>();
+
+    @ManyToMany
     @JoinTable(
             name = "blog_post_tag",
             joinColumns = @JoinColumn(name = "blog_post_id"),
@@ -53,9 +61,11 @@ public class BlogPost {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
-    private List<BlogPostComment> comments = new ArrayList<>();
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
-    private List<BlogPostLike> likes = new ArrayList<>();
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+    }
 }

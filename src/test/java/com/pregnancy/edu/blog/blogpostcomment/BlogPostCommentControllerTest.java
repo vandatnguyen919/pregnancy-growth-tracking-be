@@ -185,7 +185,7 @@ class BlogPostCommentControllerTest {
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Update Success"))
-                .andExpect(jsonPath("$.data.id").value(1))          // Remove [0]
+                .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.content").value("Updated Comment"))
                 .andExpect(jsonPath("$.data.blogPostId").value(1))
                 .andExpect(jsonPath("$.data.userId").value(1));

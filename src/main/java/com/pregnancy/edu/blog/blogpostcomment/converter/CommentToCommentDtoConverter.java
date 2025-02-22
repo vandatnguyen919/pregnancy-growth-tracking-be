@@ -22,6 +22,9 @@ public class CommentToCommentDtoConverter implements Converter<BlogPostComment, 
         );
     }
     public String formatDateTimeToString(LocalDateTime dateTime) {
+        if(dateTime == null) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }

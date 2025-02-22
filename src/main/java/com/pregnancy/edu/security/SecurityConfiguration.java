@@ -75,10 +75,19 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags").permitAll()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").hasAuthority("ROLE_expert")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-comments").hasAuthority("ROLE_expert")
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/tags").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").authenticated()
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-comments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-likes").authenticated()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-likes").authenticated()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",

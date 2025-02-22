@@ -48,18 +48,12 @@ public class BlogPostCommentService {
             comment.setUser(user);
         }
 
-        // Set timestamps
-        LocalDateTime now = LocalDateTime.now();
-        comment.setCreatedAt(now);
-        comment.setUpdatedAt(now);
-
         return blogPostCommentRepository.save(comment);
     }
     public BlogPostComment update(Long id, BlogPostComment comment) {
         return blogPostCommentRepository.findById(id)
                 .map(existingComment -> {
                     existingComment.setContent(comment.getContent());
-                    existingComment.setUpdatedAt(LocalDateTime.now());
 
                     // Update relationships if provided
                     if (comment.getBlogPost() != null && comment.getBlogPost().getId() != null) {

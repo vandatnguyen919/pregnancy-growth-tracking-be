@@ -12,9 +12,11 @@ public class UserToUserDtoConverter implements Converter<MyUser, UserDto> {
     public UserDto convert(MyUser source) {
         return new UserDto(
                 source.getId(),
+                source.getFullName(),
                 source.getEmail(),
                 source.getUsername(),
                 source.getEnabled(),
+                source.getVerified(),
                 source.getRole()
         );
     }

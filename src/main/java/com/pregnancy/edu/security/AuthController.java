@@ -1,5 +1,9 @@
 package com.pregnancy.edu.security;
 
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.UserService;
+import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
+import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.security.dto.RegisterDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
@@ -7,10 +11,12 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -20,8 +26,14 @@ public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
+    private final UserService userService;
+
+    private final UserToUserDtoConverter userToUserDtoConverter;
+
+    public AuthController(AuthService authService, UserService userService, UserToUserDtoConverter userToUserDtoConverter) {
         this.authService = authService;
+        this.userService = userService;
+        this.userToUserDtoConverter = userToUserDtoConverter;
     }
 
     @PostMapping("/login")
@@ -33,5 +45,14 @@ public class AuthController {
     @PostMapping("/register")
     public Result getRegisterInfo(@Valid @RequestBody RegisterDto registerDto) {
         return new Result(true, StatusCode.SUCCESS, "User Registration", this.authService.createRegisterInfo(registerDto));
+    }
+
+    @GetMapping("/profile")
+    public Result getUserInfo(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+        MyUser myUser = this.userService.findById(userId);
+        UserDto userDto = this.userToUserDtoConverter.convert(myUser);
+        return new Result(true, StatusCode.SUCCESS, "User Info", userDto);
     }
 }

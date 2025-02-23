@@ -51,6 +51,6 @@ public class MyUserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return myUser.getEnabled();
+        return myUser.getEnabled() && myUser.getVerified();
     }
 }

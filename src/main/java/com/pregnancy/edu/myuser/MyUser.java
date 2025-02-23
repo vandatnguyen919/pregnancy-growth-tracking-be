@@ -9,7 +9,7 @@ import com.pregnancy.edu.membershippackages.payment.Payment;
 import com.pregnancy.edu.membershippackages.subscription.Subscription;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.reminder.Reminder;
-import com.pregnancy.edu.system.consts.BloodType;
+import com.pregnancy.edu.system.common.BloodType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -61,9 +61,9 @@ public class MyUser {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private Boolean verified;
+    private Boolean verified = false;
 
-    private Boolean enabled;
+    private Boolean enabled = false;
 
     @NotEmpty(message = "role is required.")
     private String role;

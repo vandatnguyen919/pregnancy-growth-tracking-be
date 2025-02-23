@@ -6,7 +6,7 @@ import com.pregnancy.edu.myuser.UserRepository;
 import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
 import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.security.dto.RegisterDto;
-import com.pregnancy.edu.system.consts.Role;
+import com.pregnancy.edu.system.common.Role;
 import com.pregnancy.edu.system.exception.RegisterIllegalArgumentException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -56,25 +57,34 @@ public class AuthService {
             throw new RegisterIllegalArgumentException("Email is already taken.");
         }
 
-        // If the username is already taken, throw an exception.
-        if (userRepository.findByUsername(registerDto.username()).isPresent()) {
-            throw new RegisterIllegalArgumentException("Username is already taken.");
-        }
-
         // If the password and confirm password do not match, throw an exception.
         if (!registerDto.password().equals(registerDto.confirmPassword())) {
             throw new RegisterIllegalArgumentException("New password and confirm new password do not match.");
         }
 
         MyUser myUser = new MyUser();
+        myUser.setFullName(registerDto.fullName());
         myUser.setEmail(registerDto.email());
-        myUser.setUsername(registerDto.username());
+        myUser.setUsername(UUID.randomUUID().toString());
         myUser.setPassword(passwordEncoder.encode(registerDto.password()));
-        myUser.setEnabled(false);
+        myUser.setEnabled(true);
+        myUser.setVerified(false);
         myUser.setRole(Role.USER.getDisplayName()); // Default role is user
 
         MyUser newUser = userRepository.save(myUser);
 
         return userToUserDtoConverter.convert(newUser);
+    }
+
+    public void enableUser(Long userId) {
+        MyUser myUser = userRepository.findById(userId).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
+        myUser.setEnabled(true);
+        userRepository.save(myUser);
+    }
+
+    public void verifyUser(String email) {
+        MyUser myUser = userRepository.findByEmail(email).orElseThrow(() -> new RegisterIllegalArgumentException("User not found."));
+        myUser.setVerified(true);
+        userRepository.save(myUser);
     }
 }

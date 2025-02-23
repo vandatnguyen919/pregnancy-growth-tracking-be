@@ -12,7 +12,7 @@ public record BlogPostDto(Long id,
                           String pageTitle,
                           String shortDescription,
                           String featuredImageUrl,
-                          Boolean isVisible,
+                          boolean isVisible,
                           Integer commentQuantity,
                           Integer likeQuantity,
                           List<String> nameTags) {

@@ -1,4 +1,4 @@
-package com.pregnancy.edu.membershippackages.payment.config;
+package com.pregnancy.edu.client.payment.config;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class VNPayConfig {
     @PostConstruct
     private void init() {
         VNPayConfig.vnp_PayUrl = this.vnpPayUrl;
-//        VNPayConfig.vnp_ReturnUrl = clientUrl + this.redirectUrl;
+        VNPayConfig.vnp_ReturnUrl = "https://example.com"; // TODO: Change this to our app domain
         VNPayConfig.vnp_TmnCode = this.vnpTmnCode;
         VNPayConfig.secretKey = this.secretKey2;
         VNPayConfig.vnp_Version = this.vnpVersion;

@@ -10,6 +10,8 @@ public class BlogPostLikeDtoToBlogPostLikeConverter implements Converter<BlogPos
     @Override
     public BlogPostLike convert(BlogPostLikeDto source) {
         BlogPostLike like = new BlogPostLike();
+        like.getBlogPost().setId(source.blogPostId());
+        like.getUser().setId(source.userId());
         return like;
     }
 }

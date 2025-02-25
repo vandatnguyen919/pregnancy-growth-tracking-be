@@ -1,3 +1,10 @@
+vnp:
+  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  tmnCode: R94R77Y4
+  secretKey: BQQO6VOYVDBQYGHTCZ17JTYR01X4GXO7
+  version: 2.1.0
+  apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+
 spring:
   h2:
     console:

@@ -90,6 +90,14 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-comments/**").authenticated()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-likes").authenticated()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-likes").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/membership-plans/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/membership-plans").authenticated()
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/membership-plans/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/membership-plans/**").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/subscriptions/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/subscriptions/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/create-payment").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/check-payment/vnpay").authenticated()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",

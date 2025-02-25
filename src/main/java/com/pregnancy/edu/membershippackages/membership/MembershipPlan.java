@@ -18,6 +18,10 @@ public class MembershipPlan {
     private Integer durationMonths;
     private boolean isActive;
 
+    public Integer getDurationInDays() {
+        return durationMonths * 30;
+    }
+
     @ManyToOne
     private Subscription subscription;
 }

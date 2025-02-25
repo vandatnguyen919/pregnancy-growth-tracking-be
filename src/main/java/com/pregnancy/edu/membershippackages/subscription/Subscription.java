@@ -21,6 +21,9 @@ public class Subscription {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 
     @ManyToOne
     private MyUser user;
@@ -30,4 +33,9 @@ public class Subscription {
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subscription")
     private List<MembershipPlan> membershipPlans;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

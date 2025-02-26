@@ -96,7 +96,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/membership-plans/**").hasAuthority("ROLE_admin")
                                 .requestMatchers(HttpMethod.POST, this.baseUrl + "/subscriptions/**").authenticated()
                                 .requestMatchers(HttpMethod.PUT, this.baseUrl + "/subscriptions/**").authenticated()
-                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/payment/**").permitAll()
                                 .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                                 .requestMatchers(
                                         "/api/v1/auth/**",

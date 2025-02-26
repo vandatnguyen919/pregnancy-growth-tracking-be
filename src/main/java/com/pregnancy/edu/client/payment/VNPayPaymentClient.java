@@ -1,14 +1,14 @@
 package com.pregnancy.edu.client.payment;
 
 import com.pregnancy.edu.client.payment.dto.CreatePaymentResponse;
-import com.pregnancy.edu.client.payment.config.VNPayConfig;
+import com.pregnancy.edu.client.payment.utils.VNPayUtils;
 import com.pregnancy.edu.client.payment.dto.VNPayQueryRequest;
 import com.pregnancy.edu.client.payment.dto.VNPayQueryResponse;
-import com.pregnancy.edu.system.common.EncryptionUtils;
 import com.pregnancy.edu.system.common.PaymentProvider;
 import com.pregnancy.edu.system.exception.PaymentException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -27,6 +27,25 @@ import java.util.*;
 @Slf4j
 @Service
 public class VNPayPaymentClient {
+
+    @Value("${vnp.payUrl}")
+    private String vnp_PayUrl;
+
+    @Value("${vnp.returnUrl}")
+    private String vnp_ReturnUrl;
+
+    @Value("${vnp.tmnCode}")
+    private String vnp_TmnCode;
+
+    @Value("${vnp.secretKey}")
+    private String secretKey;
+
+    @Value("${vnp.version}")
+    private String vnp_Version;
+
+    @Value("${vnp.apiUrl}")
+    private String vnp_ApiUrl;
+
     // Common constants
     private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -49,7 +68,7 @@ public class VNPayPaymentClient {
 
     public VNPayPaymentClient(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder
-                .baseUrl(VNPayConfig.vnp_ApiUrl)
+                .baseUrl(vnp_ApiUrl)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
     }
@@ -62,8 +81,8 @@ public class VNPayPaymentClient {
      * @return Response containing payment URL
      */
     public CreatePaymentResponse createPayment(long amount, HttpServletRequest request) {
-        String transactionRef = VNPayConfig.getRandomNumber(RANDOM_ID_LENGTH);
-        String ipAddress = VNPayConfig.getIpAddress(request);
+        String transactionRef = VNPayUtils.getRandomNumber(RANDOM_ID_LENGTH);
+        String ipAddress = VNPayUtils.getIpAddress(request);
         long vnpayAmount = amount * AMOUNT_MULTIPLIER;
 
         // Create time-related values
@@ -106,9 +125,9 @@ public class VNPayPaymentClient {
      * Builds a VNPay query request with secure hash.
      */
     private VNPayQueryRequest buildQueryRequest(String txnRef, String transDate, HttpServletRequest request) {
-        String requestId = VNPayConfig.getRandomNumber(RANDOM_ID_LENGTH);
+        String requestId = VNPayUtils.getRandomNumber(RANDOM_ID_LENGTH);
         String createDate = ZonedDateTime.now(VIETNAM_ZONE).format(DATE_FORMATTER);
-        String ipAddr = VNPayConfig.getIpAddress(request);
+        String ipAddr = VNPayUtils.getIpAddress(request);
         String orderInfo = "Kiem tra ket qua GD OrderId:" + txnRef;
 
         // Using a record-based approach with a builder pattern
@@ -116,7 +135,7 @@ public class VNPayPaymentClient {
                 .vnp_RequestId(requestId)
                 .vnp_Version(QUERY_VERSION)
                 .vnp_Command(QUERY_COMMAND)
-                .vnp_TmnCode(VNPayConfig.vnp_TmnCode)
+                .vnp_TmnCode(vnp_TmnCode)
                 .vnp_TxnRef(txnRef)
                 .vnp_OrderInfo(orderInfo)
                 .vnp_TransactionDate(transDate)
@@ -125,11 +144,11 @@ public class VNPayPaymentClient {
 
         // Generate secure hash
         String hashData = String.join("|",
-                requestId, QUERY_VERSION, QUERY_COMMAND, VNPayConfig.vnp_TmnCode,
+                requestId, QUERY_VERSION, QUERY_COMMAND, vnp_TmnCode,
                 txnRef, transDate, createDate, ipAddr, orderInfo
         );
 
-        String secureHash = EncryptionUtils.hmacSHA512(VNPayConfig.secretKey, hashData);
+        String secureHash = VNPayUtils.hmacSHA512(secretKey, hashData);
         builder.vnp_SecureHash(secureHash);
 
         return builder.build();
@@ -143,15 +162,15 @@ public class VNPayPaymentClient {
         Map<String, String> params = new HashMap<>();
 
         // Add all required parameters
-        params.put("vnp_Version", VNPayConfig.vnp_Version);
+        params.put("vnp_Version", vnp_Version);
         params.put("vnp_Command", PAYMENT_COMMAND);
-        params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
+        params.put("vnp_TmnCode", vnp_TmnCode);
         params.put("vnp_Amount", String.valueOf(amount));
         params.put("vnp_BankCode", DEFAULT_BANK_CODE);
         params.put("vnp_CurrCode", VND_CURRENCY);
         params.put("vnp_IpAddr", ipAddress);
         params.put("vnp_OrderType", DEFAULT_ORDER_TYPE);
-        params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
+        params.put("vnp_ReturnUrl", vnp_ReturnUrl);
         params.put("vnp_TxnRef", transactionRef);
         params.put("vnp_CreateDate", createDate);
         params.put("vnp_ExpireDate", expireDate);
@@ -194,9 +213,9 @@ public class VNPayPaymentClient {
         }
 
         // Generate and append secure hash
-        String secureHash = EncryptionUtils.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
+        String secureHash = VNPayUtils.hmacSHA512(secretKey, hashData.toString());
         query.append("&vnp_SecureHash=").append(secureHash);
 
-        return VNPayConfig.vnp_PayUrl + "?" + query;
+        return vnp_PayUrl + "?" + query;
     }
 }

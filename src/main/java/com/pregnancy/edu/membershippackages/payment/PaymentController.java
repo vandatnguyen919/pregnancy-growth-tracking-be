@@ -65,24 +65,4 @@ public class PaymentController {
         }
         return new Result(true, StatusCode.SUCCESS, "Payment Checked Success");
     }
-
-//    @GetMapping("/create-payment")
-//    public ResponseEntity<?> createPayment(
-//            Principal principal,
-//            HttpServletRequest req,
-//            @RequestParam Long subscriptionId,
-//            @RequestParam(required = false, defaultValue = "VNPAY") PaymentProvider provider
-//    ) {
-//        return paymentService.createPayment(principal, req, subscriptionId, provider);
-//    }
-//
-//    @GetMapping("/check-payment/vnpay")
-//    public ResponseEntity<?> checkVNPayPayment(
-//            Principal principal,
-//            HttpServletRequest req,
-//            @RequestParam(name = "vnp_TxnRef") String vnp_TxnRef,
-//            @RequestParam(name = "vnp_PayDate") String vnp_TransDate
-//    ) throws IOException {
-//        return paymentService.checkVNPayPayment(principal, req, vnp_TxnRef, vnp_TransDate);
-//    }
 }

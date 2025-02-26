@@ -1,5 +1,6 @@
 vnp:
   payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  returnUrl: https://example.com
   tmnCode: 6A32GGY0
   secretKey: SWXLFPTXZYUNKQ39U7GTRCAQD7K9E008
   version: 2.1.0

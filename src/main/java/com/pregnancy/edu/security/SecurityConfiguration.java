@@ -69,50 +69,49 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/login").authenticated() // Protect this endpoint
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/otp/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").hasAuthority("ROLE_admin") // Protect this endpoint
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/tags").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").authenticated()
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-comments/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-comments/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-likes").authenticated()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-likes").authenticated()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/membership-plans/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/membership-plans").authenticated()
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/membership-plans/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/membership-plans/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/subscriptions/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/subscriptions/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/create-payment").authenticated()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/check-payment/vnpay").authenticated()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-ui.html").permitAll()
-                        // Disallow everything else.
-                        .anyRequest().authenticated() // Always a good idea to put this as last.
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/login").authenticated() // Protect this endpoint
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/otp/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").hasAuthority("ROLE_admin") // Protect this endpoint
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // Protect this endpoint
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-posts/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-posts/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/tags/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/tags").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/tags/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-comments/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-comments").authenticated()
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/blog-comments/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-comments/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-likes").authenticated()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-likes").authenticated()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/membership-plans/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/membership-plans").authenticated()
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/membership-plans/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/membership-plans/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/subscriptions/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/subscriptions/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/**").permitAll()
+                                .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                                .requestMatchers(
+                                        "/api/v1/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/webjars/**",
+                                        "/swagger-ui.html").permitAll()
+                                // Disallow everything else.
+                                .anyRequest().authenticated() // Always a good idea to put this as last.
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // This is for H2 browser console access
                 .csrf(AbstractHttpConfigurer::disable)

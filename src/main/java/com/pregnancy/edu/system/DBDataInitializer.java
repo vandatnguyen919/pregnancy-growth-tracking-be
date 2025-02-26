@@ -8,11 +8,22 @@ import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLikeService;
 import com.pregnancy.edu.blog.tag.Tag;
 import com.pregnancy.edu.blog.tag.TagService;
+import com.pregnancy.edu.fetusinfo.fetus.Fetus;
+import com.pregnancy.edu.fetusinfo.fetus.FetusService;
+import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
+import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetricService;
+import com.pregnancy.edu.fetusinfo.metric.Metric;
+import com.pregnancy.edu.fetusinfo.metric.MetricService;
+import com.pregnancy.edu.fetusinfo.standard.Standard;
+import com.pregnancy.edu.fetusinfo.standard.StandardService;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
+import com.pregnancy.edu.pregnancy.Pregnancy;
+import com.pregnancy.edu.pregnancy.PregnancyService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +36,26 @@ public class DBDataInitializer implements CommandLineRunner {
     private final BlogPostLikeService blogPostLikeService;
     private final BlogPostCommentService blogPostCommentService;
     private final TagService tagService;
+    private final PregnancyService pregnancyService;
+    private final FetusService fetusService;
+    private final MetricService metricService;
+    private final StandardService standardService;
+    private final FetusMetricService fetusMetricService;
 
     public DBDataInitializer(UserService userService, BlogPostService blogPostService,
                              BlogPostLikeService blogPostLikeService,
                              BlogPostCommentService blogPostCommentService,
-                             TagService tagService) {
+                             TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService) {
         this.userService = userService;
         this.blogPostService = blogPostService;
         this.blogPostLikeService = blogPostLikeService;
         this.blogPostCommentService = blogPostCommentService;
         this.tagService = tagService;
+        this.pregnancyService = pregnancyService;
+        this.fetusService = fetusService;
+        this.metricService = metricService;
+        this.standardService = standardService;
+        this.fetusMetricService = fetusMetricService;
     }
 
     @Override
@@ -125,6 +146,107 @@ public class DBDataInitializer implements CommandLineRunner {
         blogPostCommentService.save(bpComment1);
         blogPostCommentService.save(bpComment2);
         blogPostCommentService.save(bpComment3);
+
+        // Create metrics with their standards
+        Metric weightMetric = createMetric("Weight", "NUMERIC", "grams");
+        Metric lengthMetric = createMetric("Length", "NUMERIC", "cm");
+        Metric headCircumferenceMetric = createMetric("Head Circumference", "NUMERIC", "cm");
+
+        metricService.save(weightMetric);
+        metricService.save(lengthMetric);
+        metricService.save(headCircumferenceMetric);
+
+        // Create pregnancies for users
+        Pregnancy pregnancy1 = createPregnancy(u1, LocalDate.now().minusWeeks(20));
+        Pregnancy pregnancy2 = createPregnancy(u2, LocalDate.now().minusWeeks(15));
+
+        if (pregnancy1.getFetuses() == null) {
+            pregnancy1.setFetuses(new ArrayList<>());
+        }
+        if (pregnancy2.getFetuses() == null) {
+            pregnancy2.setFetuses(new ArrayList<>());
+        }
+
+        pregnancyService.save(pregnancy1);
+        pregnancyService.save(pregnancy2);
+
+        // Create fetuses
+        Fetus fetus1 = createFetus(u1, pregnancy1, "Baby Boy", "MALE", 1);
+        Fetus fetus2 = createFetus(u1, pregnancy1, "Baby Girl", "FEMALE", 2); // Twins for user1
+        Fetus fetus3 = createFetus(u2, pregnancy2, "Little One", "UNKNOWN", 1);
+
+        fetusService.save(fetus1);
+        fetusService.save(fetus2);
+        fetusService.save(fetus3);
+
+//        // Create fetus metrics
+//        // For fetus1 (week 20)
+//        createFetusMetric(fetus1, weightMetric, 300.0, 20);
+//        createFetusMetric(fetus1, lengthMetric, 17.5, 20);
+//        createFetusMetric(fetus1, headCircumferenceMetric, 16.8, 20);
+//
+//        // For fetus2 (week 20)
+//        createFetusMetric(fetus2, weightMetric, 285.0, 20);
+//        createFetusMetric(fetus2, lengthMetric, 16.8, 20);
+//        createFetusMetric(fetus2, headCircumferenceMetric, 16.2, 20);
+//
+//        // For fetus3 (week 15)
+//        createFetusMetric(fetus3, weightMetric, 150.0, 15);
+//        createFetusMetric(fetus3, lengthMetric, 10.5, 15);
+//        createFetusMetric(fetus3, headCircumferenceMetric, 9.8, 15);
+    }
+
+    private void createAndSaveStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+        if (metric.getName().equals("Weight")) {
+            standards.add(createStandard(metric, 12, 16.0, 45.0));
+            standards.add(createStandard(metric, 16, 100.0, 200.0));
+            standards.add(createStandard(metric, 20, 250.0, 350.0));
+            standards.add(createStandard(metric, 28, 1000.0, 1300.0));
+            standards.add(createStandard(metric, 32, 1700.0, 2100.0));
+            standards.add(createStandard(metric, 36, 2500.0, 3000.0));
+            standards.add(createStandard(metric, 40, 3200.0, 3700.0));
+        } else if (metric.getName().equals("Length")) {
+            standards.add(createStandard(metric, 12, 5.0, 8.0));
+            standards.add(createStandard(metric, 16, 11.0, 14.0));
+            standards.add(createStandard(metric, 20, 16.0, 19.0));
+            standards.add(createStandard(metric, 24, 21.0, 24.0));
+            standards.add(createStandard(metric, 28, 25.0, 28.0));
+            standards.add(createStandard(metric, 32, 29.0, 32.0));
+            standards.add(createStandard(metric, 36, 33.0, 37.0));
+        } else if (metric.getName().equals("Head Circumference")) {
+            standards.add(createStandard(metric, 12, 5.0, 8.0));
+            standards.add(createStandard(metric, 16, 10.0, 13.0));
+            standards.add(createStandard(metric, 20, 15.0, 18.0));
+            standards.add(createStandard(metric, 24, 19.0, 22.0));
+            standards.add(createStandard(metric, 28, 23.0, 26.0));
+            standards.add(createStandard(metric, 32, 27.0, 30.0));
+            standards.add(createStandard(metric, 36, 31.0, 34.0));
+            standards.add(createStandard(metric, 40, 35.0, 38.0));
+        }
+
+        for (Standard standard : standards) {
+            standardService.save(standard);
+            if (metric.getStandards() == null) {
+                metric.setStandards(new ArrayList<>());
+            }
+            metric.getStandards().add(standard);
+        }
+
+        metricService.save(metric);
+    }
+
+    private FetusMetric createFetusMetric(Fetus fetus, Metric metric, Double value, Integer week) {
+        FetusMetric fetusMetric = new FetusMetric();
+        fetusMetric.setFetus(fetus);
+        fetusMetric.setMetric(metric);
+        fetusMetric.setValue(value);
+        fetusMetric.setWeek(week);
+
+        fetus.getFetusMetrics().add(fetusMetric);
+        metric.getFetusMetrics().add(fetusMetric);
+
+        return fetusMetricService.save(fetusMetric);
     }
 
     private MyUser createUser(String email, String username, String password, boolean enabled, boolean verified, String role) {
@@ -147,4 +269,39 @@ public class DBDataInitializer implements CommandLineRunner {
         tags.forEach(post::addTag);
         return post;
     }
+
+    private Pregnancy createPregnancy(MyUser user, LocalDate dueDate) {
+        Pregnancy pregnancy = new Pregnancy();
+        pregnancy.setUser(user);
+        pregnancy.setEstimatedDueDate(dueDate);
+        return pregnancy;
+    }
+
+    private Metric createMetric(String name, String dataType, String unit) {
+        Metric metric = new Metric();
+        metric.setName(name);
+        metric.setDataType(dataType);
+        metric.setUnit(unit);
+        return metric;
+    }
+
+    private Standard createStandard(Metric metric, Integer week, Double min, Double max) {
+        Standard standard = new Standard();
+        standard.setMetric(metric);
+        standard.setWeek(week);
+        standard.setMin(min);
+        standard.setMax(max);
+        return standard;
+    }
+
+    private Fetus createFetus(MyUser user, Pregnancy pregnancy, String nickname, String gender, Integer fetusNumber) {
+        Fetus fetus = new Fetus();
+        fetus.setUser(user);
+        fetus.setPregnancy(pregnancy);
+        fetus.setNickName(nickname);
+        fetus.setGender(gender);
+        fetus.setFetusNumber(fetusNumber);
+        return fetus;
+    }
+
 }

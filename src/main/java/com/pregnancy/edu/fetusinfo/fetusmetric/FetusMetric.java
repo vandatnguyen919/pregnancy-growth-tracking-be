@@ -1,5 +1,6 @@
-package com.pregnancy.edu.fetusinfo.standard;
+package com.pregnancy.edu.fetusinfo.fetusmetric;
 
+import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.metric.Metric;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,19 +9,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class Standard {
-
+public class FetusMetric {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "metric_id")
+    private Fetus fetus;
+
+    @ManyToOne
     private Metric metric;
 
+    private Double value;
+
     private Integer week;
-
-    private Double min;
-
-    private Double max;
 }

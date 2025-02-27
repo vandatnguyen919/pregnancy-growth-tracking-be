@@ -6,9 +6,6 @@ public record MetricDto(
         Long id,
         @NotEmpty(message = "Name is required")
         String name,
-        String dataType,
-        String unit,
-        Integer standardsCount,
-        Integer metricsCount
+        String unit
 ) {
 }

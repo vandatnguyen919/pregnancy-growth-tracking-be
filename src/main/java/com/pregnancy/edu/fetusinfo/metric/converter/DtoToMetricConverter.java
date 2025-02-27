@@ -11,7 +11,6 @@ public class DtoToMetricConverter implements Converter<MetricDto, Metric> {
     public Metric convert(MetricDto source) {
         Metric metric = new Metric();
         metric.setName(source.name());
-        metric.setDataType(source.dataType());
         metric.setUnit(source.unit());
         return metric;
     }

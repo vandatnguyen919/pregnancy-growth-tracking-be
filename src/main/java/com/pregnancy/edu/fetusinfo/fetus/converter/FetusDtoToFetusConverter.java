@@ -35,7 +35,6 @@ public class FetusDtoToFetusConverter implements Converter<FetusDto, Fetus> {
         fetus.setPregnancy(pregnancy);
         fetus.setNickName(source.nickName());
         fetus.setGender(source.gender());
-        fetus.setFetusNumber(source.fetusNumber());
 
         return fetus;
     }

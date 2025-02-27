@@ -20,6 +20,7 @@ public class FetusMetric {
     @ManyToOne
     private Metric metric;
 
+    @Column(name = "metric_value")
     private Double value;
 
     private Integer week;

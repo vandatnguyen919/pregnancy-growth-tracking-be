@@ -14,9 +14,7 @@ public class FetusToFetusDtoConverter implements Converter<Fetus, FetusDto> {
                 source.getUser().getId(),
                 source.getPregnancy().getId(),
                 source.getNickName(),
-                source.getGender(),
-                source.getFetusNumber(),
-                source.getFetusMetrics() == null ? 0 : source.getFetusMetrics().size()
+                source.getGender()
         );
     }
 }

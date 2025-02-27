@@ -4,7 +4,6 @@ import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostcomment.BlogPostCommentService;
-import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLikeService;
 import com.pregnancy.edu.blog.tag.Tag;
 import com.pregnancy.edu.blog.tag.TagService;
@@ -45,7 +44,7 @@ public class DBDataInitializer implements CommandLineRunner {
     public DBDataInitializer(UserService userService, BlogPostService blogPostService,
                              BlogPostLikeService blogPostLikeService,
                              BlogPostCommentService blogPostCommentService,
-                             TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService) {
+                             TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService, FetusMetricService fetusMetricService1) {
         this.userService = userService;
         this.blogPostService = blogPostService;
         this.blogPostLikeService = blogPostLikeService;
@@ -55,7 +54,7 @@ public class DBDataInitializer implements CommandLineRunner {
         this.fetusService = fetusService;
         this.metricService = metricService;
         this.standardService = standardService;
-        this.fetusMetricService = fetusMetricService;
+        this.fetusMetricService = fetusMetricService1;
     }
 
     @Override
@@ -134,6 +133,9 @@ public class DBDataInitializer implements CommandLineRunner {
         blogPostService.save(p1);
         blogPostService.save(p2);
         blogPostService.save(p3);
+        blogPostService.save(p4);
+        blogPostService.save(p5);
+        blogPostService.save(p6);
 
         // Create and save comments
         BlogPostComment bpComment1 = new BlogPostComment();
@@ -179,21 +181,13 @@ public class DBDataInitializer implements CommandLineRunner {
         fetusService.save(fetus2);
         fetusService.save(fetus3);
 
-//        // Create fetus metrics
-//        // For fetus1 (week 20)
-//        createFetusMetric(fetus1, weightMetric, 300.0, 20);
-//        createFetusMetric(fetus1, lengthMetric, 17.5, 20);
-//        createFetusMetric(fetus1, headCircumferenceMetric, 16.8, 20);
-//
-//        // For fetus2 (week 20)
-//        createFetusMetric(fetus2, weightMetric, 285.0, 20);
-//        createFetusMetric(fetus2, lengthMetric, 16.8, 20);
-//        createFetusMetric(fetus2, headCircumferenceMetric, 16.2, 20);
-//
-//        // For fetus3 (week 15)
-//        createFetusMetric(fetus3, weightMetric, 150.0, 15);
-//        createFetusMetric(fetus3, lengthMetric, 10.5, 15);
-//        createFetusMetric(fetus3, headCircumferenceMetric, 9.8, 15);
+        createAndSaveStandards(weightMetric);
+        createAndSaveStandards(lengthMetric);
+        createAndSaveStandards(headCircumferenceMetric);
+
+        createAndSaveFetusMetrics();
+        createAndSaveFetusMetrics();
+        createAndSaveFetusMetrics();
     }
 
     private void createAndSaveStandards(Metric metric) {
@@ -230,23 +224,9 @@ public class DBDataInitializer implements CommandLineRunner {
             if (metric.getStandards() == null) {
                 metric.setStandards(new ArrayList<>());
             }
-            metric.getStandards().add(standard);
         }
 
         metricService.save(metric);
-    }
-
-    private FetusMetric createFetusMetric(Fetus fetus, Metric metric, Double value, Integer week) {
-        FetusMetric fetusMetric = new FetusMetric();
-        fetusMetric.setFetus(fetus);
-        fetusMetric.setMetric(metric);
-        fetusMetric.setValue(value);
-        fetusMetric.setWeek(week);
-
-        fetus.getFetusMetrics().add(fetusMetric);
-        metric.getFetusMetrics().add(fetusMetric);
-
-        return fetusMetricService.save(fetusMetric);
     }
 
     private MyUser createUser(String email, String username, String password, boolean enabled, boolean verified, String role) {
@@ -303,5 +283,46 @@ public class DBDataInitializer implements CommandLineRunner {
         fetus.setFetusNumber(fetusNumber);
         return fetus;
     }
+
+    private void createAndSaveFetusMetrics() {
+        List<Fetus> allFetuses = fetusService.findAll();
+
+        List<Metric> allMetrics = metricService.findAll();
+
+        for (Fetus fetus : allFetuses) {
+            int currentWeek = calculateCurrentWeek(fetus.getPregnancy().getEstimatedDueDate());
+
+            for (Metric metric : allMetrics) {
+                for (int week = Math.max(12, currentWeek - 8); week <= currentWeek; week += 4) {
+                    Standard standard = standardService.findByMetricAndWeek(metric.getId(), week);
+
+                    if (standard != null) {
+                        double range = standard.getMax() - standard.getMin();
+                        double value = standard.getMin() + (Math.random() * range * 0.8) + (range * 0.1);
+
+                        FetusMetric fetusMetric = new FetusMetric();
+                        fetusMetric.setFetus(fetus);
+                        fetusMetric.setMetric(metric);
+                        fetusMetric.setValue(value);
+                        fetusMetric.setWeek(week);
+
+                        fetusMetricService.save(fetusMetric);
+
+                    }
+                }
+            }
+            fetusService.save(fetus);
+        }
+    }
+
+    private int calculateCurrentWeek(LocalDate dueDate) {
+        LocalDate today = LocalDate.now();
+        long weeksUntilDue = java.time.temporal.ChronoUnit.WEEKS.between(today, dueDate);
+        if (weeksUntilDue < 0) {
+            return 40;
+        }
+        return (int) (40 - weeksUntilDue);
+    }
+
 
 }

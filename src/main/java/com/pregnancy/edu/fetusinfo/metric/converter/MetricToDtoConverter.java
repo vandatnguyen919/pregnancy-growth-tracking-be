@@ -12,10 +12,7 @@ public class MetricToDtoConverter implements Converter<Metric, MetricDto> {
         return new MetricDto(
                 source.getId(),
                 source.getName(),
-                source.getDataType(),
-                source.getUnit(),
-                source.getStandards() == null ? 0 : source.getStandards().size(),
-                source.getFetusMetrics() == null ? 0 : source.getFetusMetrics().size()
+                source.getUnit()
         );
     }
 }

@@ -9,8 +9,6 @@ public record FetusDto(
         @NotNull(message = "Pregnancy ID is required")
         Long pregnancyId,
         String nickName,
-        String gender,
-        Integer fetusNumber,
-        Integer metricsCount
+        String gender
 ) {
 }

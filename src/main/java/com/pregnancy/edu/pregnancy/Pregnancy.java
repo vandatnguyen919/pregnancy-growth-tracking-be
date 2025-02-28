@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,14 +19,24 @@ public class Pregnancy {
     private Long id;
 
     private Integer maternalAge;
-    private Date pregnancyStartDate;
-    private Date estimatedDueDate;
-    private Date deliveryDate;
+    private LocalDate pregnancyStartDate;
+    private LocalDate estimatedDueDate;
+    private LocalDate deliveryDate;
     private String status;
 
     @ManyToOne
     private MyUser user;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "pregnancy")
-    private List<Fetus> fetuses;
+    private List<Fetus> fetuses = new ArrayList<>();
+
+    public void addFetus(Fetus fetus) {
+        fetuses.add(fetus);
+        fetus.setPregnancy(this);
+    }
+
+    public void removeFetus(Fetus fetus) {
+        fetuses.remove(fetus);
+        fetus.setPregnancy(null);
+    }
 }

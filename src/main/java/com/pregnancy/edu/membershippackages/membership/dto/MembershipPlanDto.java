@@ -15,6 +15,6 @@ public record MembershipPlanDto(
         @Positive(message = "Duration must be positive")
         Integer durationMonths,
         Boolean isActive,
-        Long subscriptionId
+        Long orderId
 ) {
 }

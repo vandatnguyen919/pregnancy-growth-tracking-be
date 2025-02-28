@@ -5,8 +5,7 @@ import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.standard.Standard;
-import com.pregnancy.edu.membershippackages.payment.Payment;
-import com.pregnancy.edu.membershippackages.subscription.Subscription;
+import com.pregnancy.edu.membershippackages.order.Order;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.reminder.Reminder;
 import com.pregnancy.edu.system.common.BloodType;
@@ -81,10 +80,7 @@ public class MyUser {
     private List<BlogPostLike> blogPostLikes;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Subscription> subscriptions;
-
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Payment> payments;
+    private List<Order> orders;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
     private List<Pregnancy> pregnancies;

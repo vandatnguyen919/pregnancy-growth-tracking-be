@@ -1,6 +1,6 @@
 package com.pregnancy.edu.membershippackages.membership;
 
-import com.pregnancy.edu.membershippackages.subscription.Subscription;
+import com.pregnancy.edu.membershippackages.order.Order;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,6 @@ public class MembershipPlan {
         return durationMonths * 30;
     }
 
-    @ManyToOne
-    private Subscription subscription;
+    @OneToOne
+    private Order order;
 }

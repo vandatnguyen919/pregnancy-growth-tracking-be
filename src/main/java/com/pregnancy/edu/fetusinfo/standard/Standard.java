@@ -1,41 +1,26 @@
 package com.pregnancy.edu.fetusinfo.standard;
 
-import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.fetusinfo.metric.Metric;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 public class Standard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String description;
-    private String region;
-    private Double minWeightGrams;
-    private Double maxWeightGrams;
-    private Double minLengthCm;
-    private Double maxLengthCm;
-    private Double headCircumferenceMinCm;
-    private Double headCircumferenceMaxCm;
-    private Double abdominalCircumferenceMinCm;
-    private Double abdominalCircumferenceMaxCm;
+    @ManyToOne
+    @JoinColumn(name = "metric_id")
+    private Metric metric;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    private Integer week;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private Double min;
 
-    //user(admin) tao data cho bang standard
-    @OneToOne(mappedBy = "standard")
-    private MyUser user;
+    private Double max;
 }

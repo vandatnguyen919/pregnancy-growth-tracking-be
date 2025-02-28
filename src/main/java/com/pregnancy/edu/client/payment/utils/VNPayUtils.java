@@ -2,10 +2,7 @@ package com.pregnancy.edu.client.payment.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Random;
 
 public class VNPayUtils {
 

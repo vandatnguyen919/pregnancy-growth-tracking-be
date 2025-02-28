@@ -1,10 +1,22 @@
 vnp:
-  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   returnUrl: https://example.com
   tmnCode: 6A32GGY0
   secretKey: SWXLFPTXZYUNKQ39U7GTRCAQD7K9E008
   version: 2.1.0
-  apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  baseUrl: https://sandbox.vnpayment.vn
+  queryUri: /merchant_webapi/api/transaction
+
+momo:
+  partnerCode: MOMO
+  accessKey: F8BBA842ECF85
+  secretKey: K951B6PE1waDMi640xX08PD3vg6EkVlz
+  requestType: payWithMethod
+  redirectUrl: https://example.com
+  ipnUrl: https://example.com
+  baseUrl: https://test-payment.momo.vn
+  createUri: /v2/gateway/api/create
+  queryUri:  /v2/gateway/api/query
 
 spring:
   h2:

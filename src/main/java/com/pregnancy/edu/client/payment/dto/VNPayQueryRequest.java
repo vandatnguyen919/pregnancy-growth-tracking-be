@@ -3,7 +3,6 @@ package com.pregnancy.edu.client.payment.dto;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 public record VNPayQueryRequest(
         String vnp_RequestId,
         String vnp_Version,

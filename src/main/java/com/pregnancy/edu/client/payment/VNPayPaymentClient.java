@@ -1,6 +1,8 @@
 package com.pregnancy.edu.client.payment;
 
-import com.pregnancy.edu.client.payment.dto.CreatePaymentResponse;
+import com.pregnancy.edu.client.payment.dto.PaymentCreationResponse;
+import com.pregnancy.edu.client.payment.dto.PaymentQueryResponse;
+import com.pregnancy.edu.client.payment.utils.EncryptionUtils;
 import com.pregnancy.edu.client.payment.utils.VNPayUtils;
 import com.pregnancy.edu.client.payment.dto.VNPayQueryRequest;
 import com.pregnancy.edu.client.payment.dto.VNPayQueryResponse;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,8 +29,8 @@ import java.util.*;
  * Handles payment creation and transaction queries.
  */
 @Slf4j
-@Service
-public class VNPayPaymentClient {
+@Service("vnPayPaymentClient")
+public class VNPayPaymentClient implements PaymentClient{
 
     @Value("${vnp.payUrl}")
     private String vnp_PayUrl;
@@ -43,8 +47,8 @@ public class VNPayPaymentClient {
     @Value("${vnp.version}")
     private String vnp_Version;
 
-    @Value("${vnp.apiUrl}")
-    private String vnp_ApiUrl;
+    @Value("${vnp.queryUri}")
+    private String vnp_QueryUri;
 
     // Common constants
     private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -66,21 +70,21 @@ public class VNPayPaymentClient {
 
     private final RestClient restClient;
 
-    public VNPayPaymentClient(RestClient.Builder restClientBuilder) {
+    public VNPayPaymentClient(
+            RestClient.Builder restClientBuilder,
+            @Value("${vnp.baseUrl}") String vnp_BaseUrl
+    ) {
         this.restClient = restClientBuilder
-                .baseUrl(vnp_ApiUrl)
+                .baseUrl(vnp_BaseUrl)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 
-    /**
-     * Creates a payment request and returns a URL for the payment page.
-     *
-     * @param amount Amount to be paid
-     * @param request HTTP request
-     * @return Response containing payment URL
-     */
-    public CreatePaymentResponse createPayment(long amount, HttpServletRequest request) {
+    @Override
+    public PaymentCreationResponse createPayment(long amount) {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
+                .getRequestAttributes())).getRequest();
+
         String transactionRef = VNPayUtils.getRandomNumber(RANDOM_ID_LENGTH);
         String ipAddress = VNPayUtils.getIpAddress(request);
         long vnpayAmount = amount * AMOUNT_MULTIPLIER;
@@ -95,28 +99,29 @@ public class VNPayPaymentClient {
                 request, createDate, expireDate);
         String paymentUrl = buildPaymentUrl(paymentParams);
 
-        return new CreatePaymentResponse(PaymentProvider.VNPAY, paymentUrl);
+        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
     }
 
-    /**
-     * Queries the status of a VNPay transaction.
-     *
-     * @param txnRef Transaction reference ID
-     * @param transDate Transaction date
-     * @param request HTTP request
-     * @return Response containing transaction details
-     * @throws PaymentException if query fails
-     */
-    public VNPayQueryResponse queryTransaction(String txnRef, String transDate, HttpServletRequest request) {
-        try {
-            VNPayQueryRequest queryRequest = buildQueryRequest(txnRef, transDate, request);
 
-            return restClient.post()
+    @Override
+    public PaymentQueryResponse queryPayment(String transactionId) {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
+                .getRequestAttributes())).getRequest();
+
+        ZonedDateTime now = ZonedDateTime.now(VIETNAM_ZONE);
+        String createDate = now.format(DATE_FORMATTER);
+
+        try {
+            VNPayQueryRequest queryRequest = buildQueryRequest(transactionId, createDate, request);
+
+            VNPayQueryResponse vnPayQueryResponse = restClient.post()
+                    .uri(vnp_QueryUri)
                     .body(queryRequest)
                     .retrieve()
                     .body(VNPayQueryResponse.class);
+            return new PaymentQueryResponse(Integer.parseInt(vnPayQueryResponse.vnpResponseCode()), vnPayQueryResponse.vnpMessage());
         } catch (RestClientException e) {
-            log.error("Failed to query VNPay transaction: {}", txnRef, e);
+            log.error("Failed to query VNPay transaction: {}", transactionId, e);
             throw new PaymentException("Failed to query VNPay transaction", e);
         }
     }
@@ -130,28 +135,26 @@ public class VNPayPaymentClient {
         String ipAddr = VNPayUtils.getIpAddress(request);
         String orderInfo = "Kiem tra ket qua GD OrderId:" + txnRef;
 
-        // Using a record-based approach with a builder pattern
-        VNPayQueryRequest.VNPayQueryRequestBuilder builder = VNPayQueryRequest.builder()
-                .vnp_RequestId(requestId)
-                .vnp_Version(QUERY_VERSION)
-                .vnp_Command(QUERY_COMMAND)
-                .vnp_TmnCode(vnp_TmnCode)
-                .vnp_TxnRef(txnRef)
-                .vnp_OrderInfo(orderInfo)
-                .vnp_TransactionDate(transDate)
-                .vnp_CreateDate(createDate)
-                .vnp_IpAddr(ipAddr);
-
         // Generate secure hash
         String hashData = String.join("|",
                 requestId, QUERY_VERSION, QUERY_COMMAND, vnp_TmnCode,
                 txnRef, transDate, createDate, ipAddr, orderInfo
         );
 
-        String secureHash = VNPayUtils.hmacSHA512(secretKey, hashData);
-        builder.vnp_SecureHash(secureHash);
+        String secureHash = EncryptionUtils.hmacSHA512(secretKey, hashData);
 
-        return builder.build();
+        return new VNPayQueryRequest(
+                requestId,
+                QUERY_VERSION,
+                QUERY_COMMAND,
+                vnp_TmnCode,
+                txnRef,
+                orderInfo,
+                transDate,
+                createDate,
+                ipAddr,
+                secureHash
+        );
     }
 
     /**
@@ -213,7 +216,7 @@ public class VNPayPaymentClient {
         }
 
         // Generate and append secure hash
-        String secureHash = VNPayUtils.hmacSHA512(secretKey, hashData.toString());
+        String secureHash = EncryptionUtils.hmacSHA512(secretKey, hashData.toString());
         query.append("&vnp_SecureHash=").append(secureHash);
 
         return vnp_PayUrl + "?" + query;

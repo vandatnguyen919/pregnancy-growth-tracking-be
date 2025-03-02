@@ -114,6 +114,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/v1/fetus-metrics/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/v1/fetus-metrics/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/v1/fetus-metrics/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/reminders/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/v1/fetus-metrics/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/v1/fetus-metrics/**").authenticated()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",

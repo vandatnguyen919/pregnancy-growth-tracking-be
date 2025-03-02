@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import com.pregnancy.edu.fetusinfo.fetus.helper.FetusHelper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/fetuses")
@@ -36,12 +37,15 @@ public class FetusController {
         this.fetusHelper = new FetusHelper();
     }
 
-    @GetMapping
-    public Result getAllFetuses(Pageable pageable) {
-        Page<Fetus> fetusPage = fetusService.findAll(pageable);
-        Page<FetusDto> fetusDtoPage = fetusPage.map(this.fetusToDtoConverter::convert);
-        return new Result(true, StatusCode.SUCCESS, "Find All Success", fetusDtoPage);
+    @GetMapping("/user/{userId}")
+    public Result getAllFetusOfUser(@PathVariable Long userId) {
+        List<Fetus> fetusList = fetusService.findAllByUserId(userId);
+        List<FetusDto> fetusDtoList = fetusList.stream()
+                .map(this.fetusToDtoConverter::convert)
+                .collect(Collectors.toList());
+        return new Result(true, StatusCode.SUCCESS, "Find All User's Fetuses Success", fetusDtoList);
     }
+
 
     @GetMapping("/{fetusId}")
     public Result getFetusById(@PathVariable Long fetusId) {
@@ -77,7 +81,7 @@ public class FetusController {
         // Get the fetus
         Fetus fetus = fetusService.findById(fetusId);
 
-        // Get all metrics for this week
+        // Get all metrics for  week
         List<Metric> metrics = metricService.findAllByStandardWeek(week);
 
         // Create response with fetus and metrics data

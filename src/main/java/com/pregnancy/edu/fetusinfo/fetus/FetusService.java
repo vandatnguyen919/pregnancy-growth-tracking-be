@@ -4,6 +4,7 @@ import com.pregnancy.edu.fetusinfo.fetus.dto.MetricValueRequest;
 import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
 import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetricRepository;
 import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
+import com.pregnancy.edu.myuser.UserRepository;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.springframework.data.domain.Page;
@@ -18,13 +19,11 @@ import java.util.List;
 public class FetusService implements BaseCrudService<Fetus, Long> {
 
     private final FetusRepository fetusRepository;
-    private final MetricRepository metricRepository;
-    private final FetusMetricRepository fetusMetricRepository;
+    private final UserRepository userRepository;
 
-    public FetusService(FetusRepository fetusRepository, MetricRepository metricRepository, FetusMetricRepository fetusMetricRepository) {
+    public FetusService(FetusRepository fetusRepository, MetricRepository metricRepository, UserRepository userRepository, FetusMetricRepository fetusMetricRepository) {
         this.fetusRepository = fetusRepository;
-        this.metricRepository = metricRepository;
-        this.fetusMetricRepository = fetusMetricRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -64,7 +63,11 @@ public class FetusService implements BaseCrudService<Fetus, Long> {
         this.fetusRepository.deleteById(fetusId);
     }
 
-    public Page<Fetus> findAll(Pageable pageable) {
-        return this.fetusRepository.findAll(pageable);
+    public List<Fetus> findAllByUserId(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ObjectNotFoundException("user", userId));
+
+        return this.fetusRepository.findAllByUserId(userId);
     }
+
 }

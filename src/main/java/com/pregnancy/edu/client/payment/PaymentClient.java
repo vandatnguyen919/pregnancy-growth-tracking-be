@@ -13,5 +13,7 @@ public interface PaymentClient {
      */
     PaymentCreationResponse createPayment(long amount);
 
+    PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId);
+
     PaymentQueryResponse queryPayment(String transactionId);
 }

@@ -15,6 +15,8 @@ import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricService;
 import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.fetusinfo.standard.StandardService;
+import com.pregnancy.edu.membershippackages.membership.MembershipPlan;
+import com.pregnancy.edu.membershippackages.membership.MembershipPlanService;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.pregnancy.Pregnancy;
@@ -40,11 +42,12 @@ public class DBDataInitializer implements CommandLineRunner {
     private final MetricService metricService;
     private final StandardService standardService;
     private final FetusMetricService fetusMetricService;
+    private final MembershipPlanService membershipPlanService;
 
     public DBDataInitializer(UserService userService, BlogPostService blogPostService,
                              BlogPostLikeService blogPostLikeService,
                              BlogPostCommentService blogPostCommentService,
-                             TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService, FetusMetricService fetusMetricService1) {
+                             TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService, FetusMetricService fetusMetricService1, MembershipPlanService membershipPlanService) {
         this.userService = userService;
         this.blogPostService = blogPostService;
         this.blogPostLikeService = blogPostLikeService;
@@ -55,6 +58,7 @@ public class DBDataInitializer implements CommandLineRunner {
         this.metricService = metricService;
         this.standardService = standardService;
         this.fetusMetricService = fetusMetricService1;
+        this.membershipPlanService = membershipPlanService;
     }
 
     @Override
@@ -188,6 +192,19 @@ public class DBDataInitializer implements CommandLineRunner {
         createAndSaveFetusMetrics();
         createAndSaveFetusMetrics();
         createAndSaveFetusMetrics();
+
+        MembershipPlan m1 = new MembershipPlan();
+        m1.setName("1 month");
+        m1.setPrice(400000D);
+        m1.setDurationMonths(1);
+
+        MembershipPlan m2 = new MembershipPlan();
+        m2.setName("1 year");
+        m2.setPrice(1000000D);
+        m2.setDurationMonths(12);
+
+        membershipPlanService.save(m1);
+        membershipPlanService.save(m2);
     }
 
     private void createAndSaveStandards(Metric metric) {

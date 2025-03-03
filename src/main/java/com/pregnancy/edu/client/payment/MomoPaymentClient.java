@@ -94,6 +94,11 @@ public class MomoPaymentClient implements PaymentClient {
     }
 
     @Override
+    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
+        return null;
+    }
+
+    @Override
     public PaymentQueryResponse queryPayment(String orderId) {
         String rawData = generateRawHashDataForQuery(momoAccessKey, orderId, momoPartnerCode, orderId);
 

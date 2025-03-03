@@ -102,6 +102,25 @@ public class VNPayPaymentClient implements PaymentClient{
         return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
     }
 
+    @Override
+    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
+                .getRequestAttributes())).getRequest();
+
+        String ipAddress = VNPayUtils.getIpAddress(request);
+        long vnpayAmount = amount * AMOUNT_MULTIPLIER;
+
+        ZonedDateTime now = ZonedDateTime.now(VIETNAM_ZONE);
+        String createDate = now.format(DATE_FORMATTER);
+        String expireDate = now.plusMinutes(PAYMENT_EXPIRATION_MINUTES).format(DATE_FORMATTER);
+
+        Map<String, String> paymentParams = createPaymentParams(transactionId, vnpayAmount, ipAddress,
+                request, createDate, expireDate);
+        String paymentUrl = buildPaymentUrl(paymentParams);
+
+        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
+    }
+
 
     @Override
     public PaymentQueryResponse queryPayment(String transactionId) {
@@ -165,19 +184,19 @@ public class VNPayPaymentClient implements PaymentClient{
         Map<String, String> params = new HashMap<>();
 
         // Add all required parameters
+        params.put("vnp_OrderInfo", "Thanh toan don hang:" + transactionRef);
+        params.put("vnp_TxnRef", transactionRef);
+        params.put("vnp_Amount", String.valueOf(amount));
         params.put("vnp_Version", vnp_Version);
         params.put("vnp_Command", PAYMENT_COMMAND);
         params.put("vnp_TmnCode", vnp_TmnCode);
-        params.put("vnp_Amount", String.valueOf(amount));
         params.put("vnp_BankCode", DEFAULT_BANK_CODE);
         params.put("vnp_CurrCode", VND_CURRENCY);
         params.put("vnp_IpAddr", ipAddress);
         params.put("vnp_OrderType", DEFAULT_ORDER_TYPE);
         params.put("vnp_ReturnUrl", vnp_ReturnUrl);
-        params.put("vnp_TxnRef", transactionRef);
         params.put("vnp_CreateDate", createDate);
         params.put("vnp_ExpireDate", expireDate);
-        params.put("vnp_OrderInfo", "Thanh toan don hang:" + transactionRef);
 
         // Handle locale - use request parameter if available or default
         String locale = request.getParameter("language");

@@ -98,6 +98,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/subscriptions/**").authenticated()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/create-payment").authenticated()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/check-payment/vnpay").authenticated()
+//                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/payment/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/v1/payment/**").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/v1/standards/**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/v1/standards").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/v1/standards/**").hasAuthority("ROLE_admin")

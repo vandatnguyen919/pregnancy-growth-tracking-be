@@ -60,10 +60,6 @@ public class ReminderService implements BaseCrudService<Reminder, Long> {
         return this.reminderRepository.findAll(pageable);
     }
 
-    public List<Reminder> findByUserId(Long userId) {
-        return this.reminderRepository.findByUser_Id(userId);
-    }
-
     public Page<Reminder> findByUserId(Long userId, Pageable pageable) {
         return this.reminderRepository.findByUser_Id(userId, pageable);
     }

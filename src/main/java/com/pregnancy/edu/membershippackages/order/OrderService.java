@@ -52,9 +52,7 @@ public class OrderService {
      public Map<String, Object> processOrder(CreateOrderRequest request) {
          PaymentClient selectedClient = getPaymentClient(request.getProvider());
 
-         // amount lấy trong cột price bảng membership plan
-         // find membership plan bằng membershipPlanId.
-         // Nếu plan đó có và active thì lấy ko thì throw ObjectNotFoundException
+         // Đổi lại là tạo order thành công mới tạo paymentUrl nha
          PaymentCreationResponse paymentResponse = selectedClient.createPayment(
                  request.getAmount().longValue());
 

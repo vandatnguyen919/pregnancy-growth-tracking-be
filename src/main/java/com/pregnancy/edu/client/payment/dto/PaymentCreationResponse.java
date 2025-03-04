@@ -4,6 +4,7 @@ import com.pregnancy.edu.system.common.PaymentProvider;
 
 public record PaymentCreationResponse(
         PaymentProvider provider,
+        String transactionId,
         String paymentUrl
 ) {
 }

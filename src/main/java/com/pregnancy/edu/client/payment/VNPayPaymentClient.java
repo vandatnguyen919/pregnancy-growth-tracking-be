@@ -99,28 +99,8 @@ public class VNPayPaymentClient implements PaymentClient{
                 request, createDate, expireDate);
         String paymentUrl = buildPaymentUrl(paymentParams);
 
-        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
+        return new PaymentCreationResponse(PaymentProvider.VNPAY, transactionRef, paymentUrl);
     }
-
-    @Override
-    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
-                .getRequestAttributes())).getRequest();
-
-        String ipAddress = VNPayUtils.getIpAddress(request);
-        long vnpayAmount = amount * AMOUNT_MULTIPLIER;
-
-        ZonedDateTime now = ZonedDateTime.now(VIETNAM_ZONE);
-        String createDate = now.format(DATE_FORMATTER);
-        String expireDate = now.plusMinutes(PAYMENT_EXPIRATION_MINUTES).format(DATE_FORMATTER);
-
-        Map<String, String> paymentParams = createPaymentParams(transactionId, vnpayAmount, ipAddress,
-                request, createDate, expireDate);
-        String paymentUrl = buildPaymentUrl(paymentParams);
-
-        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
-    }
-
 
     @Override
     public PaymentQueryResponse queryPayment(String transactionId) {

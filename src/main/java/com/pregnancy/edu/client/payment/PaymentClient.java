@@ -12,8 +12,6 @@ public interface PaymentClient {
      * @return Response containing payment URL
      */
     PaymentCreationResponse createPayment(long amount);
-
-    PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId);
-
+    
     PaymentQueryResponse queryPayment(String transactionId);
 }

@@ -86,16 +86,11 @@ public class MomoPaymentClient implements PaymentClient {
 
             assert response != null;
             String paymentUrl = response.payUrl();
-            return new PaymentCreationResponse(PaymentProvider.MOMO, paymentUrl);
+            return new PaymentCreationResponse(PaymentProvider.MOMO, orderId, paymentUrl);
         } catch (RestClientException e) {
             log.error("Failed to create Momo payment transaction: {}", orderId, e);
             throw new PaymentException("Failed to create Momo payment transaction", e);
         }
-    }
-
-    @Override
-    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
-        return null;
     }
 
     @Override

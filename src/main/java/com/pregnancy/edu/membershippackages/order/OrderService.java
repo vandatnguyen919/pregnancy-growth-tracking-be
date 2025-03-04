@@ -50,21 +50,20 @@ public class OrderService {
       * Process order creation including payment initialization
       */
      public Map<String, Object> processOrder(CreateOrderRequest request) {
-         String transactionId = request.getTransactionId();
-         if (transactionId == null || transactionId.isEmpty()) {
-             transactionId = VNPayUtils.getRandomNumber(8);
-         }
-
          PaymentClient selectedClient = getPaymentClient(request.getProvider());
-         PaymentCreationResponse paymentResponse = selectedClient.createPaymentWithTransactionId(
-                 request.getAmount().longValue(), transactionId);
+
+         // amount lấy trong cột price bảng membership plan
+         // find membership plan bằng membershipPlanId.
+         // Nếu plan đó có và active thì lấy ko thì throw ObjectNotFoundException
+         PaymentCreationResponse paymentResponse = selectedClient.createPayment(
+                 request.getAmount().longValue());
 
          Order initialOrder = createInitialOrder(
                  request.getUserId(),
                  request.getMembershipPlanId(),
                  request.getAmount(),
                  paymentResponse.provider(),
-                 transactionId
+                 paymentResponse.transactionId()
          );
 
          return Map.of(

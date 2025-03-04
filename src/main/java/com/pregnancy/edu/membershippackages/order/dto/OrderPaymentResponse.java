@@ -8,5 +8,6 @@ public record OrderPaymentResponse(
         String transactionId,
         String transactionDate,
         String membershipPlan,
+        String status,
         Long userId
 ) {}

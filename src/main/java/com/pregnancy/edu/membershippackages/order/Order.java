@@ -30,6 +30,6 @@ public class Order {
     @ManyToOne
     private MyUser user;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     private MembershipPlan membershipPlan;
 }

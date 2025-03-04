@@ -14,8 +14,7 @@ public class MembershipPlanToMembershipPlanDtoConverter implements Converter<Mem
                 source.getName(),
                 source.getPrice(),
                 source.getDurationMonths(),
-                source.isActive(),
-                source.getOrder() != null ? source.getOrder().getId() : null
+                source.isActive()
         );
     }
 }

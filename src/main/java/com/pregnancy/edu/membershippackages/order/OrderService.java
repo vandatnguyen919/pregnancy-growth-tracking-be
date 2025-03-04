@@ -11,6 +11,7 @@ import com.pregnancy.edu.membershippackages.order.exception.UnauthorizedExceptio
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserRepository;
 import com.pregnancy.edu.system.common.PaymentProvider;
+import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -50,19 +51,25 @@ public class OrderService {
       * Process order creation including payment initialization
       */
      public Map<String, Object> processOrder(CreateOrderRequest request) {
-         PaymentClient selectedClient = getPaymentClient(request.getProvider());
 
-         // Đổi lại là tạo order thành công mới tạo paymentUrl nha
-         PaymentCreationResponse paymentResponse = selectedClient.createPayment(
-                 request.getAmount().longValue());
+         MembershipPlan membershipPlan = membershipPlanRepository.findById(request.getMembershipPlanId())
+                 .filter(MembershipPlan::isActive)
+                 .orElseThrow(() -> new ObjectNotFoundException("Active membership plan", request.getMembershipPlanId()));
+
+         Double amount = membershipPlan.getPrice();
+         PaymentClient selectedClient = getPaymentClient(request.getProvider());
 
          Order initialOrder = createInitialOrder(
                  request.getUserId(),
                  request.getMembershipPlanId(),
-                 request.getAmount(),
-                 paymentResponse.provider(),
-                 paymentResponse.transactionId()
+                 amount,
+                 request.getProvider()
          );
+
+         PaymentCreationResponse paymentResponse = selectedClient.createPayment(amount.longValue());
+
+         initialOrder.setTransactionId(paymentResponse.transactionId());
+         orderRepository.save(initialOrder);
 
          return Map.of(
                  "order", initialOrder,
@@ -73,15 +80,15 @@ public class OrderService {
      /**
       * Check payment status for VNPay with user authorization
       */
-     public Order checkVNPayPayment(String transactionId, Long authenticatedUserId) {
+     public Order checkVNPayPayment(String vnp_TxnRef, Long authenticatedUserId) {
          // Check if the order belongs to the authenticated user
-         Order order = orderRepository.findByTransactionId(transactionId)
-                 .orElseThrow(() -> new IllegalArgumentException("Order not found for transaction: " + transactionId));
+         Order order = orderRepository.findByTransactionId(vnp_TxnRef)
+                 .orElseThrow(() -> new IllegalArgumentException("Order not found for transaction: " + vnp_TxnRef));
 
          verifyOrderOwnership(order, authenticatedUserId);
 
-         PaymentQueryResponse paymentQueryResponse = vnPayPaymentClient.queryPayment(transactionId);
-         return completeOrder(transactionId, paymentQueryResponse);
+         PaymentQueryResponse paymentQueryResponse = vnPayPaymentClient.queryPayment(vnp_TxnRef);
+         return completeOrder(vnp_TxnRef, paymentQueryResponse);
      }
 
      /**
@@ -114,7 +121,7 @@ public class OrderService {
          return paymentClientMap.getOrDefault(provider, vnPayPaymentClient); // Default to VNPay if provider is invalid
      }
 
-     public Order createInitialOrder(Long userId, Long membershipPlanId, Double amount, PaymentProvider provider, String transactionId) {
+     public Order createInitialOrder(Long userId, Long membershipPlanId, Double amount, String provider) {
          MyUser user = userRepository.findById(userId)
                  .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -125,33 +132,39 @@ public class OrderService {
          order.setUser(user);
          order.setMembershipPlan(membershipPlan);
          order.setAmount(amount);
-         order.setProvider(provider.name());
+         order.setProvider(provider);
          order.setCurrency("VND");
-         order.setTransactionId(transactionId);
          order.setCreatedAt(LocalDateTime.now());
          order.setStatus("PENDING");
 
          return orderRepository.save(order);
      }
 
-     @Transactional
-     public Order completeOrder(String transactionId, PaymentQueryResponse paymentResponse) {
-         Order order = orderRepository.findByTransactionId(transactionId)
-                 .orElseThrow(() -> new IllegalArgumentException("Order not found for transaction: " + transactionId));
+    public Order completeOrder(String transactionId, PaymentQueryResponse paymentResponse) {
+        Order order = orderRepository.findByTransactionId(transactionId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found for transaction: " + transactionId));
 
-         if (paymentResponse.code() == 0) {
-             order.setStatus("COMPLETED");
-             order.setTransactionDate(LocalDateTime.now());
+        switch (paymentResponse.status()) {
+            case COMPLETED:
+                order.setStatus("COMPLETED");
+                order.setTransactionDate(LocalDateTime.now());
 
-             LocalDateTime startDate = LocalDateTime.now();
-             order.setStartDate(startDate);
+                LocalDateTime startDate = LocalDateTime.now();
+                order.setStartDate(startDate);
 
-             int durationInDays = order.getMembershipPlan().getDurationInDays();
-             order.setEndDate(startDate.plusDays(durationInDays));
-         } else {
-             order.setStatus("FAILED");
-         }
+                int durationInDays = order.getMembershipPlan().getDurationInDays();
+                order.setEndDate(startDate.plusDays(durationInDays));
+                break;
+            case FAILED:
+                order.setStatus("FAILED");
+                break;
+            case PENDING:
+                order.setStatus("PENDING");
+                break;
+            default:
+                order.setStatus("UNKNOWN");
+        }
 
-         return orderRepository.save(order);
-     }
+        return orderRepository.save(order);
+    }
 }

@@ -45,8 +45,6 @@ public class BlogPost {
     @ManyToOne
     private MyUser user;
 
-
-
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
     private List<BlogPostComment> comments = new ArrayList<>();
 

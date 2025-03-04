@@ -263,6 +263,7 @@ public class DBDataInitializer implements CommandLineRunner {
         post.setContent(content);
         post.setFeaturedImageUrl(imageUrl);
         post.setShortDescription(description);
+        post.setUser(userService.findById(1L));
         tags.forEach(post::addTag);
         return post;
     }

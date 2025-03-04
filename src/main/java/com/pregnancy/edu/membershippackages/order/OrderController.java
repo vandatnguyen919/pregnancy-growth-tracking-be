@@ -37,7 +37,8 @@ public class OrderController {
 
     public OrderController(
             @Qualifier("vnPayPaymentClient") PaymentClient vnPayPaymentClient,
-            @Qualifier("momoPaymentClient") PaymentClient momoPaymentClient, OrderService orderService,
+            @Qualifier("momoPaymentClient") PaymentClient momoPaymentClient,
+            OrderService orderService,
             OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter) {
         this.vnPayPaymentClient = vnPayPaymentClient;
         this.momoPaymentClient = momoPaymentClient;
@@ -176,5 +177,4 @@ public class OrderController {
         }
         return new Result(true, StatusCode.SUCCESS, "Payment Checked Success", paymentQueryResponse);
     }
-
 }

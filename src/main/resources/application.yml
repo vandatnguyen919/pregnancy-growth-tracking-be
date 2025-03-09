@@ -1,5 +1,7 @@
+server:
+  port: 8090
 vnp:
-  returnUrl: https://example.com
+  returnUrl: http://localhost:5173/confirm-payment
   tmnCode: 6A32GGY0
   secretKey: SWXLFPTXZYUNKQ39U7GTRCAQD7K9E008
   version: 2.1.0
@@ -12,7 +14,7 @@ momo:
   accessKey: F8BBA842ECF85
   secretKey: K951B6PE1waDMi640xX08PD3vg6EkVlz
   requestType: payWithMethod
-  redirectUrl: https://example.com
+  redirectUrl: http://localhost:5173/confirm-payment
   ipnUrl: https://example.com
   baseUrl: https://test-payment.momo.vn
   createUri: /v2/gateway/api/create

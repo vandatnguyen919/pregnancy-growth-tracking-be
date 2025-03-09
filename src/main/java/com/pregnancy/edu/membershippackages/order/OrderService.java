@@ -155,11 +155,15 @@ public class OrderService {
                 int durationInDays = order.getMembershipPlan().getDurationInDays();
                 order.setEndDate(startDate.plusDays(durationInDays));
                 break;
+            case PENDING:
+            case PROCESSING:
+                order.setStatus("PENDING");
+                break;
             case FAILED:
                 order.setStatus("FAILED");
                 break;
-            case PENDING:
-                order.setStatus("PENDING");
+            case REFUNDED:
+                order.setStatus("REFUNDED");
                 break;
             default:
                 order.setStatus("UNKNOWN");

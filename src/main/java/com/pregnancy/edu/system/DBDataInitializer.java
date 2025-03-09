@@ -65,7 +65,7 @@ public class DBDataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Create and save users first
         MyUser u1 = createUser("john@example.com", "john", "123456", true, true,"admin");
-        MyUser u2 = createUser("eric@example.com", "eric", "654321", true, true, "authenticatedUser");
+        MyUser u2 = createUser("eric@example.com", "eric", "654321", true, true, "user");
         MyUser u3 = createUser("tom@example.com", "tom", "qwerty", false, true, "user");
 
         userService.save(u1);

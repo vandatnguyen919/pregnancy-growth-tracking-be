@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -22,6 +24,6 @@ public class MembershipPlan {
         return durationMonths * 30;
     }
 
-    @OneToOne
-    private Order order;
+    @OneToMany(mappedBy = "membershipPlan", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Order> orders;
 }

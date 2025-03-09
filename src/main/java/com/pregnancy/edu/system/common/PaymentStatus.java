@@ -2,10 +2,11 @@ package com.pregnancy.edu.system.common;
 
 public enum PaymentStatus {
     PENDING("Pending"),
-    SUCCESS("Success"),
+    COMPLETED("Completed"),
     FAILED("Failed"),
-    CANCELLED("Cancelled"),
-    REFUNDED("Refunded");
+    REFUNDED("Refunded"),
+    PROCESSING("Processing"),
+    UNKNOWN("Unknown");
 
     private final String description;
 

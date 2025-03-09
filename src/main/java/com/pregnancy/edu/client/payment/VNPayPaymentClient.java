@@ -7,6 +7,7 @@ import com.pregnancy.edu.client.payment.dto.VNPayQueryResponse;
 import com.pregnancy.edu.client.payment.utils.EncryptionUtils;
 import com.pregnancy.edu.client.payment.utils.VNPayUtils;
 import com.pregnancy.edu.system.common.PaymentProvider;
+import com.pregnancy.edu.system.common.PaymentStatus;
 import com.pregnancy.edu.system.exception.PaymentException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -99,28 +100,8 @@ public class VNPayPaymentClient implements PaymentClient{
                 request, createDate, expireDate);
         String paymentUrl = buildPaymentUrl(paymentParams);
 
-        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
+        return new PaymentCreationResponse(PaymentProvider.VNPAY, transactionRef, paymentUrl);
     }
-
-    @Override
-    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
-                .getRequestAttributes())).getRequest();
-
-        String ipAddress = VNPayUtils.getIpAddress(request);
-        long vnpayAmount = amount * AMOUNT_MULTIPLIER;
-
-        ZonedDateTime now = ZonedDateTime.now(VIETNAM_ZONE);
-        String createDate = now.format(DATE_FORMATTER);
-        String expireDate = now.plusMinutes(PAYMENT_EXPIRATION_MINUTES).format(DATE_FORMATTER);
-
-        Map<String, String> paymentParams = createPaymentParams(transactionId, vnpayAmount, ipAddress,
-                request, createDate, expireDate);
-        String paymentUrl = buildPaymentUrl(paymentParams);
-
-        return new PaymentCreationResponse(PaymentProvider.VNPAY, paymentUrl);
-    }
-
 
     @Override
     public PaymentQueryResponse queryPayment(String transactionId) {
@@ -138,7 +119,31 @@ public class VNPayPaymentClient implements PaymentClient{
                     .body(queryRequest)
                     .retrieve()
                     .body(VNPayQueryResponse.class);
-            return new PaymentQueryResponse(Integer.parseInt(vnPayQueryResponse.vnpResponseCode()), vnPayQueryResponse.vnpMessage());
+            int responseCode = Integer.parseInt(vnPayQueryResponse.vnpResponseCode());
+            String message = vnPayQueryResponse.vnpMessage();
+
+            PaymentStatus status;
+            switch (responseCode) {
+                case 0:
+                    status = PaymentStatus.COMPLETED;
+                    break;
+                case 1:
+                    status = PaymentStatus.PENDING;
+                    break;
+                case 2:
+                    status = PaymentStatus.FAILED;
+                    break;
+                case 13:
+                    status = PaymentStatus.REFUNDED;
+                    break;
+                case 99:
+                    status = PaymentStatus.PROCESSING;
+                    break;
+                default:
+                    status = PaymentStatus.UNKNOWN;
+            }
+
+            return new PaymentQueryResponse(responseCode, message, status);
         } catch (RestClientException e) {
             log.error("Failed to query VNPay transaction: {}", transactionId, e);
             throw new PaymentException("Failed to query VNPay transaction", e);

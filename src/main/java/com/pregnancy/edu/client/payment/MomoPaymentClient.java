@@ -3,6 +3,7 @@ package com.pregnancy.edu.client.payment;
 import com.pregnancy.edu.client.payment.dto.*;
 import com.pregnancy.edu.client.payment.utils.EncryptionUtils;
 import com.pregnancy.edu.system.common.PaymentProvider;
+import com.pregnancy.edu.system.common.PaymentStatus;
 import com.pregnancy.edu.system.exception.PaymentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,16 +87,11 @@ public class MomoPaymentClient implements PaymentClient {
 
             assert response != null;
             String paymentUrl = response.payUrl();
-            return new PaymentCreationResponse(PaymentProvider.MOMO, paymentUrl);
+            return new PaymentCreationResponse(PaymentProvider.MOMO, orderId, paymentUrl);
         } catch (RestClientException e) {
             log.error("Failed to create Momo payment transaction: {}", orderId, e);
             throw new PaymentException("Failed to create Momo payment transaction", e);
         }
-    }
-
-    @Override
-    public PaymentCreationResponse createPaymentWithTransactionId(long amount, String transactionId) {
-        return null;
     }
 
     @Override
@@ -113,7 +109,24 @@ public class MomoPaymentClient implements PaymentClient {
                     .body(momoQueryRequest)
                     .retrieve()
                     .body(MomoQueryResponse.class);
-            return new PaymentQueryResponse(momoQueryResponse.resultCode(), momoQueryResponse.message());
+            PaymentStatus status;
+            int resultCode = momoQueryResponse.resultCode();
+            switch (resultCode) {
+                case 0:
+                    status = PaymentStatus.COMPLETED;
+                    break;
+                case 7000:
+                    status = PaymentStatus.PENDING;
+                    break;
+                default:
+                    status = PaymentStatus.UNKNOWN;
+            }
+
+            return new PaymentQueryResponse(
+                    resultCode,
+                    momoQueryResponse.message(),
+                    status
+            );
         } catch (RestClientException e) {
             log.error("Failed to query Momo transaction: {}", orderId, e);
             throw new PaymentException("Failed to query Momo transaction", e);

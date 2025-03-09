@@ -69,7 +69,7 @@ public class AuthService {
         myUser.setPassword(passwordEncoder.encode(registerDto.password()));
         myUser.setEnabled(true);
         myUser.setVerified(false);
-        myUser.setRole(Role.USER.getDisplayName()); // Default role is user
+        myUser.setRole(Role.AUTHENTICATED_USER.getDisplayName()); // Default role is user
 
         MyUser newUser = userRepository.save(myUser);
 

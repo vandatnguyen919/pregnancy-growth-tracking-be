@@ -1,5 +1,6 @@
 package com.pregnancy.edu.blog.blogpost.dto;
 
+import com.pregnancy.edu.myuser.dto.UserDto;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
@@ -15,5 +16,6 @@ public record BlogPostDto(Long id,
                           boolean isVisible,
                           Integer commentQuantity,
                           Integer likeQuantity,
-                          List<String> nameTags) {
+                          List<String> nameTags,
+                          UserDto userDto) {
 }

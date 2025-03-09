@@ -6,7 +6,5 @@ import lombok.Data;
 public class CreateOrderRequest {
     private Long userId;
     private Long membershipPlanId;
-    private Double amount;
-    private String provider;
-    private String transactionId;
+    private String provider; // truyen ten cua provider luon (VNPAY, MOMO)
 }

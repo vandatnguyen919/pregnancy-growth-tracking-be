@@ -1,7 +1,9 @@
 package com.pregnancy.edu.blog.blogpostlike.converter;
 
+import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.blog.blogpostlike.dto.BlogPostLikeDto;
+import com.pregnancy.edu.myuser.MyUser;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +12,15 @@ public class BlogPostLikeDtoToBlogPostLikeConverter implements Converter<BlogPos
     @Override
     public BlogPostLike convert(BlogPostLikeDto source) {
         BlogPostLike like = new BlogPostLike();
-        like.getBlogPost().setId(source.blogPostId());
-        like.getUser().setId(source.userId());
+
+        BlogPost blogPost = new BlogPost();
+        blogPost.setId(source.blogPostId());
+        like.setBlogPost(blogPost);
+
+        MyUser user = new MyUser();
+        user.setId(source.userId());
+        like.setUser(user);
+
         return like;
     }
 }

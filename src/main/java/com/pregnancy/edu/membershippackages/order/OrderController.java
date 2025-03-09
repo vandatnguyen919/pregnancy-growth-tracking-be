@@ -1,24 +1,20 @@
 package com.pregnancy.edu.membershippackages.order;
 
-import com.pregnancy.edu.client.payment.MomoPaymentClient;
-import com.pregnancy.edu.client.payment.PaymentClient;
-import com.pregnancy.edu.client.payment.VNPayPaymentClient;
-import com.pregnancy.edu.client.payment.dto.PaymentCreationResponse;
-import com.pregnancy.edu.client.payment.dto.MomoQueryResponse;
-import com.pregnancy.edu.client.payment.dto.PaymentQueryResponse;
-import com.pregnancy.edu.client.payment.dto.VNPayQueryResponse;
-import com.pregnancy.edu.client.payment.utils.VNPayUtils;
-import com.pregnancy.edu.membershippackages.order.converter.OrderDtoToOrderConverter;
-import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderDtoConverter;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderPaymentResponseConverter;
 import com.pregnancy.edu.membershippackages.order.dto.CreateOrderRequest;
-import com.pregnancy.edu.membershippackages.order.dto.OrderDto;
 import com.pregnancy.edu.membershippackages.order.dto.OrderPaymentResponse;
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.MyUserPrincipal;
+import com.pregnancy.edu.myuser.UserService;
+import com.pregnancy.edu.security.JwtProvider;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.repository.query.Param;
+import com.pregnancy.edu.system.common.Role;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,138 +23,74 @@ import java.util.Map;
 @RequestMapping("/api/v1/payment")
 public class OrderController {
 
-    private final PaymentClient vnPayPaymentClient;
-
-    private final PaymentClient momoPaymentClient;
-
     private final OrderService orderService;
-
     private final OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter;
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     public OrderController(
-            @Qualifier("vnPayPaymentClient") PaymentClient vnPayPaymentClient,
-            @Qualifier("momoPaymentClient") PaymentClient momoPaymentClient, OrderService orderService,
-            OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter) {
-        this.vnPayPaymentClient = vnPayPaymentClient;
-        this.momoPaymentClient = momoPaymentClient;
+            OrderService orderService,
+            OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter,
+            UserService userService,
+            JwtProvider jwtProvider) {
         this.orderService = orderService;
         this.orderToOrderPaymentResponseConverter = orderToOrderPaymentResponseConverter;
-    }
-
-    @PostMapping("/callback/vnpay")
-    public Result handleVNPayCallback(
-            @RequestParam(name = "vnp_TxnRef") String transactionId,
-            @RequestParam(name = "vnp_ResponseCode") String responseCode,
-            @RequestParam(name = "vnp_Amount") String amount
-    ) {
-        PaymentQueryResponse paymentResponse = vnPayPaymentClient.queryPayment(transactionId);
-
-        if (paymentResponse.code() == 0) {
-            Order completedOrder = orderService.completeOrder(transactionId, paymentResponse);
-            OrderPaymentResponse completedOrderResponse = orderToOrderPaymentResponseConverter.convert(completedOrder);
-            return new Result(true, StatusCode.SUCCESS, "Payment Completed", completedOrderResponse);
-        } else {
-            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed", paymentResponse);
-        }
-    }
-
-    @PostMapping("/callback/momo")
-    public Result handleMomoCallback(
-            @RequestParam(name = "orderId") String orderId,
-            @RequestParam(name = "resultCode") String resultCode
-    ) {
-        PaymentQueryResponse paymentResponse = momoPaymentClient.queryPayment(orderId);
-
-        if (paymentResponse.code() == 0) {
-            Order completedOrder = orderService.completeOrder(orderId, paymentResponse);
-            OrderPaymentResponse completedOrderResponse = orderToOrderPaymentResponseConverter.convert(completedOrder);
-            return new Result(true, StatusCode.SUCCESS, "Payment Completed", completedOrderResponse);
-        } else {
-            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed", paymentResponse);
-        }
+        this.userService = userService;
+        this.jwtProvider = jwtProvider;
     }
 
     @PostMapping("/order")
-    public Result createOrder(@RequestBody CreateOrderRequest request) {
-        String transactionId = request.getTransactionId();
-        if (transactionId == null || transactionId.isEmpty()) {
-            transactionId = VNPayUtils.getRandomNumber(8);
-        }
+    public Result createOrder(@RequestBody CreateOrderRequest request, JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
 
-        PaymentCreationResponse paymentResponse;
+        request.setUserId(userId);
 
-        if ("VNPAY".equals(request.getProvider())) {
-            paymentResponse = vnPayPaymentClient.createPaymentWithTransactionId(
-                    request.getAmount().longValue(), transactionId);
-        } else {
-            paymentResponse = momoPaymentClient.createPaymentWithTransactionId(
-                    request.getAmount().longValue(), transactionId);
-        }
+        Map<String, Object> orderResult = orderService.processOrder(request);
 
-        // Create the order with the SAME transaction ID used for payment
-        Order initialOrder = orderService.createInitialOrder(
-                request.getUserId(),
-                request.getMembershipPlanId(),
-                request.getAmount(),
-                paymentResponse.provider(),
-                transactionId  // Use the generated/provided transaction ID
-        );
+        Order initialOrder = (Order) orderResult.get("order");
+        String paymentUrl = (String) orderResult.get("paymentUrl");
 
         OrderPaymentResponse initialOrderResponse = orderToOrderPaymentResponseConverter.convert(initialOrder);
 
         return new Result(true, StatusCode.SUCCESS, "Order Created", Map.of(
                 "order", initialOrderResponse,
-                "paymentUrl", paymentResponse.paymentUrl()
+                "paymentUrl", paymentUrl
         ));
-    }
-    /**
-     * Creates a VNPay payment URL.
-     * Example URL: GET /api/v1/payment/create/vnpay?amount=100000
-     *
-     * @param amount  the amount to be paid
-     * @return a Result object containing the payment URL and VNPay provider
-     */
-    @GetMapping("/create/vnpay")
-    public Result createVNPayPayment(
-            @Param(value = "amount") Long amount
-    ) {
-        PaymentCreationResponse paymentCreationResponse = vnPayPaymentClient.createPayment(amount);
-        return new Result(true, StatusCode.SUCCESS, "Payment Url Created Success", paymentCreationResponse);
-    }
-
-    /**
-     * Creates a Momo payment URL.
-     * Example URL: GET /api/v1/payment/create/momo?amount=100000
-     *
-     * @param amount  the amount to be paid
-     * @return a Result object containing the payment URL and Momo provider
-     */
-    @GetMapping("/create/momo")
-    public Result createMomoPayment(
-            @Param(value = "amount") Long amount
-    ) {
-        PaymentCreationResponse paymentCreationResponse = momoPaymentClient.createPayment(amount);
-        return new Result(true, StatusCode.SUCCESS, "Payment Url Created Success", paymentCreationResponse);
     }
 
     /**
      * Checks the status of a VNPay payment.
      * Example URL: GET /api/v1/payment/check/vnpay?vnp_TxnRef=59796198
      *
-     * @param vnp_TxnRef    the transaction reference number
+     * @param vnp_TxnRef the transaction reference number
      * @return a Result object containing the status of the payment check
      */
+    // In OrderController.java
     @GetMapping("/check/vnpay")
     public Result checkVNPayPayment(
-            @RequestParam(name = "vnp_TxnRef") String vnp_TxnRef
+            @RequestParam(name = "vnp_TxnRef") String vnp_TxnRef,
+            JwtAuthenticationToken jwtAuthenticationToken
     ) {
-        PaymentQueryResponse paymentQueryResponse = vnPayPaymentClient.queryPayment(vnp_TxnRef);
-        if (paymentQueryResponse.code() != 0) {
-            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Checked Failed", paymentQueryResponse);
-        }
-        return new Result(true, StatusCode.SUCCESS, "Payment Checked Success", paymentQueryResponse);
-    }
+        try {
+            Jwt jwt = jwtAuthenticationToken.getToken();
+            Long userId = jwt.getClaim("userId");
 
+            Order order = orderService.checkVNPayPayment(vnp_TxnRef, userId);
+
+            if ("COMPLETED".equals(order.getStatus())) {
+                return processCompletedOrder(order, userId);
+            } else if ("PENDING".equals(order.getStatus())) {
+                return new Result(true, StatusCode.SUCCESS, "Payment Processing", Map.of(
+                        "order", orderToOrderPaymentResponseConverter.convert(order)
+                ));
+            } else {
+                return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed", null);
+            }
+        } catch (Exception e) {
+            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed: " + e.getMessage(), null);
+        }
+    }
     /**
      * Checks the status of a Momo payment.
      * Example URL: GET /api/v1/payment/check/momo?orderId=MOMO1740729694232
@@ -168,13 +100,45 @@ public class OrderController {
      */
     @GetMapping("/check/momo")
     public Result checkMomoPayment(
-            @RequestParam(name = "orderId") String orderId
+            @RequestParam(name = "orderId") String orderId,
+            JwtAuthenticationToken jwtAuthenticationToken
     ) {
-        PaymentQueryResponse paymentQueryResponse = momoPaymentClient.queryPayment(orderId);
-        if (paymentQueryResponse.code() != 0) {
-            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Checked Failed", paymentQueryResponse);
+        try {
+            Jwt jwt = jwtAuthenticationToken.getToken();
+            Long userId = jwt.getClaim("userId");
+
+            Order completedOrder = orderService.checkMomoPayment(orderId, userId);
+            if ("COMPLETED".equals(completedOrder.getStatus())) {
+                return processCompletedOrder(completedOrder, userId);
+            } else {
+                return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed", null);
+            }
+        } catch (Exception e) {
+            return new Result(false, StatusCode.INVALID_ARGUMENT, "Payment Failed: " + e.getMessage(), null);
         }
-        return new Result(true, StatusCode.SUCCESS, "Payment Checked Success", paymentQueryResponse);
     }
 
+    private Result processCompletedOrder(Order completedOrder, Long userId) {
+        MyUser user = userService.findById(userId);
+
+        user.setRole(Role.MEMBER.getDisplayName());
+        userService.update(userId, user);
+
+        MyUserPrincipal userPrincipal = new MyUserPrincipal(user);
+        Authentication newAuthentication = new UsernamePasswordAuthenticationToken(
+                userPrincipal,
+                null,
+                userPrincipal.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+
+        String newToken = jwtProvider.createToken(newAuthentication);
+
+        OrderPaymentResponse completedOrderResponse = orderToOrderPaymentResponseConverter.convert(completedOrder);
+
+        return new Result(true, StatusCode.SUCCESS, "Payment Completed", Map.of(
+                "order", completedOrderResponse,
+                "token", newToken
+        ));
+    }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
+import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.system.StatusCode;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;
@@ -160,7 +161,8 @@ class BlogPostControllerTest {
                 true,
                 0,
                 0,
-                List.of("health", "pregnancy")
+                List.of("health", "pregnancy"),
+                new UserDto(1L, "user", "example@gmail.com", "user", true, true, "USER")
         );
 
         BlogPost savedBlogPost = new BlogPost();
@@ -194,7 +196,7 @@ class BlogPostControllerTest {
 
     @Test
     void testUpdateBlogPostSuccess() throws Exception {
-        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true, 2, 2, new ArrayList<>(3));
+        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true, 2, 2, new ArrayList<>(3),                 new UserDto(1L, "user", "example@gmail.com", "user", true, true, "USER"));
         BlogPost updatedPost = new BlogPost();
         updatedPost.setId(2L);
         updatedPost.setHeading("Heading 2");

@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8080
 vnp:
   returnUrl: http://localhost:5173/confirm-payment
   tmnCode: 6A32GGY0

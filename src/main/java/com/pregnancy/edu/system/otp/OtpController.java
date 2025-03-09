@@ -32,23 +32,15 @@ public class OtpController {
     public Result validateOTP(
             @RequestParam String email,
             @RequestParam String otp) {
-        boolean isValid = otpService.validateOTP(email, otp);
-        if (isValid) {
-            return new Result(true, StatusCode.SUCCESS, "OTP validated successfully");
-        } else {
-            return new Result(false, StatusCode.FORBIDDEN, "Invalid or expired OTP");
-        }
+        otpService.validateOTP(email, otp);
+        return new Result(true, StatusCode.SUCCESS, "OTP validated successfully");
     }
 
     @PostMapping("/validate-email")
     public Result validateEmail(
             @RequestParam String email,
             @RequestParam String otp) {
-        boolean isValid = otpService.validateEmail(email, otp);
-        if (isValid) {
-            return new Result(true, StatusCode.SUCCESS, "OTP validated successfully");
-        } else {
-            return new Result(false, StatusCode.FORBIDDEN, "Invalid or expired OTP");
-        }
+        otpService.validateEmail(email, otp);
+        return new Result(true, StatusCode.SUCCESS, "OTP validated successfully");
     }
 }

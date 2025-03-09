@@ -6,6 +6,8 @@ import com.pregnancy.edu.fetusinfo.fetus.dto.FetusDto;
 import com.pregnancy.edu.fetusinfo.fetus.dto.FetusWeekMetricsResponse;
 import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricService;
+import com.pregnancy.edu.myuser.UserService;
+import com.pregnancy.edu.pregnancy.PregnancyService;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
@@ -26,15 +28,19 @@ public class FetusController {
     private final FetusToFetusDtoConverter fetusToDtoConverter;
     private final FetusDtoToFetusConverter dtoToFetusConverter;
     private final FetusHelper fetusHelper;
+    private final UserService userService;
+    private final PregnancyService pregnancyService;
 
     public FetusController(FetusService fetusService, MetricService metricService,
                            FetusToFetusDtoConverter fetusToDtoConverter,
-                           FetusDtoToFetusConverter dtoToFetusConverter) {
+                           FetusDtoToFetusConverter dtoToFetusConverter, UserService userService, PregnancyService pregnancyService) {
         this.fetusService = fetusService;
         this.metricService = metricService;
         this.fetusToDtoConverter = fetusToDtoConverter;
         this.dtoToFetusConverter = dtoToFetusConverter;
         this.fetusHelper = new FetusHelper();
+        this.userService = userService;
+        this.pregnancyService = pregnancyService;
     }
 
     @GetMapping("/user/{userId}")
@@ -57,6 +63,8 @@ public class FetusController {
     @PostMapping
     public Result addFetus(@Valid @RequestBody FetusDto newFetusDto) {
         Fetus newFetus = dtoToFetusConverter.convert(newFetusDto);
+        newFetus.setUser(userService.findById(newFetusDto.userId()));
+        newFetus.setPregnancy(pregnancyService.findById(newFetusDto.pregnancyId()));
         Fetus savedFetus = fetusService.save(newFetus);
         FetusDto savedFetusDto = fetusToDtoConverter.convert(savedFetus);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedFetusDto);
@@ -65,6 +73,8 @@ public class FetusController {
     @PutMapping("/{fetusId}")
     public Result updateFetus(@PathVariable Long fetusId, @Valid @RequestBody FetusDto fetusDto) {
         Fetus update = dtoToFetusConverter.convert(fetusDto);
+        update.setUser(userService.findById(fetusDto.userId()));
+        update.setPregnancy(pregnancyService.findById(fetusDto.pregnancyId()));
         Fetus updatedFetus = fetusService.update(fetusId, update);
         FetusDto updatedFetusDto = fetusToDtoConverter.convert(updatedFetus);
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedFetusDto);

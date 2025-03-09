@@ -13,29 +13,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class FetusDtoToFetusConverter implements Converter<FetusDto, Fetus> {
 
-    private final UserRepository userRepository;
-    private final PregnancyRepository pregnancyRepository;
-
-    public FetusDtoToFetusConverter(UserRepository userRepository, PregnancyRepository pregnancyRepository) {
-        this.userRepository = userRepository;
-        this.pregnancyRepository = pregnancyRepository;
+    public FetusDtoToFetusConverter() {
     }
 
     @Override
     public Fetus convert(FetusDto source) {
         Fetus fetus = new Fetus();
-
-        MyUser user = userRepository.findById(source.userId())
-                .orElseThrow(() -> new ObjectNotFoundException("user", source.userId()));
-
-        Pregnancy pregnancy = pregnancyRepository.findById(source.pregnancyId())
-                .orElseThrow(() -> new ObjectNotFoundException("pregnancy", source.pregnancyId()));
-
-        fetus.setUser(user);
-        fetus.setPregnancy(pregnancy);
         fetus.setNickName(source.nickName());
         fetus.setGender(source.gender());
-
         return fetus;
     }
 }

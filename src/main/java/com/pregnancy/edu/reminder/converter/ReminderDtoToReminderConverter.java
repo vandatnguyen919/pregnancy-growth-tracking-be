@@ -11,12 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReminderDtoToReminderConverter implements Converter<ReminderDto, Reminder> {
 
-    private final UserRepository myUserRepository;
-
-    public ReminderDtoToReminderConverter(UserRepository myUserRepository) {
-        this.myUserRepository = myUserRepository;
-    }
-
     @Override
     public Reminder convert(ReminderDto reminderDto) {
         Reminder reminder = new Reminder();
@@ -25,13 +19,6 @@ public class ReminderDtoToReminderConverter implements Converter<ReminderDto, Re
         reminder.setDescription(reminderDto.description());
         reminder.setReminderDate(reminderDto.reminderDate());
         reminder.setStatus(reminderDto.status());
-
-        if (reminderDto.userId() != null) {
-            MyUser user = myUserRepository.findById(reminderDto.userId())
-                    .orElseThrow(() -> new ObjectNotFoundException("user", reminderDto.userId()));
-            reminder.setUser(user);
-        }
-
         return reminder;
     }
 }

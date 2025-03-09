@@ -13,26 +13,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtoToFetusMetricConverter implements Converter<FetusMetricDto, FetusMetric> {
 
-    private final FetusRepository fetusRepository;
-    private final MetricRepository metricRepository;
 
-    public DtoToFetusMetricConverter(FetusRepository fetusRepository, MetricRepository metricRepository) {
-        this.fetusRepository = fetusRepository;
-        this.metricRepository = metricRepository;
+    public DtoToFetusMetricConverter() {
     }
 
     @Override
     public FetusMetric convert(FetusMetricDto source) {
         FetusMetric fetusMetric = new FetusMetric();
-
-        Fetus fetus = fetusRepository.findById(source.fetusId())
-                .orElseThrow(() -> new ObjectNotFoundException("fetus", source.fetusId()));
-
-        Metric metric = metricRepository.findById(source.metricId())
-                .orElseThrow(() -> new ObjectNotFoundException("metric", source.metricId()));
-
-        fetusMetric.setFetus(fetus);
-        fetusMetric.setMetric(metric);
         fetusMetric.setValue(source.value());
         fetusMetric.setWeek(source.week());
 

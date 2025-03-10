@@ -11,20 +11,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class StandardDtoToStandardConverter implements Converter<StandardDto, Standard> {
 
-    private final MetricRepository metricRepository;
-
-    public StandardDtoToStandardConverter(MetricRepository metricRepository) {
-        this.metricRepository = metricRepository;
+    public StandardDtoToStandardConverter() {
     }
 
     @Override
     public Standard convert(StandardDto source) {
         Standard standard = new Standard();
-
-        Metric metric = metricRepository.findById(source.metricId())
-                .orElseThrow(() -> new ObjectNotFoundException("metric", source.metricId()));
-
-        standard.setMetric(metric);
         standard.setWeek(source.week());
         standard.setMin(source.min());
         standard.setMax(source.max());

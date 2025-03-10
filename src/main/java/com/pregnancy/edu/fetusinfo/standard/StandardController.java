@@ -1,5 +1,6 @@
 package com.pregnancy.edu.fetusinfo.standard;
 
+import com.pregnancy.edu.fetusinfo.metric.MetricService;
 import com.pregnancy.edu.fetusinfo.standard.converter.StandardDtoToStandardConverter;
 import com.pregnancy.edu.fetusinfo.standard.converter.StandardToStandardDtoConverter;
 import com.pregnancy.edu.fetusinfo.standard.dto.StandardDto;
@@ -15,13 +16,15 @@ import org.springframework.web.bind.annotation.*;
 public class StandardController {
 
     private final StandardService standardService;
+    private final MetricService metricService;
     private final StandardToStandardDtoConverter toStandardDtoConverter;
     private final StandardDtoToStandardConverter toStandardConverter;
 
-    public StandardController(StandardService standardService,
+    public StandardController(StandardService standardService, MetricService metricService,
                               StandardToStandardDtoConverter toStandardDtoConverter,
                               StandardDtoToStandardConverter toStandardConverter) {
         this.standardService = standardService;
+        this.metricService = metricService;
         this.toStandardDtoConverter = toStandardDtoConverter;
         this.toStandardConverter = toStandardConverter;
     }
@@ -57,6 +60,7 @@ public class StandardController {
     @PostMapping
     public Result addStandard(@Valid @RequestBody StandardDto newStandardDto) {
         Standard newStandard = toStandardConverter.convert(newStandardDto);
+        newStandard.setMetric(metricService.findById(newStandardDto.metricId()));
         Standard savedStandard = standardService.save(newStandard);
         StandardDto savedStandardDto = toStandardDtoConverter.convert(savedStandard);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedStandardDto);
@@ -65,6 +69,7 @@ public class StandardController {
     @PutMapping("/{standardId}")
     public Result updateStandard(@PathVariable Long standardId, @Valid @RequestBody StandardDto standardDto) {
         Standard update = toStandardConverter.convert(standardDto);
+        update.setMetric(metricService.findById(standardDto.metricId()));
         Standard updatedStandard = standardService.update(standardId, update);
         StandardDto updatedStandardDto = toStandardDtoConverter.convert(updatedStandard);
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedStandardDto);

@@ -1,7 +1,6 @@
 package com.pregnancy.edu.membershippackages.order.converter;
 
 import com.pregnancy.edu.membershippackages.order.Order;
-import com.pregnancy.edu.membershippackages.order.dto.OrderDto;
 import com.pregnancy.edu.membershippackages.order.dto.OrderPaymentResponse;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

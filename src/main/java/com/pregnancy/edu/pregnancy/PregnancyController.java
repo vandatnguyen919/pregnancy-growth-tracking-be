@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class PregnancyController {
 
     private final PregnancyService pregnancyService;
-//    private final FetusService fetusService;
+    private final FetusService fetusService;
     private final PregnancyToPregnancyDtoConverter pregnancyToDtoConverter;
     private final PregnancyDtoToPregnancyConverter dtoToPregnancyConverter;
     private final FetusToFetusDtoConverter fetusToDtoConverter;
@@ -36,7 +36,7 @@ public class PregnancyController {
                                FetusToFetusDtoConverter fetusToDtoConverter,
                                FetusDtoToFetusConverter dtoToFetusConverter) {
         this.pregnancyService = pregnancyService;
-//        this.fetusService = fetusService;
+        this.fetusService = fetusService;
         this.pregnancyToDtoConverter = pregnancyToDtoConverter;
         this.dtoToPregnancyConverter = dtoToPregnancyConverter;
         this.fetusToDtoConverter = fetusToDtoConverter;

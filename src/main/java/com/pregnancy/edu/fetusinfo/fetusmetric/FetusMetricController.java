@@ -1,8 +1,10 @@
 package com.pregnancy.edu.fetusinfo.fetusmetric;
 
+import com.pregnancy.edu.fetusinfo.fetus.FetusService;
 import com.pregnancy.edu.fetusinfo.fetusmetric.converter.DtoToFetusMetricConverter;
 import com.pregnancy.edu.fetusinfo.fetusmetric.converter.FetusMetricToDtoConverter;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricDto;
+import com.pregnancy.edu.fetusinfo.metric.MetricService;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
@@ -17,13 +19,17 @@ public class FetusMetricController {
     private final FetusMetricService fetusMetricService;
     private final FetusMetricToDtoConverter toFetusMetricDtoConverter;
     private final DtoToFetusMetricConverter toFetusMetricConverter;
+    private final FetusService fetusService;
+    private final MetricService metricService;
 
     public FetusMetricController(FetusMetricService fetusMetricService,
                                  FetusMetricToDtoConverter toFetusMetricDtoConverter,
-                                 DtoToFetusMetricConverter toFetusMetricConverter) {
+                                 DtoToFetusMetricConverter toFetusMetricConverter, FetusService fetusService, MetricService metricService) {
         this.fetusMetricService = fetusMetricService;
         this.toFetusMetricDtoConverter = toFetusMetricDtoConverter;
         this.toFetusMetricConverter = toFetusMetricConverter;
+        this.fetusService = fetusService;
+        this.metricService = metricService;
     }
 
     @GetMapping
@@ -50,6 +56,8 @@ public class FetusMetricController {
     @PostMapping
     public Result addFetusMetric(@Valid @RequestBody FetusMetricDto newFetusMetricDto) {
         FetusMetric newFetusMetric = toFetusMetricConverter.convert(newFetusMetricDto);
+        newFetusMetric.setFetus(fetusService.findById(newFetusMetricDto.fetusId()));
+        newFetusMetric.setMetric(metricService.findById(newFetusMetricDto.metricId()));
         FetusMetric savedFetusMetric = fetusMetricService.save(newFetusMetric);
         FetusMetricDto savedFetusMetricDto = toFetusMetricDtoConverter.convert(savedFetusMetric);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedFetusMetricDto);
@@ -58,6 +66,8 @@ public class FetusMetricController {
     @PutMapping("/{fetusMetricId}")
     public Result updateFetusMetric(@PathVariable Long fetusMetricId, @Valid @RequestBody FetusMetricDto fetusMetricDto) {
         FetusMetric update = toFetusMetricConverter.convert(fetusMetricDto);
+        update.setFetus(fetusService.findById(fetusMetricDto.fetusId()));
+        update.setMetric(metricService.findById(fetusMetricDto.metricId()));
         FetusMetric updatedFetusMetric = fetusMetricService.update(fetusMetricId, update);
         FetusMetricDto updatedFetusMetricDto = toFetusMetricDtoConverter.convert(updatedFetusMetric);
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedFetusMetricDto);

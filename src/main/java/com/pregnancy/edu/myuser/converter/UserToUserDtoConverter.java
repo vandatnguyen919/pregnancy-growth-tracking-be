@@ -17,7 +17,17 @@ public class UserToUserDtoConverter implements Converter<MyUser, UserDto> {
                 source.getUsername(),
                 source.getEnabled(),
                 source.getVerified(),
-                source.getRole()
+                source.getRole(),
+                // Map additional attributes
+                source.getPhoneNumber(),
+                source.getDateOfBirth(),
+                source.getAvatarUrl(),
+                source.getGender(),
+                source.getBloodType() != null ? source.getBloodType().toString() : null,
+                source.getSymptoms(),
+                source.getNationality(),
+                source.getCreatedAt(),
+                source.getUpdatedAt()
         );
     }
 }

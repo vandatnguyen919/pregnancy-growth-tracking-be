@@ -19,6 +19,10 @@ public class OrderToOrderDtoConverter implements Converter<Order, OrderDto> {
                 source.getCurrency(),
                 source.getTransactionId(),
                 formatDateTimeToString(source.getTransactionDate()),
+                source.getStatus(),
+                formatDateTimeToString(source.getCreatedAt()),
+                formatDateTimeToString(source.getStartDate()),
+                formatDateTimeToString(source.getEndDate()),
                 source.getMembershipPlan() != null ? source.getMembershipPlan().getId() : null,
                 source.getUser() != null ? source.getUser().getId() : null
         );

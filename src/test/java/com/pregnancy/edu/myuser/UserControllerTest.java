@@ -157,7 +157,7 @@ class UserControllerTest {
     @Test
     void testUpdateUserSuccess() throws Exception {
         // Given
-        UserDto update = new UserDto(null, "John", "john-update", "John", true, true, "admin");
+        UserDto update = new UserDto(null, "John", "john-update", "John", true, true, "admin", null, null, null, null, null, null, null, null, null);
 
         MyUser updatedUser = new MyUser();
         updatedUser.setId(1L);
@@ -183,7 +183,7 @@ class UserControllerTest {
     @Test
     void testUserUpdateUserErrorWithNonExistentId() throws Exception {
         // Given
-        UserDto update = new UserDto(null, "John", "john-update", "John", true, true,"admin");
+        UserDto update = new UserDto(null, "John", "john-update", "John", true, true, "admin", null, null, null, null, null, null, null, null, null);
 
         String json = objectMapper.writeValueAsString(update);
 

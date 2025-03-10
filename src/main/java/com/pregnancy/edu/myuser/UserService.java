@@ -40,9 +40,10 @@ public class UserService implements BaseCrudService<MyUser, Long>, UserDetailsSe
     public MyUser update(Long userId, MyUser user) {
         return this.userRepository.findById(userId)
                 .map(oldUser -> {
+                    oldUser.setAvatarUrl(user.getAvatarUrl());
+                    oldUser.setFullName(user.getFullName());
                     oldUser.setUsername(user.getUsername());
                     oldUser.setPhoneNumber(user.getPhoneNumber());
-                    oldUser.setFullName(user.getFullName());
                     oldUser.setDateOfBirth(user.getDateOfBirth());
                     oldUser.setGender(user.getGender());
                     oldUser.setBloodType(user.getBloodType());

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -45,6 +46,10 @@ public class OrderService {
          this.paymentClientMap = new HashMap<>();
          this.paymentClientMap.put("VNPAY", vnPayPaymentClient);
          this.paymentClientMap.put("MOMO", momoPaymentClient);
+     }
+
+     public List<Order> findAllByUserId(Long userId) {
+         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
      }
 
      /**

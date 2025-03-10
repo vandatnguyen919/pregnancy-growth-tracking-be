@@ -32,11 +32,13 @@ public class MyUser {
     private String email;
 
     @NotEmpty(message = "username is required.")
+    @Column(unique = true)
     private String username;
 
     @NotEmpty(message = "password is required.")
     private String password;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     private String fullName;

@@ -1,7 +1,9 @@
 package com.pregnancy.edu.membershippackages.order;
 
+import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderDtoConverter;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderPaymentResponseConverter;
 import com.pregnancy.edu.membershippackages.order.dto.CreateOrderRequest;
+import com.pregnancy.edu.membershippackages.order.dto.OrderDto;
 import com.pregnancy.edu.membershippackages.order.dto.OrderPaymentResponse;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.MyUserPrincipal;
@@ -17,29 +19,42 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/payment")
+@RequestMapping("/api/v1")
 public class OrderController {
 
     private final OrderService orderService;
     private final OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter;
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final OrderToOrderDtoConverter orderToOrderDtoConverter;
 
     public OrderController(
             OrderService orderService,
             OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter,
             UserService userService,
-            JwtProvider jwtProvider) {
+            JwtProvider jwtProvider, OrderToOrderDtoConverter orderToOrderDtoConverter) {
         this.orderService = orderService;
         this.orderToOrderPaymentResponseConverter = orderToOrderPaymentResponseConverter;
         this.userService = userService;
         this.jwtProvider = jwtProvider;
+        this.orderToOrderDtoConverter = orderToOrderDtoConverter;
     }
 
-    @PostMapping("/order")
+    @GetMapping("/orders/my-orders")
+    public Result findOrderByUserId(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+        List<Order> orders = orderService.findAllByUserId(userId);
+        List<OrderDto> orderDtos = orders.stream().map(orderToOrderDtoConverter::convert).toList();
+        return new Result(true, StatusCode.SUCCESS, "Find Orders Success", orderDtos);
+
+    }
+
+    @PostMapping("/payment/order")
     public Result createOrder(@RequestBody CreateOrderRequest request, JwtAuthenticationToken jwtAuthenticationToken) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
@@ -66,8 +81,7 @@ public class OrderController {
      * @param vnp_TxnRef the transaction reference number
      * @return a Result object containing the status of the payment check
      */
-    // In OrderController.java
-    @GetMapping("/check/vnpay")
+    @GetMapping("/payment/check/vnpay")
     public Result checkVNPayPayment(
             @RequestParam(name = "vnp_TxnRef") String vnp_TxnRef,
             JwtAuthenticationToken jwtAuthenticationToken
@@ -98,7 +112,7 @@ public class OrderController {
      * @param orderId the order ID to be checked
      * @return a Result object containing the status of the payment check
      */
-    @GetMapping("/check/momo")
+    @GetMapping("/payment/check/momo")
     public Result checkMomoPayment(
             @RequestParam(name = "orderId") String orderId,
             JwtAuthenticationToken jwtAuthenticationToken

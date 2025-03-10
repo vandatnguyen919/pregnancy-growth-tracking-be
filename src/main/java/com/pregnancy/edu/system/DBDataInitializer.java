@@ -21,6 +21,7 @@ import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.pregnancy.PregnancyService;
+import com.pregnancy.edu.system.utils.MyUserGenerator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -63,14 +64,19 @@ public class DBDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Create and save users first
-        MyUser u1 = createUser("john@example.com", "john", "123456", true, true,"admin");
-        MyUser u2 = createUser("eric@example.com", "eric", "654321", true, true, "user");
-        MyUser u3 = createUser("tom@example.com", "tom", "qwerty", false, true, "user");
+        // Create user data
+        MyUser u1 = MyUserGenerator.createJohn();
+        MyUser u2 = MyUserGenerator.createEric();
+        MyUser u3 = MyUserGenerator.createTom();
 
         userService.save(u1);
         userService.save(u2);
         userService.save(u3);
+
+        List<MyUser> randomUsers = MyUserGenerator.generateRandomUsers(10);
+        for (MyUser user : randomUsers) {
+            userService.save(user);
+        }
 
         // First create and save all tags
         Tag t1 = new Tag();
@@ -260,17 +266,6 @@ public class DBDataInitializer implements CommandLineRunner {
         }
 
         metricService.save(metric);
-    }
-
-    private MyUser createUser(String email, String username, String password, boolean enabled, boolean verified, String role) {
-        MyUser user = new MyUser();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEnabled(enabled);
-        user.setVerified(verified);
-        user.setRole(role);
-        return user;
     }
 
     private BlogPost createBlogPost(String title, String content, String imageUrl, String description, List<Tag> tags) {

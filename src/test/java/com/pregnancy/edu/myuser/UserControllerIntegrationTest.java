@@ -165,7 +165,7 @@ public class UserControllerIntegrationTest {
         myUser.setEmail("john@example.com");
         myUser.setUsername("john123"); // Username is changed.
         myUser.setEnabled(true);
-        myUser.setRole("admin");
+        myUser.setRole("user");
 
         String json = this.objectMapper.writeValueAsString(myUser);
 

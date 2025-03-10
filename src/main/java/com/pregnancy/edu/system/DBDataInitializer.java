@@ -200,33 +200,20 @@ public class DBDataInitializer implements CommandLineRunner {
         createAndSaveFetusMetrics();
 
         MembershipPlan m1 = new MembershipPlan();
-        m1.setName("1 month");
+        m1.setName("Each Month");
         m1.setPrice(400000D);
         m1.setDurationMonths(1);
         m1.setActive(true);
 
         MembershipPlan m2 = new MembershipPlan();
-        m2.setName("1 year");
-        m2.setPrice(40000000D);
-        m2.setDurationMonths(12);
+        m2.setName("Lifetime Package");
+        m2.setPrice(3600000D);
+        m2.setDurationMonths(10);
         m2.setActive(true);
 
-        MembershipPlan m3 = new MembershipPlan();
-        m3.setName("6 months");
-        m3.setPrice(2000000D);
-        m3.setDurationMonths(6);
-        m3.setActive(false);
-
-        MembershipPlan m4 = new MembershipPlan();
-        m4.setName("7 months");
-        m4.setPrice(2000000D);
-        m4.setDurationMonths(7);
-        m4.setActive(true);
 
         membershipPlanService.save(m1);
         membershipPlanService.save(m2);
-        membershipPlanService.save(m3);
-        membershipPlanService.save(m4);
     }
 
     private void createAndSaveStandards(Metric metric) {

@@ -6,6 +6,8 @@ import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +29,10 @@ public class UserController {
     }
 
     @GetMapping
-    public Result getAllUsers() {
-        List<MyUser> hogwartsUsers = userService.findAll();
-        List<UserDto> userDtos = hogwartsUsers.stream().map(userToUserDtoConverter::convert).toList();
-        return new Result(true, StatusCode.SUCCESS, "Find All Success", userDtos);
+    public Result getAllUsers(Pageable pageable) {
+        Page<MyUser> myUserPage = userService.findAll(pageable);
+        Page<UserDto> userDtoPage = myUserPage.map(userToUserDtoConverter::convert);
+        return new Result(true, StatusCode.SUCCESS, "Find All Success", userDtoPage);
     }
 
     @GetMapping("/{userId}")

@@ -55,7 +55,7 @@ public class MyUserGenerator {
         u2.setPassword("654321");
         u2.setVerified(true);
         u2.setEnabled(true);
-        u2.setRole("user");
+        u2.setRole("member");
 
         // Adding more information
         u2.setPhoneNumber("+44789123456");

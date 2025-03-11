@@ -12,6 +12,9 @@ import com.pregnancy.edu.security.JwtProvider;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import com.pregnancy.edu.system.common.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -45,13 +49,18 @@ public class OrderController {
     }
 
     @GetMapping("/orders/my-orders")
-    public Result findOrderByUserId(JwtAuthenticationToken jwtAuthenticationToken) {
+    public Result findOrderByUserId(
+            JwtAuthenticationToken jwtAuthenticationToken,
+            Pageable pageable,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
-        List<Order> orders = orderService.findAllByUserId(userId);
-        List<OrderDto> orderDtos = orders.stream().map(orderToOrderDtoConverter::convert).toList();
-        return new Result(true, StatusCode.SUCCESS, "Find Orders Success", orderDtos);
 
+        Page<Order> orderPage = orderService.findAllByUserIdAndDateRange(userId, pageable, startDate, endDate);
+        Page<OrderDto> orderDtoPage = orderPage.map(orderToOrderDtoConverter::convert);
+        return new Result(true, StatusCode.SUCCESS, "Find Orders Success", orderDtoPage);
     }
 
     @PostMapping("/payment/order")

@@ -22,14 +22,19 @@ public class BlogPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 1024)
     private String heading;
 
+    @Column(length = 1024)
     private String pageTitle;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(length = 1024)
     private String shortDescription;
 
+    @Column(length = 1024)
     private String featuredImageUrl;
 
     private String urlHandle;

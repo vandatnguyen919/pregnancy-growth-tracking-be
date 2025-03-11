@@ -21,7 +21,9 @@ import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.pregnancy.PregnancyService;
+import com.pregnancy.edu.system.utils.BlogPostGenerator;
 import com.pregnancy.edu.system.utils.MyUserGenerator;
+import com.pregnancy.edu.system.utils.TagGenerator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -69,83 +71,26 @@ public class DBDataInitializer implements CommandLineRunner {
         MyUser u2 = MyUserGenerator.createEric();
         MyUser u3 = MyUserGenerator.createTom();
 
-        userService.save(u1);
-        userService.save(u2);
-        userService.save(u3);
-
         List<MyUser> randomUsers = MyUserGenerator.generateRandomUsers(10);
+        randomUsers.add(u1);
+        randomUsers.add(u2);
+        randomUsers.add(u3);
+
         for (MyUser user : randomUsers) {
             userService.save(user);
         }
 
-        // First create and save all tags
-        Tag t1 = new Tag();
-        t1.setName("Pregnancy");
-        t1 = tagService.save(t1);
+        // Create tags
+        List<Tag> tags = TagGenerator.generateSampleTags();
+        for (Tag tag : tags) {
+            tagService.save(tag);
+        }
 
-        Tag t2 = new Tag();
-        t2.setName("Nutrition");
-        t2 = tagService.save(t2);
-
-        Tag t3 = new Tag();
-        t3.setName("Sleep");
-        t3 = tagService.save(t3);
-
-        BlogPost p1 = createBlogPost(
-                "Top 10 Foods Every Pregnant Mom Should Include in Her Diet",
-                "Content 1",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "By Texas Health and Human Services: If you experience any of these symptoms during or after",
-                new ArrayList<>(Arrays.asList(t1, t2, t3))
-        );
-
-        BlogPost p2 = createBlogPost(
-                "The Importance of Sleep for Moms and Babies: Tips to Rest Better",
-                "Content 2",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "By Texas Health and Human Services: If you experience any of these symptoms during or after",
-                new ArrayList<>(Arrays.asList(t1, t2))
-        );
-
-        BlogPost p3 = createBlogPost(
-                "5 Simple Prenatal Yoga Poses to Reduce Stress and Boost Energy",
-                "Content 3",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "By Texas Health and Human Services: If you experience any of these symptoms during or after",
-                new ArrayList<>(Arrays.asList(t1, t2, t3))
-        );
-
-        BlogPost p4 = createBlogPost(
-                "Pregnancy Warning Signs You Should Never Ignore",
-                "Content 4",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "By Texas Health and Human Services: If you experience any of these symptoms during or after",
-                new ArrayList<>(Arrays.asList(t1, t3))
-        );
-
-        BlogPost p5 = createBlogPost(
-                "Fun and Educational Games to Boost Your Baby's Brain Development",
-                "Content 5",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "For children, play is not just about having fun—it's crucial for developing critical",
-                new ArrayList<>(Arrays.asList(t1, t2))
-        );
-
-        BlogPost p6 = createBlogPost(
-                "Common Newborn Health Issues and How to Handle Them Like a Pro",
-                "Content 6",
-                "https://images.squarespace-cdn.com/content/v1/57c93870b3db2b6e16992e6c/1512434151171-3RNNOUGZXAIRBBRU342M/pregnant-mom-baby",
-                "If you're a first-time parent, and even if you've already been through it before",
-                new ArrayList<>(Arrays.asList(t1, t2))
-        );
-
-        // Save blog posts
-        blogPostService.save(p1);
-        blogPostService.save(p2);
-        blogPostService.save(p3);
-        blogPostService.save(p4);
-        blogPostService.save(p5);
-        blogPostService.save(p6);
+        // Create blog posts
+        List<BlogPost> blogPosts = BlogPostGenerator.generateSampleBlogPosts(randomUsers, tags);
+        for (BlogPost blogPost : blogPosts) {
+            blogPostService.save(blogPost);
+        }
 
         // Create and save comments
         BlogPostComment bpComment1 = new BlogPostComment();
@@ -253,17 +198,6 @@ public class DBDataInitializer implements CommandLineRunner {
         }
 
         metricService.save(metric);
-    }
-
-    private BlogPost createBlogPost(String title, String content, String imageUrl, String description, List<Tag> tags) {
-        BlogPost post = new BlogPost();
-        post.setPageTitle(title);
-        post.setContent(content);
-        post.setFeaturedImageUrl(imageUrl);
-        post.setShortDescription(description);
-        post.setUser(userService.findById(1L));
-        tags.forEach(post::addTag);
-        return post;
     }
 
     private Pregnancy createPregnancy(MyUser user, LocalDate dueDate) {

@@ -50,6 +50,10 @@ public class OrderService {
          this.paymentClientMap.put("MOMO", momoPaymentClient);
      }
 
+     public Page<Order> findAll(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
+         return orderRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(pageable, startDate, endDate);
+     }
+
      public Page<Order> findAllByUserIdAndDateRange(Long userId, Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
          return orderRepository.findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(userId, pageable, startDate, endDate);
      }

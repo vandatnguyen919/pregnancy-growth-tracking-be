@@ -48,6 +48,18 @@ public class OrderController {
         this.orderToOrderDtoConverter = orderToOrderDtoConverter;
     }
 
+    @GetMapping("/orders")
+    public Result findAllOrders(
+            Pageable pageable,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        Page<Order> orderPage = orderService.findAll(pageable, startDate, endDate);
+        Page<OrderDto> orderDtoPage = orderPage.map(orderToOrderDtoConverter::convert);
+
+        return new Result(true, StatusCode.SUCCESS, "Find All Orders Success", orderDtoPage);
+    }
+
     @GetMapping("/orders/my-orders")
     public Result findOrderByUserId(
             JwtAuthenticationToken jwtAuthenticationToken,

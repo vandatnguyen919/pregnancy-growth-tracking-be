@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByTransactionId(String transactionId);
 
+    Page<Order> findByCreatedAtBetweenOrderByCreatedAtDesc(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
+
     Page<Order> findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(Long userId, Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
 }

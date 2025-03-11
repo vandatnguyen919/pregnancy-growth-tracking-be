@@ -90,7 +90,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/blog-comments/**").authenticated()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/blog-likes").authenticated()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/blog-likes").authenticated()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/membership-plans/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/membership-plans/**").permitAll()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/membership-plans").authenticated()
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/membership-plans/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/membership-plans/**").hasAuthority("ROLE_admin")

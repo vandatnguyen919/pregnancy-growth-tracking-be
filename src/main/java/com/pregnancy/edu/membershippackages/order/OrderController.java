@@ -84,6 +84,10 @@ public class OrderController {
 
         Map<String, Object> orderResult = orderService.processOrder(request);
 
+        if (orderResult.containsKey("success") && !(Boolean)orderResult.get("success")) {
+            return new Result(false, StatusCode.INVALID_ARGUMENT, (String)orderResult.get("message"), null);
+        }
+
         Order initialOrder = (Order) orderResult.get("order");
         String paymentUrl = (String) orderResult.get("paymentUrl");
 

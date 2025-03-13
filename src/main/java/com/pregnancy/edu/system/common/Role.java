@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Role {
-    AUTHENTICATED_USER("authenticatedUser"),
+    USER("User"),
     ADMIN("admin"),
     MEMBER("member");
 

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -62,12 +63,33 @@ public class OrderService {
       * Process order creation including payment initialization
       */
      public Map<String, Object> processOrder(CreateOrderRequest request) {
+         MyUser user = userRepository.findById(request.getUserId())
+                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-         MembershipPlan membershipPlan = membershipPlanRepository.findById(request.getMembershipPlanId())
+         MembershipPlan newMembershipPlan = membershipPlanRepository.findById(request.getMembershipPlanId())
                  .filter(MembershipPlan::isActive)
                  .orElseThrow(() -> new ObjectNotFoundException("Active membership plan", request.getMembershipPlanId()));
 
-         Double amount = membershipPlan.getPrice();
+         Optional<Order> currentActiveOrder = findActiveOrderForUser(user.getId());
+
+         if (currentActiveOrder.isPresent()) {
+             MembershipPlan currentPlan = currentActiveOrder.get().getMembershipPlan();
+
+             if (currentPlan.getDurationMonths() > newMembershipPlan.getDurationMonths()) {
+                 return Map.of(
+                         "success", false,
+                         "message", "Cannot downgrade from a longer membership plan to a shorter one"
+                 );
+             }
+             if (currentPlan.getDurationMonths().equals(newMembershipPlan.getDurationMonths())) {
+                 return Map.of(
+                         "success", false,
+                         "message", "You already bought this membership plan"
+                 );
+             }
+         }
+
+         Double amount = newMembershipPlan.getPrice();
          PaymentClient selectedClient = getPaymentClient(request.getProvider());
 
          Order initialOrder = createInitialOrder(
@@ -146,7 +168,7 @@ public class OrderService {
          order.setProvider(provider);
          order.setCurrency("VND");
          order.setCreatedAt(LocalDateTime.now());
-         order.setStatus("PENDING");
+         order.setStatus("COMPLETED"); // payment with localhost
 
          return orderRepository.save(order);
      }
@@ -167,14 +189,7 @@ public class OrderService {
                 order.setEndDate(startDate.plusDays(durationInDays));
                 break;
             case PENDING:
-            case PROCESSING:
                 order.setStatus("PENDING");
-                break;
-            case FAILED:
-                order.setStatus("FAILED");
-                break;
-            case REFUNDED:
-                order.setStatus("REFUNDED");
                 break;
             default:
                 order.setStatus("UNKNOWN");
@@ -182,4 +197,13 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
+    public Optional<Order> findActiveOrderForUser(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        return orderRepository.findByUserIdAndStatusAndStartDateBeforeAndEndDateAfterOrderByEndDateDesc(
+                        userId, "COMPLETED", now, now, Pageable.ofSize(1))
+                .stream()
+                .findFirst();
+    }
+
 }

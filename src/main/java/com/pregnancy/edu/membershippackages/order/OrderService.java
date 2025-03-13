@@ -206,4 +206,16 @@ public class OrderService {
                 .findFirst();
     }
 
+    public Optional<Order> findLatestOrderByUserId(Long userId) {
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        LocalDateTime now = LocalDateTime.now();
+
+        Page<Order> orderPage = orderRepository.findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(
+                userId,
+                Pageable.ofSize(1),
+                oneYearAgo,
+                now);
+
+        return orderPage.stream().findFirst();
+    }
 }

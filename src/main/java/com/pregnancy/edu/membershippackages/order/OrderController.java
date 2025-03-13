@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -64,15 +65,30 @@ public class OrderController {
     public Result findOrderByUserId(
             JwtAuthenticationToken jwtAuthenticationToken,
             Pageable pageable,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
-
         Page<Order> orderPage = orderService.findAllByUserIdAndDateRange(userId, pageable, startDate, endDate);
         Page<OrderDto> orderDtoPage = orderPage.map(orderToOrderDtoConverter::convert);
         return new Result(true, StatusCode.SUCCESS, "Find Orders Success", orderDtoPage);
+    }
+
+    @GetMapping("/orders/latest")
+    public Result findLatestOrder(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+        Optional<Order> latestOrder = orderService.findLatestOrderByUserId(userId);
+
+        if (latestOrder.isPresent()) {
+            OrderDto orderDto = orderToOrderDtoConverter.convert(latestOrder.get());
+            return new Result(true, StatusCode.SUCCESS, "Find Latest Order Success", orderDto);
+        } else {
+            return new Result(true, StatusCode.SUCCESS, "No Orders Found", null);
+        }
     }
 
     @PostMapping("/payment/order")

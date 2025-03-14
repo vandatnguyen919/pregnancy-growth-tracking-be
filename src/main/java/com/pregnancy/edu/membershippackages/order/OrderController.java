@@ -1,5 +1,6 @@
 package com.pregnancy.edu.membershippackages.order;
 
+import com.pregnancy.edu.membershippackages.membership.MembershipPlanService;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderDtoConverter;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderPaymentResponseConverter;
 import com.pregnancy.edu.membershippackages.order.dto.CreateOrderRequest;
@@ -36,17 +37,19 @@ public class OrderController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
     private final OrderToOrderDtoConverter orderToOrderDtoConverter;
+    private final MembershipPlanService membershipPlanService;
 
     public OrderController(
             OrderService orderService,
             OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter,
             UserService userService,
-            JwtProvider jwtProvider, OrderToOrderDtoConverter orderToOrderDtoConverter) {
+            JwtProvider jwtProvider, OrderToOrderDtoConverter orderToOrderDtoConverter, MembershipPlanService membershipPlanService) {
         this.orderService = orderService;
         this.orderToOrderPaymentResponseConverter = orderToOrderPaymentResponseConverter;
         this.userService = userService;
         this.jwtProvider = jwtProvider;
         this.orderToOrderDtoConverter = orderToOrderDtoConverter;
+        this.membershipPlanService = membershipPlanService;
     }
 
     @GetMapping("/orders")
@@ -82,10 +85,10 @@ public class OrderController {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
         Optional<Order> latestOrder = orderService.findLatestOrderByUserId(userId);
-
         if (latestOrder.isPresent()) {
+            int duration = membershipPlanService.findById(latestOrder.get().getMembershipPlan().getId()).durationMonths();
             OrderDto orderDto = orderToOrderDtoConverter.convert(latestOrder.get());
-            return new Result(true, StatusCode.SUCCESS, "Find Latest Order Success", orderDto);
+            return new Result(true, StatusCode.SUCCESS, "Find Latest Order Success", Map.of("order", orderDto, "duration months", duration));
         } else {
             return new Result(true, StatusCode.SUCCESS, "No Orders Found", null);
         }

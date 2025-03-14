@@ -37,7 +37,6 @@ public class DBDataInitializer implements CommandLineRunner {
 
     private final UserService userService;
     private final BlogPostService blogPostService;
-    private final BlogPostLikeService blogPostLikeService;
     private final BlogPostCommentService blogPostCommentService;
     private final TagService tagService;
     private final PregnancyService pregnancyService;
@@ -48,12 +47,10 @@ public class DBDataInitializer implements CommandLineRunner {
     private final MembershipPlanService membershipPlanService;
 
     public DBDataInitializer(UserService userService, BlogPostService blogPostService,
-                             BlogPostLikeService blogPostLikeService,
                              BlogPostCommentService blogPostCommentService,
                              TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService, FetusMetricService fetusMetricService1, MembershipPlanService membershipPlanService) {
         this.userService = userService;
         this.blogPostService = blogPostService;
-        this.blogPostLikeService = blogPostLikeService;
         this.blogPostCommentService = blogPostCommentService;
         this.tagService = tagService;
         this.pregnancyService = pregnancyService;
@@ -104,14 +101,30 @@ public class DBDataInitializer implements CommandLineRunner {
         blogPostCommentService.save(bpComment2);
         blogPostCommentService.save(bpComment3);
 
-        // Create metrics with their standards
-        Metric weightMetric = createMetric("Weight", "NUMERIC", "grams");
-        Metric lengthMetric = createMetric("Length", "NUMERIC", "cm");
-        Metric headCircumferenceMetric = createMetric("Head Circumference", "NUMERIC", "cm");
+        // Create metrics
+        Metric bpdMetric = createMetric("BPD", "NUMERIC", "mm");
+        Metric crlMetric = createMetric("CRL", "NUMERIC", "mm");
+        Metric acMetric = createMetric("AC", "NUMERIC", "mm");
+        Metric fhrMetric = createMetric("Fetal Heart Rate", "NUMERIC", "bpm");
+        Metric weightMetric = createMetric("Weight", "NUMERIC", "g");
+        Metric flMetric = createMetric("FL", "NUMERIC", "mm");
 
+        // Save metrics
+        metricService.save(bpdMetric);
+        metricService.save(crlMetric);
+        metricService.save(acMetric);
+        metricService.save(fhrMetric);
         metricService.save(weightMetric);
-        metricService.save(lengthMetric);
-        metricService.save(headCircumferenceMetric);
+        metricService.save(flMetric);
+
+        // Create and save standards for each metric
+        createAndSaveBPDStandards(bpdMetric);
+        createAndSaveCRLStandards(crlMetric);
+        createAndSaveACStandards(acMetric);
+        createAndSaveFHRStandards(fhrMetric);
+        createAndSaveWeightStandards(weightMetric);
+        createAndSaveFLStandards(flMetric);
+
 
         // Create pregnancies for users
         Pregnancy pregnancy1 = createPregnancy(u1, LocalDate.now().minusWeeks(20));
@@ -136,10 +149,6 @@ public class DBDataInitializer implements CommandLineRunner {
         fetusService.save(fetus2);
         fetusService.save(fetus3);
 
-        createAndSaveStandards(weightMetric);
-        createAndSaveStandards(lengthMetric);
-        createAndSaveStandards(headCircumferenceMetric);
-
         createAndSaveFetusMetrics();
         createAndSaveFetusMetrics();
         createAndSaveFetusMetrics();
@@ -156,48 +165,8 @@ public class DBDataInitializer implements CommandLineRunner {
         m2.setDurationMonths(10);
         m2.setActive(true);
 
-
         membershipPlanService.save(m1);
         membershipPlanService.save(m2);
-    }
-
-    private void createAndSaveStandards(Metric metric) {
-        List<Standard> standards = new ArrayList<>();
-        if (metric.getName().equals("Weight")) {
-            standards.add(createStandard(metric, 12, 16.0, 45.0));
-            standards.add(createStandard(metric, 16, 100.0, 200.0));
-            standards.add(createStandard(metric, 20, 250.0, 350.0));
-            standards.add(createStandard(metric, 28, 1000.0, 1300.0));
-            standards.add(createStandard(metric, 32, 1700.0, 2100.0));
-            standards.add(createStandard(metric, 36, 2500.0, 3000.0));
-            standards.add(createStandard(metric, 40, 3200.0, 3700.0));
-        } else if (metric.getName().equals("Length")) {
-            standards.add(createStandard(metric, 12, 5.0, 8.0));
-            standards.add(createStandard(metric, 16, 11.0, 14.0));
-            standards.add(createStandard(metric, 20, 16.0, 19.0));
-            standards.add(createStandard(metric, 24, 21.0, 24.0));
-            standards.add(createStandard(metric, 28, 25.0, 28.0));
-            standards.add(createStandard(metric, 32, 29.0, 32.0));
-            standards.add(createStandard(metric, 36, 33.0, 37.0));
-        } else if (metric.getName().equals("Head Circumference")) {
-            standards.add(createStandard(metric, 12, 5.0, 8.0));
-            standards.add(createStandard(metric, 16, 10.0, 13.0));
-            standards.add(createStandard(metric, 20, 15.0, 18.0));
-            standards.add(createStandard(metric, 24, 19.0, 22.0));
-            standards.add(createStandard(metric, 28, 23.0, 26.0));
-            standards.add(createStandard(metric, 32, 27.0, 30.0));
-            standards.add(createStandard(metric, 36, 31.0, 34.0));
-            standards.add(createStandard(metric, 40, 35.0, 38.0));
-        }
-
-        for (Standard standard : standards) {
-            standardService.save(standard);
-            if (metric.getStandards() == null) {
-                metric.setStandards(new ArrayList<>());
-            }
-        }
-
-        metricService.save(metric);
     }
 
     private Pregnancy createPregnancy(MyUser user, LocalDate dueDate) {
@@ -236,14 +205,34 @@ public class DBDataInitializer implements CommandLineRunner {
 
     private void createAndSaveFetusMetrics() {
         List<Fetus> allFetuses = fetusService.findAll();
-
         List<Metric> allMetrics = metricService.findAll();
 
         for (Fetus fetus : allFetuses) {
             int currentWeek = calculateCurrentWeek(fetus.getPregnancy().getEstimatedDueDate());
 
             for (Metric metric : allMetrics) {
-                for (int week = Math.max(12, currentWeek - 8); week <= currentWeek; week += 4) {
+                // For each metric, find the appropriate weeks to generate data
+                int startWeek;
+                int endWeek = Math.min(currentWeek, 40); // Don't go beyond 40 weeks
+
+                // Different metrics start at different weeks
+                if (metric.getName().equals("CRL")) {
+                    startWeek = Math.max(5, currentWeek - 8);
+                    endWeek = Math.min(currentWeek, 16); // CRL only goes up to week 16
+                } else if (metric.getName().equals("BPD")) {
+                    startWeek = Math.max(11, currentWeek - 8);
+                } else if (metric.getName().equals("FL")) {
+                    startWeek = Math.max(13, currentWeek - 8);
+                } else if (metric.getName().equals("AC")) {
+                    startWeek = Math.max(16, currentWeek - 8);
+                } else if (metric.getName().equals("Fetal Heart Rate")) {
+                    startWeek = Math.max(6, currentWeek - 8);
+                } else { // Weight or other metrics
+                    startWeek = Math.max(12, currentWeek - 8);
+                }
+
+                // Generate data for every 4 weeks
+                for (int week = startWeek; week <= endWeek; week += 4) {
                     Standard standard = standardService.findByMetricAndWeek(metric.getId(), week);
 
                     if (standard != null) {
@@ -257,7 +246,6 @@ public class DBDataInitializer implements CommandLineRunner {
                         fetusMetric.setWeek(week);
 
                         fetusMetricService.save(fetusMetric);
-
                     }
                 }
             }
@@ -274,5 +262,207 @@ public class DBDataInitializer implements CommandLineRunner {
         return (int) (40 - weeksUntilDue);
     }
 
+    private void createAndSaveBPDStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // BPD standards from JSON
+        standards.add(createStandard(metric, 11, 13.0, 21.0));
+        standards.add(createStandard(metric, 12, 17.0, 24.0));
+        standards.add(createStandard(metric, 13, 20.0, 28.0));
+        standards.add(createStandard(metric, 14, 23.0, 31.0));
+        standards.add(createStandard(metric, 15, 26.0, 34.0));
+        standards.add(createStandard(metric, 16, 29.0, 37.0));
+        standards.add(createStandard(metric, 17, 32.0, 40.0));
+        standards.add(createStandard(metric, 18, 35.0, 44.0));
+        standards.add(createStandard(metric, 19, 38.0, 47.0));
+        standards.add(createStandard(metric, 20, 41.0, 50.0));
+        standards.add(createStandard(metric, 21, 44.0, 53.0));
+        standards.add(createStandard(metric, 22, 47.0, 56.0));
+        standards.add(createStandard(metric, 23, 50.0, 59.0));
+        standards.add(createStandard(metric, 24, 53.0, 62.0));
+        standards.add(createStandard(metric, 25, 56.0, 65.0));
+        standards.add(createStandard(metric, 26, 59.0, 68.0));
+        standards.add(createStandard(metric, 27, 62.0, 71.0));
+        standards.add(createStandard(metric, 28, 65.0, 74.0));
+        standards.add(createStandard(metric, 29, 68.0, 77.0));
+        standards.add(createStandard(metric, 30, 71.0, 80.0));
+        standards.add(createStandard(metric, 31, 74.0, 83.0));
+        standards.add(createStandard(metric, 32, 77.0, 86.0));
+        standards.add(createStandard(metric, 33, 80.0, 89.0));
+        standards.add(createStandard(metric, 34, 83.0, 92.0));
+        standards.add(createStandard(metric, 35, 86.0, 95.0));
+        standards.add(createStandard(metric, 36, 89.0, 98.0));
+        standards.add(createStandard(metric, 37, 92.0, 101.0));
+        standards.add(createStandard(metric, 38, 95.0, 104.0));
+        standards.add(createStandard(metric, 39, 98.0, 107.0));
+        standards.add(createStandard(metric, 40, 100.0, 110.0));
+
+        saveStandards(standards, metric);
+    }
+
+    private void createAndSaveCRLStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // CRL standards from JSON
+        standards.add(createStandard(metric, 5, 2.0, 5.0));
+        standards.add(createStandard(metric, 6, 4.0, 6.0));
+        standards.add(createStandard(metric, 7, 9.0, 14.0));
+        standards.add(createStandard(metric, 8, 16.0, 22.0));
+        standards.add(createStandard(metric, 9, 23.0, 31.0));
+        standards.add(createStandard(metric, 10, 31.0, 41.0));
+        standards.add(createStandard(metric, 11, 41.0, 52.0));
+        standards.add(createStandard(metric, 12, 52.0, 67.0));
+        standards.add(createStandard(metric, 13, 67.0, 80.0));
+        standards.add(createStandard(metric, 14, 80.0, 95.0));
+        standards.add(createStandard(metric, 15, 95.0, 110.0));
+        standards.add(createStandard(metric, 16, 110.0, 120.0));
+
+        saveStandards(standards, metric);
+    }
+
+    private void createAndSaveACStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // AC standards from JSON
+        standards.add(createStandard(metric, 16, 88.0, 116.0));
+        standards.add(createStandard(metric, 17, 93.0, 122.0));
+        standards.add(createStandard(metric, 18, 98.0, 128.0));
+        standards.add(createStandard(metric, 19, 104.0, 136.0));
+        standards.add(createStandard(metric, 20, 110.0, 144.0));
+        standards.add(createStandard(metric, 21, 116.0, 152.0));
+        standards.add(createStandard(metric, 22, 122.0, 160.0));
+        standards.add(createStandard(metric, 23, 128.0, 168.0));
+        standards.add(createStandard(metric, 24, 134.0, 176.0));
+        standards.add(createStandard(metric, 25, 140.0, 184.0));
+        standards.add(createStandard(metric, 26, 146.0, 192.0));
+        standards.add(createStandard(metric, 27, 152.0, 200.0));
+        standards.add(createStandard(metric, 28, 158.0, 208.0));
+        standards.add(createStandard(metric, 29, 164.0, 216.0));
+        standards.add(createStandard(metric, 30, 170.0, 224.0));
+        standards.add(createStandard(metric, 31, 176.0, 232.0));
+        standards.add(createStandard(metric, 32, 182.0, 240.0));
+        standards.add(createStandard(metric, 33, 188.0, 248.0));
+        standards.add(createStandard(metric, 34, 194.0, 256.0));
+        standards.add(createStandard(metric, 35, 200.0, 264.0));
+        standards.add(createStandard(metric, 36, 206.0, 272.0));
+        standards.add(createStandard(metric, 37, 212.0, 280.0));
+        standards.add(createStandard(metric, 38, 218.0, 288.0));
+        standards.add(createStandard(metric, 39, 224.0, 296.0));
+        standards.add(createStandard(metric, 40, 230.0, 304.0));
+
+        saveStandards(standards, metric);
+    }
+
+    private void createAndSaveFHRStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // Fetal Heart Rate standards from JSON
+        standards.add(createStandard(metric, 6, 90.0, 110.0));
+        standards.add(createStandard(metric, 7, 110.0, 130.0));
+        standards.add(createStandard(metric, 8, 120.0, 150.0));
+        standards.add(createStandard(metric, 9, 120.0, 160.0));
+        standards.add(createStandard(metric, 10, 130.0, 170.0));
+
+        // Weeks 11-27 have the same range
+        for (int week = 11; week <= 27; week++) {
+            standards.add(createStandard(metric, week, 140.0, 170.0));
+        }
+
+        // Weeks 28-35 have the same range
+        for (int week = 28; week <= 35; week++) {
+            standards.add(createStandard(metric, week, 120.0, 160.0));
+        }
+
+        // Weeks 36-40 have the same range
+        for (int week = 36; week <= 40; week++) {
+            standards.add(createStandard(metric, week, 110.0, 160.0));
+        }
+
+        saveStandards(standards, metric);
+    }
+
+    private void createAndSaveWeightStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // Weight standards from JSON
+        standards.add(createStandard(metric, 12, 10.0, 20.0));
+        standards.add(createStandard(metric, 13, 23.0, 30.0));
+        standards.add(createStandard(metric, 14, 40.0, 45.0));
+        standards.add(createStandard(metric, 15, 70.0, 75.0));
+        standards.add(createStandard(metric, 16, 100.0, 110.0));
+        standards.add(createStandard(metric, 17, 140.0, 150.0));
+        standards.add(createStandard(metric, 18, 190.0, 210.0));
+        standards.add(createStandard(metric, 19, 240.0, 270.0));
+        standards.add(createStandard(metric, 20, 290.0, 320.0));
+        standards.add(createStandard(metric, 21, 350.0, 380.0));
+        standards.add(createStandard(metric, 22, 430.0, 460.0));
+        standards.add(createStandard(metric, 23, 500.0, 550.0));
+        standards.add(createStandard(metric, 24, 600.0, 650.0));
+        standards.add(createStandard(metric, 25, 700.0, 750.0));
+        standards.add(createStandard(metric, 26, 800.0, 850.0));
+        standards.add(createStandard(metric, 27, 900.0, 1000.0));
+        standards.add(createStandard(metric, 28, 1000.0, 1100.0));
+        standards.add(createStandard(metric, 29, 1150.0, 1250.0));
+        standards.add(createStandard(metric, 30, 1300.0, 1400.0));
+        standards.add(createStandard(metric, 31, 1500.0, 1600.0));
+        standards.add(createStandard(metric, 32, 1700.0, 1800.0));
+        standards.add(createStandard(metric, 33, 1900.0, 2000.0));
+        standards.add(createStandard(metric, 34, 2100.0, 2200.0));
+        standards.add(createStandard(metric, 35, 2300.0, 2400.0));
+        standards.add(createStandard(metric, 36, 2600.0, 2800.0));
+        standards.add(createStandard(metric, 37, 2800.0, 3000.0));
+        standards.add(createStandard(metric, 38, 3000.0, 3200.0));
+        standards.add(createStandard(metric, 39, 3200.0, 3400.0));
+        standards.add(createStandard(metric, 40, 3400.0, 3600.0));
+
+        saveStandards(standards, metric);
+    }
+    private void createAndSaveFLStandards(Metric metric) {
+        List<Standard> standards = new ArrayList<>();
+
+        // FL (Femur Length) standards from JSON
+        standards.add(createStandard(metric, 13, 7.0, 9.0));
+        standards.add(createStandard(metric, 14, 10.0, 14.0));
+        standards.add(createStandard(metric, 15, 12.0, 17.0));
+        standards.add(createStandard(metric, 16, 15.0, 20.0));
+        standards.add(createStandard(metric, 17, 17.0, 23.0));
+        standards.add(createStandard(metric, 18, 20.0, 26.0));
+        standards.add(createStandard(metric, 19, 23.0, 30.0));
+        standards.add(createStandard(metric, 20, 26.0, 34.0));
+        standards.add(createStandard(metric, 21, 29.0, 37.0));
+        standards.add(createStandard(metric, 22, 32.0, 40.0));
+        standards.add(createStandard(metric, 23, 35.0, 44.0));
+        standards.add(createStandard(metric, 24, 38.0, 47.0));
+        standards.add(createStandard(metric, 25, 41.0, 50.0));
+        standards.add(createStandard(metric, 26, 44.0, 53.0));
+        standards.add(createStandard(metric, 27, 47.0, 56.0));
+        standards.add(createStandard(metric, 28, 50.0, 59.0));
+        standards.add(createStandard(metric, 29, 53.0, 62.0));
+        standards.add(createStandard(metric, 30, 56.0, 65.0));
+        standards.add(createStandard(metric, 31, 59.0, 68.0));
+        standards.add(createStandard(metric, 32, 62.0, 71.0));
+        standards.add(createStandard(metric, 33, 65.0, 74.0));
+        standards.add(createStandard(metric, 34, 68.0, 77.0));
+        standards.add(createStandard(metric, 35, 71.0, 80.0));
+        standards.add(createStandard(metric, 36, 74.0, 83.0));
+        standards.add(createStandard(metric, 37, 77.0, 86.0));
+        standards.add(createStandard(metric, 38, 80.0, 89.0));
+        standards.add(createStandard(metric, 39, 83.0, 92.0));
+        standards.add(createStandard(metric, 40, 86.0, 95.0));
+
+        saveStandards(standards, metric);
+    }
+
+    private void saveStandards(List<Standard> standards, Metric metric) {
+        for (Standard standard : standards) {
+            standardService.save(standard);
+        }
+
+        if (metric.getStandards() == null) {
+            metric.setStandards(new ArrayList<>());
+        }
+        metric.getStandards().addAll(standards);
+        metricService.save(metric);
+    }
 
 }

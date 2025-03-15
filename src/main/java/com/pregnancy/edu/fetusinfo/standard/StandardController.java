@@ -6,9 +6,16 @@ import com.pregnancy.edu.fetusinfo.standard.converter.StandardToStandardDtoConve
 import com.pregnancy.edu.fetusinfo.standard.dto.StandardDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,11 +36,34 @@ public class StandardController {
         this.toStandardConverter = toStandardConverter;
     }
 
+    @Operation(
+            summary = "Get all standards",
+            description = "Retrieves a paginated list of standards, with optional filtering by week"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Standards retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Result.class)))
+    })
     @GetMapping
-    public Result getAllStandards(Pageable pageable) {
-        Page<Standard> standardPage = standardService.findAll(pageable);
+    public Result getAllStandards(
+            @Parameter(description = "Optional parameter to filter standards by specific week")
+            @RequestParam(required = false) Integer week,
+            @Parameter(description = "Page number (zero-based)")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Page size")
+            @RequestParam(required = false, defaultValue = "20") int size,
+            @Parameter(description = "Sort field and direction (e.g. week,asc)")
+            @RequestParam(required = false) String sort,
+            @Parameter(hidden = true) Pageable pageable) {
+        Page<Standard> standardPage;
+        if (week == null) {
+            standardPage = standardService.findAll(pageable);
+        } else {
+            standardPage = standardService.findAllByWeek(week, pageable);
+        }
         Page<StandardDto> standardDtoPage = standardPage.map(this.toStandardDtoConverter::convert);
-        return new Result(true, StatusCode.SUCCESS, "Find All Success", standardDtoPage);
+        return new Result(true, StatusCode.SUCCESS, "Find Success", standardDtoPage);
     }
 
     @GetMapping("/{standardId}")
@@ -48,13 +78,6 @@ public class StandardController {
         Page<Standard> standardPage = standardService.findAllByMetricId(metricId, pageable);
         Page<StandardDto> standardDtoPage = standardPage.map(this.toStandardDtoConverter::convert);
         return new Result(true, StatusCode.SUCCESS, "Find By Metric Success", standardDtoPage);
-    }
-
-    @GetMapping("/week/{week}")
-    public Result getStandardsByWeek(@PathVariable Integer week, Pageable pageable) {
-        Page<Standard> standardPage = standardService.findAllByWeek(week, pageable);
-        Page<StandardDto> standardDtoPage = standardPage.map(this.toStandardDtoConverter::convert);
-        return new Result(true, StatusCode.SUCCESS, "Find By Week Success", standardDtoPage);
     }
 
     @PostMapping

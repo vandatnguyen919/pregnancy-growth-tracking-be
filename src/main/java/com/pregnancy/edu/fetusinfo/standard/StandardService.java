@@ -67,7 +67,7 @@ public class StandardService implements BaseCrudService<Standard, Long> {
         this.standardRepository.deleteById(standardId);
     }
 
-    public Standard findByMetricAndWeek(Long metricId, Integer week) {
+    public Standard findByMetricIdAndWeek(Long metricId, Integer week) {
         return standardRepository.findByMetricIdAndWeek(metricId, week);
     }
 

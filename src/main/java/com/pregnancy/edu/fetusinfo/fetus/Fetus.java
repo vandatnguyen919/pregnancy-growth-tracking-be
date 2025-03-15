@@ -39,4 +39,8 @@ public class Fetus {
 
     @OneToMany(mappedBy = "fetus", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<FetusMetric> fetusMetrics = new ArrayList<>();
+
+    public int getCurrentWeek() {
+        return pregnancy.getCurrentWeek();
+    }
 }

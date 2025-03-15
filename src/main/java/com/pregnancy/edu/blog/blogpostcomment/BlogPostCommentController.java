@@ -5,11 +5,13 @@ import com.pregnancy.edu.blog.blogpostcomment.converter.CommentToCommentDtoConve
 import com.pregnancy.edu.blog.blogpostcomment.dto.CommentDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Hidden
 @RestController
 @RequestMapping("/api/v1/blog-comments")
 public class BlogPostCommentController {

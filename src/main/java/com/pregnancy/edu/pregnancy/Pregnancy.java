@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,12 @@ public class Pregnancy {
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "pregnancy")
     private List<Fetus> fetuses = new ArrayList<>();
+
+    public int getCurrentWeek() {
+        LocalDate today = LocalDate.now();
+        long daysBetween = ChronoUnit.DAYS.between(pregnancyStartDate, today);
+        return (int) (daysBetween / 7) + 1; // Add 1 because first week is week 1, not 0
+    }
 
     public void addFetus(Fetus fetus) {
         fetuses.add(fetus);

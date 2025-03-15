@@ -1,4 +1,4 @@
-package com.pregnancy.edu.system.utils;
+package com.pregnancy.edu.system.utils.generators;
 
 import com.pregnancy.edu.blog.tag.Tag;
 

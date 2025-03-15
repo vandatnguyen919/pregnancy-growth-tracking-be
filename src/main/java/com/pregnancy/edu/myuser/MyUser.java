@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -70,27 +71,24 @@ public class MyUser {
     private String role;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Reminder> reminders;
+    private List<Reminder> reminders = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<BlogPost> blogPosts;
+    private List<BlogPost> blogPosts = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<BlogPostComment> blogPostComments;
+    private List<BlogPostComment> blogPostComments = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<BlogPostLike> blogPostLikes;
+    private List<BlogPostLike> blogPostLikes = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Pregnancy> pregnancies;
-
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Standard standard;
+    private List<Pregnancy> pregnancies = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<Fetus> fetuses;
+    private List<Fetus> fetuses = new ArrayList<>();
 }
 

@@ -1,24 +1,19 @@
-package com.pregnancy.edu.system.utils;
+package com.pregnancy.edu.system.utils.generators;
 
+import com.pregnancy.edu.fetusinfo.fetus.Fetus;
+import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
+import com.pregnancy.edu.fetusinfo.metric.Metric;
+import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.system.common.BloodType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class MyUserGenerator {
-
-
-    public static void main(String[] args) {
-        List<MyUser> users = generateRandomUsers(10);
-        
-        // Print users
-        for (MyUser user : users) {
-            System.out.println(user);
-        }
-    }
 
     public static MyUser createJohn() {
         MyUser u1 = new MyUser();
@@ -103,11 +98,11 @@ public class MyUserGenerator {
         Random random = new Random();
         
         String[] domains = {"gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "company.com"};
-        String[] firstNames = {"John", "Sarah", "Michael", "Emma", "David", "Sophia", "James", "Olivia", "Daniel", "Ava"};
+        String[] firstNames = {"Emma", "Sarah", "Sophia", "Olivia", "Ava", "Lily", "Zoe", "Isabella", "Charlotte", "Mia"};
         String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"};
         String[] nationalities = {"American", "British", "Canadian", "Australian", "French", "German", "Spanish", "Italian", "Japanese", "Chinese"};
         String[] symptoms = {"Headache", "Fever", "Nausea", "Fatigue", "Cough", "Dizziness", "None", "Chest pain", "Shortness of breath", "Muscle ache"};
-        String[] roles = {"admin", "user", "member"};
+        String[] roles = {"user", "member"};
         
         for (int i = 0; i < count; i++) {
             MyUser user = new MyUser();
@@ -122,14 +117,17 @@ public class MyUserGenerator {
             user.setFullName(firstName + " " + lastName);
             
             // Generate date of birth (18-80 years ago)
-            LocalDateTime now = LocalDateTime.now();
-            int years = random.nextInt(62) + 18; // 18-80 years
+            LocalDate now = LocalDate.now();
+            int years = random.nextInt(22) + 18; // 18-40 years
             int months = random.nextInt(12);
             int days = random.nextInt(28); // Simplified for safety
-            user.setDateOfBirth(now.minusYears(years).minusMonths(months).minusDays(days));
+            user.setDateOfBirth(now.minusYears(years).minusMonths(months).minusDays(days).atStartOfDay());
             
-            user.setAvatarUrl("https://storage.vivago.ai/image/j_da373917-4d47-4807-97d7-4ffc45c0ced4.jpg?width=512");
-            user.setGender(random.nextBoolean());
+            user.setAvatarUrl("https://s3.envato.com/files/437230449/63f8b7060d73aa1e07faf27f_withmeta.jpg");
+
+            // Make 95% of users female (gender=false)
+            // true=male (5%), false=female (95%)
+            user.setGender(random.nextDouble() >= 0.95);
             user.setBloodType(BloodType.values()[random.nextInt(BloodType.values().length)]);
             user.setSymptoms(symptoms[random.nextInt(symptoms.length)]);
             user.setNationality(nationalities[random.nextInt(nationalities.length)]);
@@ -138,18 +136,27 @@ public class MyUserGenerator {
             user.setEnabled(random.nextDouble() > 0.2); // 80% likely to be enabled
             
             user.setRole(roles[random.nextInt(roles.length)]);
-            
+
             users.add(user);
         }
         
         return users;
     }
-    
+
     private static String generatePhoneNumber(Random random) {
         StringBuilder phoneNumber = new StringBuilder("+1");
         for (int i = 0; i < 10; i++) {
             phoneNumber.append(random.nextInt(10));
         }
         return phoneNumber.toString();
+    }
+
+    public static void main(String[] args) {
+        List<MyUser> users = generateRandomUsers(10);
+
+        // Print users
+        for (MyUser user : users) {
+            System.out.println(user);
+        }
     }
 }

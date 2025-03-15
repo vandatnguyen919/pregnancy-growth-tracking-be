@@ -11,6 +11,5 @@ public interface StandardRepository extends JpaRepository<Standard, Long> {
 
     Page<Standard> findAllByWeek(Integer week, Pageable pageable);
 
-    @Query("SELECT s FROM Standard s WHERE s.metric.id = :metricId AND s.week = :week")
-    Standard findByMetricIdAndWeek(@Param("metricId") Long metricId, @Param("week") Integer week);
+    Standard findByMetricIdAndWeek(Long metricId, Integer week);
 }

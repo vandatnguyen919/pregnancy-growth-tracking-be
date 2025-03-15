@@ -1,4 +1,4 @@
-package com.pregnancy.edu.system.utils;
+package com.pregnancy.edu.system.utils.generators;
 
 import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.tag.Tag;
@@ -10,30 +10,6 @@ import java.util.List;
 import java.util.Random;
 
 public class BlogPostGenerator {
-
-    public static void main(String[] args) {
-        // Create some users for association with blog posts
-        List<MyUser> users = MyUserGenerator.generateRandomUsers(10);
-        
-        // Create some tags for association with blog posts
-        List<Tag> tags = TagGenerator.generateSampleTags();
-        
-        // Generate 15 sample blog posts
-        List<BlogPost> blogPosts = generateSampleBlogPosts(users, tags);
-        
-        // Print the blog posts
-        for (BlogPost post : blogPosts) {
-            System.out.println("Blog Post ID: " + post.getId());
-            System.out.println("Heading: " + post.getHeading());
-            System.out.println("Author: " + post.getUser().getFullName());
-            System.out.println("Short Description: " + post.getShortDescription());
-            System.out.println("Tags: " + post.getTags().stream().map(Tag::getName).toList());
-            System.out.println("Published: " + post.getPublishedDate());
-            System.out.println("Visible: " + post.isVisible());
-            System.out.println("URL: " + post.getUrlHandle());
-            System.out.println("--------------------------------------");
-        }
-    }
     
     public static List<BlogPost> generateSampleBlogPosts(List<MyUser> users, List<Tag> tags) {
         List<BlogPost> blogPosts = new ArrayList<>();
@@ -154,5 +130,29 @@ public class BlogPostGenerator {
         }
         
         return blogPosts;
+    }
+
+    public static void main(String[] args) {
+        // Create some users for association with blog posts
+        List<MyUser> users = MyUserGenerator.generateRandomUsers(10);
+
+        // Create some tags for association with blog posts
+        List<Tag> tags = TagGenerator.generateSampleTags();
+
+        // Generate 15 sample blog posts
+        List<BlogPost> blogPosts = generateSampleBlogPosts(users, tags);
+
+        // Print the blog posts
+        for (BlogPost post : blogPosts) {
+            System.out.println("Blog Post ID: " + post.getId());
+            System.out.println("Heading: " + post.getHeading());
+            System.out.println("Author: " + post.getUser().getFullName());
+            System.out.println("Short Description: " + post.getShortDescription());
+            System.out.println("Tags: " + post.getTags().stream().map(Tag::getName).toList());
+            System.out.println("Published: " + post.getPublishedDate());
+            System.out.println("Visible: " + post.isVisible());
+            System.out.println("URL: " + post.getUrlHandle());
+            System.out.println("--------------------------------------");
+        }
     }
 }

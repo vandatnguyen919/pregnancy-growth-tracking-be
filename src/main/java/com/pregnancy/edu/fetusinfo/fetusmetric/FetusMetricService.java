@@ -41,6 +41,10 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
         return this.fetusMetricRepository.findAllByFetusId(fetusId, pageable);
     }
 
+    public List<FetusMetric> findByFetusIdAndWeek(Long fetusId, int week) {
+        return fetusMetricRepository.findByFetusIdAndWeek(fetusId, week);
+    }
+
     @Override
     public FetusMetric findById(Long fetusMetricId) {
         return this.fetusMetricRepository.findById(fetusMetricId)

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FetusMetricRepository extends JpaRepository<FetusMetric, Long> {
     Page<FetusMetric> findAllByFetusId(Long fetusId, Pageable pageable);
@@ -20,4 +21,8 @@ public interface FetusMetricRepository extends JpaRepository<FetusMetric, Long> 
             @Param("week") Integer week);
 
     List<FetusMetric> findByFetusIdAndWeek(Long fetusId, Integer week);
+
+    List<FetusMetric> findByFetusIdAndMetricId(Long fetusId, Long metricId);
+
+    Optional<FetusMetric> findByFetusIdAndMetricIdAndWeek(Long fetusId, Long metricId, Integer week);
 }

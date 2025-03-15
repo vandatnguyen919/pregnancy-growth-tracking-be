@@ -68,7 +68,9 @@ public class StandardService implements BaseCrudService<Standard, Long> {
     }
 
     public Standard findByMetricIdAndWeek(Long metricId, Integer week) {
-        return standardRepository.findByMetricIdAndWeek(metricId, week);
+        return standardRepository.findByMetricIdAndWeek(metricId, week).orElseThrow(
+                () -> new ObjectNotFoundException("standard", "metricId: " + metricId + ", week: " + week)
+        );
     }
 
 }

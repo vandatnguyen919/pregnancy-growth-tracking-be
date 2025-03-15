@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface StandardRepository extends JpaRepository<Standard, Long> {
     Page<Standard> findAllByMetricId(Long metricId, Pageable pageable);
 
     Page<Standard> findAllByWeek(Integer week, Pageable pageable);
 
-    Standard findByMetricIdAndWeek(Long metricId, Integer week);
+    Optional<Standard> findByMetricIdAndWeek(Long metricId, Integer week);
 }

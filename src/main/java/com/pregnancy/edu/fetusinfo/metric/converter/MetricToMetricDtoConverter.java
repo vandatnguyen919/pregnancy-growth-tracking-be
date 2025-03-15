@@ -6,12 +6,13 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DtoToMetricConverter implements Converter<MetricDto, Metric> {
+public class MetricToMetricDtoConverter implements Converter<Metric, MetricDto> {
     @Override
-    public Metric convert(MetricDto source) {
-        Metric metric = new Metric();
-        metric.setName(source.name());
-        metric.setUnit(source.unit());
-        return metric;
+    public MetricDto convert(Metric source) {
+        return new MetricDto(
+                source.getId(),
+                source.getName(),
+                source.getUnit()
+        );
     }
 }

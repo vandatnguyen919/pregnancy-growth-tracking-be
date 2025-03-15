@@ -45,6 +45,16 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
         return fetusMetricRepository.findByFetusIdAndWeek(fetusId, week);
     }
 
+    public List<FetusMetric> findByFetusIdAndMetricId(Long fetusId, Long metricId) {
+        return fetusMetricRepository.findByFetusIdAndMetricId(fetusId, metricId);
+    }
+
+    public FetusMetric findByFetusIdAndMetricIdAndWeek(Long fetusId, Long metricId, int week) {
+        return fetusMetricRepository.findByFetusIdAndMetricIdAndWeek(fetusId, metricId, week).orElseThrow(
+                () -> new ObjectNotFoundException("FetusMetric", ", fetusId: " + fetusId + ", metricId: " + metricId + ", week: " + week)
+        );
+    }
+
     @Override
     public FetusMetric findById(Long fetusMetricId) {
         return this.fetusMetricRepository.findById(fetusMetricId)

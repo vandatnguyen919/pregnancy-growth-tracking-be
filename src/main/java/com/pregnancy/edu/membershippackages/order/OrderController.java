@@ -1,5 +1,6 @@
 package com.pregnancy.edu.membershippackages.order;
 
+import com.pregnancy.edu.membershippackages.membership.MembershipPlanService;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderDtoConverter;
 import com.pregnancy.edu.membershippackages.order.converter.OrderToOrderPaymentResponseConverter;
 import com.pregnancy.edu.membershippackages.order.dto.CreateOrderRequest;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -35,17 +37,19 @@ public class OrderController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
     private final OrderToOrderDtoConverter orderToOrderDtoConverter;
+    private final MembershipPlanService membershipPlanService;
 
     public OrderController(
             OrderService orderService,
             OrderToOrderPaymentResponseConverter orderToOrderPaymentResponseConverter,
             UserService userService,
-            JwtProvider jwtProvider, OrderToOrderDtoConverter orderToOrderDtoConverter) {
+            JwtProvider jwtProvider, OrderToOrderDtoConverter orderToOrderDtoConverter, MembershipPlanService membershipPlanService) {
         this.orderService = orderService;
         this.orderToOrderPaymentResponseConverter = orderToOrderPaymentResponseConverter;
         this.userService = userService;
         this.jwtProvider = jwtProvider;
         this.orderToOrderDtoConverter = orderToOrderDtoConverter;
+        this.membershipPlanService = membershipPlanService;
     }
 
     @GetMapping("/orders")
@@ -64,15 +68,30 @@ public class OrderController {
     public Result findOrderByUserId(
             JwtAuthenticationToken jwtAuthenticationToken,
             Pageable pageable,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
-
         Page<Order> orderPage = orderService.findAllByUserIdAndDateRange(userId, pageable, startDate, endDate);
         Page<OrderDto> orderDtoPage = orderPage.map(orderToOrderDtoConverter::convert);
         return new Result(true, StatusCode.SUCCESS, "Find Orders Success", orderDtoPage);
+    }
+
+    @GetMapping("/orders/latest")
+    public Result findLatestOrder(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+        Optional<Order> latestOrder = orderService.findLatestOrderByUserId(userId);
+        if (latestOrder.isPresent()) {
+            int duration = membershipPlanService.findById(latestOrder.get().getMembershipPlan().getId()).durationMonths();
+            OrderDto orderDto = orderToOrderDtoConverter.convert(latestOrder.get());
+            return new Result(true, StatusCode.SUCCESS, "Find Latest Order Success", Map.of("order", orderDto, "duration months", duration));
+        } else {
+            return new Result(true, StatusCode.SUCCESS, "No Orders Found", null);
+        }
     }
 
     @PostMapping("/payment/order")
@@ -83,6 +102,10 @@ public class OrderController {
         request.setUserId(userId);
 
         Map<String, Object> orderResult = orderService.processOrder(request);
+
+        if (orderResult.containsKey("success") && !(Boolean)orderResult.get("success")) {
+            return new Result(false, StatusCode.INVALID_ARGUMENT, (String)orderResult.get("message"), null);
+        }
 
         Order initialOrder = (Order) orderResult.get("order");
         String paymentUrl = (String) orderResult.get("paymentUrl");

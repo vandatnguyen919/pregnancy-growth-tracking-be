@@ -20,7 +20,7 @@ public class OrderToOrderPaymentResponseConverter implements Converter<Order, Or
                 source.getTransactionId(),
                 formatDateTimeToString(source.getTransactionDate()),
                 source.getMembershipPlan() != null ? source.getMembershipPlan().getName() : null,
-                "PENDING",
+                source.getStatus(),
                 source.getUser() != null ? source.getUser().getId() : null
         );
     }

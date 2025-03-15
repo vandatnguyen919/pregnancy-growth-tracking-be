@@ -3,14 +3,12 @@ package com.pregnancy.edu.membershippackages.order;
 import com.pregnancy.edu.client.payment.PaymentClient;
 import com.pregnancy.edu.client.payment.dto.PaymentCreationResponse;
 import com.pregnancy.edu.client.payment.dto.PaymentQueryResponse;
-import com.pregnancy.edu.client.payment.utils.VNPayUtils;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlan;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlanRepository;
 import com.pregnancy.edu.membershippackages.order.dto.CreateOrderRequest;
 import com.pregnancy.edu.membershippackages.order.exception.UnauthorizedException;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.myuser.UserRepository;
-import com.pregnancy.edu.system.common.PaymentProvider;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,9 +52,21 @@ public class OrderService {
          return orderRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(pageable, startDate, endDate);
      }
 
-     public Page<Order> findAllByUserIdAndDateRange(Long userId, Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
-         return orderRepository.findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(userId, pageable, startDate, endDate);
-     }
+    public Page<Order> findAllByUserIdAndDateRange(Long userId, Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null && endDate == null) {
+            // Both dates are null, get all orders for the user
+            return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+        } else if (startDate == null) {
+            // Only startDate is null, get orders before endDate
+            return orderRepository.findByUserIdAndCreatedAtBeforeOrderByCreatedAtDesc(userId, endDate, pageable);
+        } else if (endDate == null) {
+            // Only endDate is null, get orders after startDate
+            return orderRepository.findByUserIdAndCreatedAtAfterOrderByCreatedAtDesc(userId, startDate, pageable);
+        } else {
+            // Both dates provided, use between query
+            return orderRepository.findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(userId, pageable, startDate, endDate);
+        }
+    }
 
      /**
       * Process order creation including payment initialization
@@ -168,7 +177,7 @@ public class OrderService {
          order.setProvider(provider);
          order.setCurrency("VND");
          order.setCreatedAt(LocalDateTime.now());
-         order.setStatus("COMPLETED"); // payment with localhost
+         order.setStatus("PENDING");
 
          return orderRepository.save(order);
      }

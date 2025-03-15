@@ -37,15 +37,15 @@ public class DashboardService {
         this.metricToMetricDtoConverter = metricToMetricDtoConverter;
     }
 
-    public RadarDataDto getRadarData(Long fetusId, Integer week) {
-        assert fetusService.findById(fetusId) != null;
+    public RadarChartDto getRadarData(Long fetusId, Integer week) {
+        fetusService.findById(fetusId);
 
         List<FetusMetric> fetusMetrics = fetusMetricService.findByFetusIdAndWeek(fetusId, week);
         if (fetusMetrics.size() < 3) {
             throw new IllegalArgumentException("Fetus metrics are not enough to generate radar data");
         }
         double max = Double.MIN_VALUE;
-        List<RadarDataItem> data = new ArrayList<>();
+        List<ChartDataItem> data = new ArrayList<>();
         for (FetusMetric fetusMetric : fetusMetrics) {
             Metric metric = fetusMetric.getMetric();
             Standard standard = standardService.findByMetricIdAndWeek(metric.getId(), fetusMetric.getWeek());
@@ -57,19 +57,21 @@ public class DashboardService {
             double roundedMin = MathUtils.round(2, standard.getMin());
 
             String name = metric.getName() + " (" + metric.getUnit() + ")";
-            data.add(new RadarDataItem(name, MAX, roundedMax));
-            data.add(new RadarDataItem(name, VALUE, roundedCurrent));
-            data.add(new RadarDataItem(name, MIN, roundedMin));
+            data.add(new ChartDataItem(MAX, name, roundedMax));
+            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
+            data.add(new ChartDataItem(MIN, name, roundedMin));
         }
         // Round the final max value as well
         double roundedMax = MathUtils.round(2, max);
-        return new RadarDataDto(roundedMax, data);
+        return new RadarChartDto(roundedMax, data);
     }
 
-    public BarDataDto getBarData(Long fetusId, Integer week) {
+    public ChartDto getBarData(Long fetusId, Integer week) {
+        fetusService.findById(fetusId);
+
         List<FetusMetric> fetusMetrics = fetusMetricService.findByFetusIdAndWeek(fetusId, week);
 
-        List<BarDataItem> data = new ArrayList<>();
+        List<ChartDataItem> data = new ArrayList<>();
         for (FetusMetric fetusMetric : fetusMetrics) {
             Metric metric = fetusMetric.getMetric();
             Standard standard = standardService.findByMetricIdAndWeek(metric.getId(), fetusMetric.getWeek());
@@ -80,41 +82,40 @@ public class DashboardService {
             double roundedMin = MathUtils.round(2, standard.getMin());
 
             String name = metric.getName() + " (" + metric.getUnit() + ")";
-            data.add(new BarDataItem(name, MAX, roundedMax));
-            data.add(new BarDataItem(name, VALUE, roundedCurrent));
-            data.add(new BarDataItem(name, MIN, roundedMin));
+            data.add(new ChartDataItem(MAX, name, roundedMax));
+            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
+            data.add(new ChartDataItem(MIN, name, roundedMin));
         }
-        return new BarDataDto(data);
+        return new ChartDto(data);
     }
 
-    public ColumnDataDto getColumnData(Long fetusId, Long metricId, Integer week) {
-        assert fetusService.findById(fetusId) != null;
+    public SingleMetricChartDto getColumnData(Long fetusId, Long metricId, Integer week) {
+        fetusService.findById(fetusId);
         Metric metric = metricService.findById(metricId);
 
-        List<ColumnDataItem> data = new ArrayList<>();
+        List<ChartDataItem> data = new ArrayList<>();
 
         FetusMetric fetusMetric = fetusMetricService.findByFetusIdAndMetricIdAndWeek(fetusId, metricId, week);
         Standard standard = standardService.findByMetricIdAndWeek(metricId, week);
-
-        String name = "Week " + week;
 
         // Round the values to 2 decimal places
         double roundedMax = MathUtils.round(2, standard.getMax());
         double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
         double roundedMin = MathUtils.round(2, standard.getMin());
 
-        data.add(new ColumnDataItem(name, MAX, roundedMax));
-        data.add(new ColumnDataItem(name, VALUE, roundedCurrent));
-        data.add(new ColumnDataItem(name, MIN, roundedMin));
+        String name = "Week " + week;
+        data.add(new ChartDataItem(MAX, name, roundedMax));
+        data.add(new ChartDataItem(VALUE, name, roundedCurrent));
+        data.add(new ChartDataItem(MIN, name, roundedMin));
 
-        return new ColumnDataDto(metricToMetricDtoConverter.convert(metric), data);
+        return new SingleMetricChartDto(metricToMetricDtoConverter.convert(metric), data);
     }
 
-    public LineDataDto getLineData(Long fetusId, Long metricId) {
-        assert fetusService.findById(fetusId) != null;
+    public SingleMetricChartDto getLineData(Long fetusId, Long metricId) {
+        fetusService.findById(fetusId);
         Metric metric = metricService.findById(metricId);
 
-        List<LineDataItem> data = new ArrayList<>();
+        List<ChartDataItem> data = new ArrayList<>();
         List<FetusMetric> fetusMetrics = fetusMetricService.findByFetusIdAndMetricId(fetusId, metricId);
         for (FetusMetric fetusMetric : fetusMetrics) {
             int week = fetusMetric.getWeek();
@@ -125,11 +126,11 @@ public class DashboardService {
             double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
             double roundedMin = MathUtils.round(2, standard.getMin());
 
-            String date = "Week " + week;
-            data.add(new LineDataItem(date, MAX, roundedMax));
-            data.add(new LineDataItem(date, VALUE, roundedCurrent));
-            data.add(new LineDataItem(date, MIN, roundedMin));
+            String name = "Week " + week;
+            data.add(new ChartDataItem(MAX, name, roundedMax));
+            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
+            data.add(new ChartDataItem(MIN, name, roundedMin));
         }
-        return new LineDataDto(metricToMetricDtoConverter.convert(metric), data);
+        return new SingleMetricChartDto(metricToMetricDtoConverter.convert(metric), data);
     }
 }

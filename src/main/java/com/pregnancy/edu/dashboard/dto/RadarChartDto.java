@@ -2,8 +2,8 @@ package com.pregnancy.edu.dashboard.dto;
 
 import java.util.List;
 
-public record RadarDataDto(
+public record RadarChartDto(
         Double max,
-        List<RadarDataItem> data
+        List<ChartDataItem> data
 ) {
 }

@@ -16,8 +16,11 @@ public class Reminder {
     private Long reminderId;
 
     private String reminderType;
+
     private String description;
+
     private LocalDateTime reminderDate;
+
     private String status;
 
     @ManyToOne

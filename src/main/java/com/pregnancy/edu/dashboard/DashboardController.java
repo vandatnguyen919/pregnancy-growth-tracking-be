@@ -1,12 +1,10 @@
 package com.pregnancy.edu.dashboard;
 
-import com.pregnancy.edu.dashboard.dto.BarDataDto;
-import com.pregnancy.edu.dashboard.dto.ColumnDataDto;
-import com.pregnancy.edu.dashboard.dto.LineDataDto;
-import com.pregnancy.edu.dashboard.dto.RadarDataDto;
+import com.pregnancy.edu.dashboard.dto.ChartDto;
+import com.pregnancy.edu.dashboard.dto.RadarChartDto;
+import com.pregnancy.edu.dashboard.dto.SingleMetricChartDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +13,8 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService
+                                       dashboardService) {
         this.dashboardService = dashboardService;
     }
 
@@ -24,8 +23,17 @@ public class DashboardController {
             @RequestParam Long fetusId,
             @RequestParam Integer week
     ) {
-        RadarDataDto radarDataDto = dashboardService.getRadarData(fetusId, week);
-        return new Result(true, StatusCode.SUCCESS, "Find Radar Data Success", radarDataDto);
+        RadarChartDto radarChartDto = dashboardService.getRadarData(fetusId, week);
+        return new Result(true, StatusCode.SUCCESS, "Find Radar Data Success", radarChartDto);
+    }
+
+    @GetMapping("/bar")
+    public Result getBarData(
+            @RequestParam Long fetusId,
+            @RequestParam Integer week
+    ) {
+        ChartDto barChartData = dashboardService.getBarData(fetusId, week);
+        return new Result(true, StatusCode.SUCCESS, "Find Bar Data Success", barChartData);
     }
 
     @GetMapping("/column")
@@ -34,18 +42,8 @@ public class DashboardController {
             @RequestParam Long metricId,
             @RequestParam Integer week
     ) {
-        ColumnDataDto columnDataDto = dashboardService.getColumnData(fetusId, metricId, week);
-        return new Result(true, StatusCode.SUCCESS, "Find Column Data Success", columnDataDto);
-    }
-
-
-    @GetMapping("/bar")
-    public Result getBarData(
-            @RequestParam Long fetusId,
-            @RequestParam Integer week
-    ) {
-        BarDataDto barDataDto = dashboardService.getBarData(fetusId, week);
-        return new Result(true, StatusCode.SUCCESS, "Find Bar Data Success", barDataDto);
+        SingleMetricChartDto columnChartData = dashboardService.getColumnData(fetusId, metricId, week);
+        return new Result(true, StatusCode.SUCCESS, "Find Column Data Success", columnChartData);
     }
 
     @GetMapping("/line")
@@ -53,7 +51,7 @@ public class DashboardController {
             @RequestParam Long fetusId,
             @RequestParam Long metricId
     ) {
-        LineDataDto lineDataDto = dashboardService.getLineData(fetusId, metricId);
-        return new Result(true, StatusCode.SUCCESS, "Find Line Data Success", lineDataDto);
+        SingleMetricChartDto lineChartData = dashboardService.getLineData(fetusId, metricId);
+        return new Result(true, StatusCode.SUCCESS, "Find Line Data Success", lineChartData);
     }
 }

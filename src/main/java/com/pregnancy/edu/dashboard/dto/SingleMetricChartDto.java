@@ -4,8 +4,8 @@ import com.pregnancy.edu.fetusinfo.metric.dto.MetricDto;
 
 import java.util.List;
 
-public record ColumnDataDto(
+public record SingleMetricChartDto(
         MetricDto metric,
-        List<ColumnDataItem> data
+        List<ChartDataItem> data
 ) {
 }

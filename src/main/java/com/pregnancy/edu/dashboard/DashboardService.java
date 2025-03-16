@@ -44,26 +44,21 @@ public class DashboardService {
         if (fetusMetrics.size() < 3) {
             throw new IllegalArgumentException("Fetus metrics are not enough to generate radar data");
         }
-        double max = Double.MIN_VALUE;
+
         List<ChartDataItem> data = new ArrayList<>();
+
+        // Iterate all fetal metric data in a specific week
         for (FetusMetric fetusMetric : fetusMetrics) {
             Metric metric = fetusMetric.getMetric();
-            Standard standard = standardService.findByMetricIdAndWeek(metric.getId(), fetusMetric.getWeek());
-            max = Double.max(max, Double.max(standard.getMax(), fetusMetric.getValue()));
-
-            // Round the values to 2 decimal places
-            double roundedMax = MathUtils.round(2, standard.getMax());
-            double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
-            double roundedMin = MathUtils.round(2, standard.getMin());
-
             String name = metric.getName() + " (" + metric.getUnit() + ")";
-            data.add(new ChartDataItem(MAX, name, roundedMax));
-            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
-            data.add(new ChartDataItem(MIN, name, roundedMin));
+
+            data.addAll(getChartData(metric.getId(), week, name, fetusMetric.getValue()));
         }
-        // Round the final max value as well
-        double roundedMax = MathUtils.round(2, max);
-        return new RadarChartDto(roundedMax, data);
+        double max = Double.MIN_VALUE;
+        for (ChartDataItem item : data) {
+            max = Double.max(max, item.value());
+        }
+        return new RadarChartDto(max, data);
     }
 
     public ChartDto getBarData(Long fetusId, Integer week) {
@@ -72,19 +67,13 @@ public class DashboardService {
         List<FetusMetric> fetusMetrics = fetusMetricService.findByFetusIdAndWeek(fetusId, week);
 
         List<ChartDataItem> data = new ArrayList<>();
+
+        // Iterate all fetal metric data in a specific week
         for (FetusMetric fetusMetric : fetusMetrics) {
             Metric metric = fetusMetric.getMetric();
-            Standard standard = standardService.findByMetricIdAndWeek(metric.getId(), fetusMetric.getWeek());
-
-            // Round the values to 2 decimal places
-            double roundedMax = MathUtils.round(2, standard.getMax());
-            double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
-            double roundedMin = MathUtils.round(2, standard.getMin());
-
             String name = metric.getName() + " (" + metric.getUnit() + ")";
-            data.add(new ChartDataItem(MAX, name, roundedMax));
-            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
-            data.add(new ChartDataItem(MIN, name, roundedMin));
+
+            data.addAll(getChartData(metric.getId(), week, name, fetusMetric.getValue()));
         }
         return new ChartDto(data);
     }
@@ -93,20 +82,10 @@ public class DashboardService {
         fetusService.findById(fetusId);
         Metric metric = metricService.findById(metricId);
 
-        List<ChartDataItem> data = new ArrayList<>();
-
         FetusMetric fetusMetric = fetusMetricService.findByFetusIdAndMetricIdAndWeek(fetusId, metricId, week);
-        Standard standard = standardService.findByMetricIdAndWeek(metricId, week);
 
-        // Round the values to 2 decimal places
-        double roundedMax = MathUtils.round(2, standard.getMax());
-        double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
-        double roundedMin = MathUtils.round(2, standard.getMin());
-
-        String name = "Week " + week;
-        data.add(new ChartDataItem(MAX, name, roundedMax));
-        data.add(new ChartDataItem(VALUE, name, roundedCurrent));
-        data.add(new ChartDataItem(MIN, name, roundedMin));
+        // Get the fetal metric data for a specific week
+        List<ChartDataItem> data = getChartData(metricId, week, "Week " + week, fetusMetric.getValue());
 
         return new SingleMetricChartDto(metricToMetricDtoConverter.convert(metric), data);
     }
@@ -117,20 +96,29 @@ public class DashboardService {
 
         List<ChartDataItem> data = new ArrayList<>();
         List<FetusMetric> fetusMetrics = fetusMetricService.findByFetusIdAndMetricId(fetusId, metricId);
+
+        // Iterate the fetal metric data through each week
         for (FetusMetric fetusMetric : fetusMetrics) {
             int week = fetusMetric.getWeek();
-            Standard standard = standardService.findByMetricIdAndWeek(metricId, week);
 
-            // Round the values to 2 decimal places
-            double roundedMax = MathUtils.round(2, standard.getMax());
-            double roundedCurrent = MathUtils.round(2, fetusMetric.getValue());
-            double roundedMin = MathUtils.round(2, standard.getMin());
-
-            String name = "Week " + week;
-            data.add(new ChartDataItem(MAX, name, roundedMax));
-            data.add(new ChartDataItem(VALUE, name, roundedCurrent));
-            data.add(new ChartDataItem(MIN, name, roundedMin));
+            data.addAll(getChartData(metricId, week, "Week " + week, fetusMetric.getValue()));
         }
         return new SingleMetricChartDto(metricToMetricDtoConverter.convert(metric), data);
+    }
+
+    // Helper method to get the max, current, and min values for a fetus metric
+    private List<ChartDataItem> getChartData(Long metricId, Integer week, String name, Double myValue) {
+        List<ChartDataItem> data = new ArrayList<>();
+        Standard standard = standardService.findByMetricIdAndWeek(metricId, week);
+
+        // Round the values to 2 decimal places
+        double roundedMax = MathUtils.round(2, standard.getMax());
+        double roundedCurrent = MathUtils.round(2, myValue);
+        double roundedMin = MathUtils.round(2, standard.getMin());
+
+        data.add(new ChartDataItem(MAX, name, roundedMax));
+        data.add(new ChartDataItem(VALUE, name, roundedCurrent));
+        data.add(new ChartDataItem(MIN, name, roundedMin));
+        return data;
     }
 }

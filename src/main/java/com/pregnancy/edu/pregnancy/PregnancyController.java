@@ -5,6 +5,8 @@ import com.pregnancy.edu.fetusinfo.fetus.FetusService;
 import com.pregnancy.edu.fetusinfo.fetus.converter.FetusDtoToFetusConverter;
 import com.pregnancy.edu.fetusinfo.fetus.converter.FetusToFetusDtoConverter;
 import com.pregnancy.edu.fetusinfo.fetus.dto.FetusDto;
+import com.pregnancy.edu.myuser.MyUser;
+import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.pregnancy.converter.PregnancyDtoToPregnancyConverter;
 import com.pregnancy.edu.pregnancy.converter.PregnancyToPregnancyDtoConverter;
 import com.pregnancy.edu.pregnancy.dto.PregnancyDto;
@@ -24,19 +26,21 @@ public class PregnancyController {
 
     private final PregnancyService pregnancyService;
     private final FetusService fetusService;
+    private final UserService userService;
     private final PregnancyToPregnancyDtoConverter pregnancyToDtoConverter;
     private final PregnancyDtoToPregnancyConverter dtoToPregnancyConverter;
     private final FetusToFetusDtoConverter fetusToDtoConverter;
     private final FetusDtoToFetusConverter dtoToFetusConverter;
 
     public PregnancyController(PregnancyService pregnancyService,
-                               FetusService fetusService,
+                               FetusService fetusService, UserService userService,
                                PregnancyToPregnancyDtoConverter pregnancyToDtoConverter,
                                PregnancyDtoToPregnancyConverter dtoToPregnancyConverter,
                                FetusToFetusDtoConverter fetusToDtoConverter,
                                FetusDtoToFetusConverter dtoToFetusConverter) {
         this.pregnancyService = pregnancyService;
         this.fetusService = fetusService;
+        this.userService = userService;
         this.pregnancyToDtoConverter = pregnancyToDtoConverter;
         this.dtoToPregnancyConverter = dtoToPregnancyConverter;
         this.fetusToDtoConverter = fetusToDtoConverter;
@@ -98,6 +102,10 @@ public class PregnancyController {
     @PostMapping("/{pregnancyId}/fetuses")
     public Result addFetusToPregnancy(@PathVariable Long pregnancyId, @Valid @RequestBody FetusDto fetusDto) {
         Fetus fetus = dtoToFetusConverter.convert(fetusDto);
+
+        MyUser user = userService.findById(fetusDto.userId());
+        fetus.setUser(user);
+
         Pregnancy updatedPregnancy = pregnancyService.addFetusToPregnancy(pregnancyId, fetus);
         PregnancyDto updatedPregnancyDto = pregnancyToDtoConverter.convert(updatedPregnancy);
         return new Result(true, StatusCode.SUCCESS, "Add Fetus Success", updatedPregnancyDto);

@@ -13,8 +13,7 @@ public class FetusMetricToDtoConverter implements Converter<FetusMetric, FetusMe
                 source.getId(),
                 source.getFetus().getId(),
                 source.getMetric().getId(),
-                source.getValue(),
-                source.getWeek()
+                source.getValue()
         );
     }
 }

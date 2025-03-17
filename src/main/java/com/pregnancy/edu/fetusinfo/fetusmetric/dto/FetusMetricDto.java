@@ -9,8 +9,6 @@ public record FetusMetricDto(
         @NotNull(message = "Metric ID is required")
         Long metricId,
         @NotNull(message = "Value is required")
-        Double value,
-        @NotNull(message = "Week is required")
-        Integer week
+        Double value
 ) {
 }

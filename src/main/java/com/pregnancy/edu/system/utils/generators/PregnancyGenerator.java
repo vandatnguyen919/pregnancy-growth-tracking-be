@@ -37,7 +37,8 @@ public class PregnancyGenerator {
                     pregnancy.setPregnancyStartDate(pregnancyStartDate);
 
                     // Set estimated due date (~40 weeks/280 days from start)
-                    pregnancy.setEstimatedDueDate(pregnancyStartDate.plusDays(280));
+                    pregnancy.setEstimatedDueDate(pregnancyStartDate.plusDays(266));
+                    pregnancy.setDeliveryDate(pregnancyStartDate.plusDays(280));
 
                     // If already delivered
                     if (daysBack > 280) {

@@ -1,5 +1,6 @@
 package com.pregnancy.edu.reminder.converter;
 
+import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
 import com.pregnancy.edu.reminder.Reminder;
 import com.pregnancy.edu.reminder.dto.ReminderDto;
 import org.springframework.core.convert.converter.Converter;
@@ -11,13 +12,13 @@ public class ReminderToReminderDtoConverter implements Converter<Reminder, Remin
     @Override
     public ReminderDto convert(Reminder reminder) {
         return new ReminderDto(
-                reminder.getReminderId(),
-                reminder.getReminderType(),
+                reminder.getId(),
+                reminder.getTitle(),
                 reminder.getDescription(),
+                reminder.getReminderType(),
                 reminder.getReminderDate(),
                 reminder.getStatus(),
-                reminder.getUser() != null ? reminder.getUser().getId() : null
+                reminder.getUser().getId()
         );
     }
-
 }

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
-    List<Reminder> findByUser_Id(Long userId);
-    Page<Reminder> findByUser_Id(Long userId, Pageable pageable);
+    Page<Reminder> findByUserId(Pageable pageable, Long userId);
+    Page<Reminder> findByUserIdAndReminderDateBetweenOrderByReminderDate(Pageable pageable, Long userId, LocalDateTime startDate, LocalDateTime endDate);
     List<Reminder> findByReminderDateBetweenAndUser_Id(LocalDateTime start, LocalDateTime end, Long userId);
     List<Reminder> findByStatusAndUser_Id(String status, Long userId);
 }

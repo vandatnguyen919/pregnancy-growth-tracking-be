@@ -17,5 +17,5 @@ public record BlogPostDto(Long id,
                           Integer commentQuantity,
                           Integer likeQuantity,
                           List<String> nameTags,
-                          Long userId) {
+                          UserDto userDto) {
 }

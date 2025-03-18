@@ -53,7 +53,7 @@ public class PregnancyController {
     }
 
     @GetMapping("/me")
-    public Result getCurrentPregnancy(@RequestParam String status, JwtAuthenticationToken jwtAuthenticationToken) {
+    public Result getCurrentPregnancy(@RequestParam(value = "status", required = false) String status, JwtAuthenticationToken jwtAuthenticationToken) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
         List<Pregnancy> pregnancies = pregnancyService.findByUserId(userId);

@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,11 +53,28 @@ public class PregnancyController {
     }
 
     @GetMapping("/me")
-    public Result getPregnanciesByUserId(JwtAuthenticationToken jwtAuthenticationToken) {
+    public Result getCurrentPregnancy(@RequestParam String status, JwtAuthenticationToken jwtAuthenticationToken) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
         List<Pregnancy> pregnancies = pregnancyService.findByUserId(userId);
-        List<PregnancyDto> pregnancyDtos = pregnancies.stream().map(this.pregnancyToDtoConverter::convert).toList();
+
+        pregnancies.sort(Comparator.comparing(Pregnancy::getEstimatedDueDate));
+
+        if(status != null) {
+            List<Pregnancy> filtereds = pregnancies.stream()
+                    .filter(pregnancy -> status.equals(pregnancy.getStatus()))
+                    .toList();
+
+            List<PregnancyDto> filteredDtos = filtereds.stream()
+                    .map(this.pregnancyToDtoConverter::convert)
+                    .toList();
+
+            return new Result(true, StatusCode.SUCCESS, "Find Your Pregnancies successfully", filteredDtos);
+        }
+
+        List<PregnancyDto> pregnancyDtos = pregnancies.stream()
+                .map(this.pregnancyToDtoConverter::convert)
+                .toList();
         return new Result(true, StatusCode.SUCCESS, "Find Your Pregnancies successfully", pregnancyDtos);
     }
 

@@ -19,6 +19,7 @@ public class PregnancyToPregnancyDtoConverter implements Converter<Pregnancy, Pr
                 source.getPregnancyStartDate(),
                 source.getEstimatedDueDate(),
                 source.getDeliveryDate(),
+                source.getStatus(),
                 source.getFetuses() != null
                         ? source.getFetuses().stream().map(fetus -> fetus.getId()).collect(Collectors.toList())
                         : null

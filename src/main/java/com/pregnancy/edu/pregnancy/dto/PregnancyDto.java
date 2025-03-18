@@ -12,6 +12,7 @@ public record PregnancyDto(
         LocalDate pregnancyStartDate,
         LocalDate dueDate,
         LocalDate deliveryDate,
-        List<Long> fetusIds
+        String status,
+        int fetusCount
 ) {
 }

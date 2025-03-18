@@ -17,6 +17,7 @@ public class PregnancyDtoToPregnancyConverter implements Converter<PregnancyDto,
         pregnancy.setEstimatedDueDate(source.dueDate());
         pregnancy.setPregnancyStartDate(source.dueDate().minusDays(266));
         pregnancy.setDeliveryDate(source.dueDate().plusDays(21));
+        pregnancy.setStatus(source.status());
 
         return pregnancy;
     }

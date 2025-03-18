@@ -12,10 +12,8 @@ import java.util.stream.Collectors;
 @Component
 public class BlogPostToBlogPostDtoConverter implements Converter<BlogPost, BlogPostDto> {
 
-    private final UserToUserDtoConverter userToUserDtoConverter;
 
-    public BlogPostToBlogPostDtoConverter(UserToUserDtoConverter userToUserDtoConverter) {
-        this.userToUserDtoConverter = userToUserDtoConverter;
+    public BlogPostToBlogPostDtoConverter() {
     }
 
     @Override
@@ -31,7 +29,7 @@ public class BlogPostToBlogPostDtoConverter implements Converter<BlogPost, BlogP
                 source.getComments().isEmpty() ? 0 : source.getComments().size(),
                 source.getLikes().isEmpty() ? 0 : source.getLikes().size(),
                 source.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
-                userToUserDtoConverter.convert(source.getUser())
+                source.getUser().getId()
                 );
     }
 }

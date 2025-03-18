@@ -3,11 +3,14 @@ package com.pregnancy.edu.blog.blogpost;
 import com.pregnancy.edu.blog.blogpost.converter.BlogPostDtoToBlogPostConverter;
 import com.pregnancy.edu.blog.blogpost.converter.BlogPostToBlogPostDtoConverter;
 import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
+import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +23,13 @@ public class BlogPostController {
     private final BlogPostService blogPostService;
     private final BlogPostToBlogPostDtoConverter blogPostToBlogPostDtoConverter;
     private final BlogPostDtoToBlogPostConverter blogPostDtoToBlogPostConverter;
+    private final UserService userService;
 
-    public BlogPostController(BlogPostService blogPostService, BlogPostToBlogPostDtoConverter blogPostToBlogPostDtoConverter, BlogPostDtoToBlogPostConverter blogPostDtoToBlogPostConverter) {
+    public BlogPostController(BlogPostService blogPostService, BlogPostToBlogPostDtoConverter blogPostToBlogPostDtoConverter, BlogPostDtoToBlogPostConverter blogPostDtoToBlogPostConverter, UserService userService) {
         this.blogPostService = blogPostService;
         this.blogPostToBlogPostDtoConverter = blogPostToBlogPostDtoConverter;
         this.blogPostDtoToBlogPostConverter = blogPostDtoToBlogPostConverter;
+        this.userService = userService;
     }
 
 //    @GetMapping
@@ -51,8 +56,11 @@ public class BlogPostController {
     }
 
     @PostMapping
-    public Result addBlogPost(@Valid @RequestBody BlogPostDto newPostDto) {
+    public Result addBlogPost(@Valid @RequestBody BlogPostDto newPostDto, JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
         BlogPost newBlogPost = blogPostDtoToBlogPostConverter.convert(newPostDto);
+        newBlogPost.setUser(userService.findById(userId));
         BlogPost savedBlogPost = blogPostService.save(newBlogPost);
         BlogPostDto savedBlogPostDto = blogPostToBlogPostDtoConverter.convert(savedBlogPost);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedBlogPostDto);

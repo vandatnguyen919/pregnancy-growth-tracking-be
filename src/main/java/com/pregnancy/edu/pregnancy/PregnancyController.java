@@ -119,7 +119,9 @@ public class PregnancyController {
         Long userId = jwt.getClaim("userId");
         Pregnancy update = dtoToPregnancyConverter.convert(pregnancyDto);
         assert update != null;
+        update.setUser(userService.findById(userId));
         if(Objects.equals(update.getUser().getId(), userId)){
+            update.setStatus(pregnancyDto.status());
             update.setFetuses(fetusService.findAllByUserId(userId));
             Pregnancy updatedPregnancy = pregnancyService.update(pregnancyId, update);
             PregnancyDto updatedPregnancyDto = pregnancyToDtoConverter.convert(updatedPregnancy);

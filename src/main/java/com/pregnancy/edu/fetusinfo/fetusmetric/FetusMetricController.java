@@ -12,6 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/v1/fetus-metrics")
 public class FetusMetricController {
@@ -54,13 +58,24 @@ public class FetusMetricController {
     }
 
     @PostMapping
-    public Result addFetusMetric(@Valid @RequestBody FetusMetricDto newFetusMetricDto) {
-        FetusMetric newFetusMetric = toFetusMetricConverter.convert(newFetusMetricDto);
-        newFetusMetric.setFetus(fetusService.findById(newFetusMetricDto.fetusId()));
-        newFetusMetric.setMetric(metricService.findById(newFetusMetricDto.metricId()));
-        FetusMetric savedFetusMetric = fetusMetricService.save(newFetusMetric);
-        FetusMetricDto savedFetusMetricDto = toFetusMetricDtoConverter.convert(savedFetusMetric);
-        return new Result(true, StatusCode.SUCCESS, "Add Success", savedFetusMetricDto);
+    public Result addFetusMetric(@Valid @RequestBody List<FetusMetricDto> newFetusMetricDtos, @RequestParam Integer week) {
+        List<FetusMetric> savedFetusMetrics = new ArrayList<>();
+
+        for (FetusMetricDto dto : newFetusMetricDtos) {
+            FetusMetric newFetusMetric = toFetusMetricConverter.convert(dto);
+            newFetusMetric.setFetus(fetusService.findById(dto.fetusId()));
+            newFetusMetric.setMetric(metricService.findById(dto.metricId()));
+            newFetusMetric.setWeek(week);
+
+            FetusMetric savedFetusMetric = fetusMetricService.save(newFetusMetric);
+            savedFetusMetrics.add(savedFetusMetric);
+        }
+
+        List<FetusMetricDto> savedFetusMetricDtos = savedFetusMetrics.stream()
+                .map(metric -> toFetusMetricDtoConverter.convert(metric))
+                .collect(Collectors.toList());
+
+        return new Result(true, StatusCode.SUCCESS, "Added " + savedFetusMetricDtos.size() + " metrics for week " + week, savedFetusMetricDtos);
     }
 
     @PutMapping("/{fetusMetricId}")

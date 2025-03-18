@@ -21,7 +21,6 @@ public class DtoToFetusMetricConverter implements Converter<FetusMetricDto, Fetu
     public FetusMetric convert(FetusMetricDto source) {
         FetusMetric fetusMetric = new FetusMetric();
         fetusMetric.setValue(source.value());
-        fetusMetric.setWeek(source.week());
 
         return fetusMetric;
     }

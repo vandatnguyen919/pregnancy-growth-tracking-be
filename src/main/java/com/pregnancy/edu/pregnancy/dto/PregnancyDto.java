@@ -7,13 +7,11 @@ import java.util.List;
 
 public record PregnancyDto(
         Long id,
-        @NotNull(message = "User ID is required")
         Long userId,
         Integer maternalAge,
         LocalDate pregnancyStartDate,
-        LocalDate estimatedDueDate,
+        LocalDate dueDate,
         LocalDate deliveryDate,
-        String status,
         List<Long> fetusIds
 ) {
 }

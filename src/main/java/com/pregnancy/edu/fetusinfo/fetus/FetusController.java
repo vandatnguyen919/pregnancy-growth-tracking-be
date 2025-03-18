@@ -11,8 +11,6 @@ import com.pregnancy.edu.pregnancy.PregnancyService;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import com.pregnancy.edu.fetusinfo.fetus.helper.FetusHelper;
 

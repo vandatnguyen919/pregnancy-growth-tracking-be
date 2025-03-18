@@ -2,6 +2,7 @@ package com.pregnancy.edu.pregnancy;
 
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.fetus.FetusRepository;
+import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.springframework.data.domain.Page;

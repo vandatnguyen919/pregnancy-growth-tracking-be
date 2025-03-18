@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
 public class FetusToFetusDtoConverter implements Converter<Fetus, FetusDto> {
     @Override
     public FetusDto convert(Fetus source) {
+        Long userId = source.getUser() != null ? source.getUser().getId() : null;
+
         return new FetusDto(
                 source.getId(),
-                source.getUser().getId(),
+                userId,
                 source.getPregnancy().getId(),
                 source.getNickName(),
                 source.getGender()

@@ -53,7 +53,7 @@ public class PregnancyController {
     }
 
     @GetMapping("/me")
-    public Result getCurrentPregnancy(@RequestParam(value = "status", required = false) String status, JwtAuthenticationToken jwtAuthenticationToken) {
+    public Result getAllMyPregnancies(@RequestParam(value = "status", required = false) String status, JwtAuthenticationToken jwtAuthenticationToken) {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
         List<Pregnancy> pregnancies = pregnancyService.findByUserId(userId);
@@ -76,6 +76,23 @@ public class PregnancyController {
                 .map(this.pregnancyToDtoConverter::convert)
                 .toList();
         return new Result(true, StatusCode.SUCCESS, "Find Your Pregnancies successfully", pregnancyDtos);
+    }
+
+    @GetMapping("/me/current")
+    public Result getCurrentPregnancy(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+
+        List<Pregnancy> ongoingPregnancies = pregnancyService.findByUserIdAndStatus(userId, "ONGOING");
+
+        if (ongoingPregnancies.isEmpty()) {
+            return new Result(false, StatusCode.NOT_FOUND, "No ongoing pregnancy found", null);
+        }
+
+        Pregnancy currentPregnancy = ongoingPregnancies.get(0);
+        PregnancyDto pregnancyDto = pregnancyToDtoConverter.convert(currentPregnancy);
+
+        return new Result(true, StatusCode.SUCCESS, "Current pregnancy found", pregnancyDto);
     }
 
     @GetMapping

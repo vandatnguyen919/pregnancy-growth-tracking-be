@@ -18,6 +18,7 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
 
     private final PregnancyRepository pregnancyRepository;
     private final FetusRepository fetusRepository;
+    private static final String STATUS_ONGOING = "ONGOING";
 
     public PregnancyService(PregnancyRepository pregnancyRepository,
                             FetusRepository fetusRepository) {
@@ -38,6 +39,11 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
 
     @Override
     public Pregnancy save(Pregnancy pregnancy) {
+        if (STATUS_ONGOING.equals(pregnancy.getStatus()) &&
+                pregnancy.getUser() != null &&
+                hasOngoingPregnancy(pregnancy.getUser().getId(), pregnancy.getId())) {
+            throw new IllegalStateException("User already has an ongoing pregnancy");
+        }
         return pregnancyRepository.save(pregnancy);
     }
 
@@ -45,6 +51,13 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
     public Pregnancy update(Long pregnancyId, Pregnancy pregnancy) {
         return pregnancyRepository.findById(pregnancyId)
                 .map(existingPregnancy -> {
+                    if (STATUS_ONGOING.equals(pregnancy.getStatus()) &&
+                            !STATUS_ONGOING.equals(existingPregnancy.getStatus()) &&
+                            pregnancy.getUser() != null &&
+                            hasOngoingPregnancy(pregnancy.getUser().getId(), pregnancyId)) {
+                        throw new IllegalStateException("User already has an ongoing pregnancy");
+                    }
+
                     existingPregnancy.setMaternalAge(pregnancy.getMaternalAge());
                     existingPregnancy.setPregnancyStartDate(pregnancy.getPregnancyStartDate());
                     existingPregnancy.setEstimatedDueDate(pregnancy.getEstimatedDueDate());
@@ -111,5 +124,21 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
         } else {
             throw new RuntimeException("Fetus is not associated with this pregnancy");
         }
+    }
+
+    private boolean hasOngoingPregnancy(Long userId, Long currentPregnancyId) {
+        List<Pregnancy> ongoingPregnancies = pregnancyRepository.findByUserIdAndStatus(userId, STATUS_ONGOING);
+
+        if (ongoingPregnancies.isEmpty()) {
+            return false;
+        }
+
+        if (currentPregnancyId != null) {
+            return ongoingPregnancies.stream()
+                    .anyMatch(pregnancy -> !pregnancy.getId().equals(currentPregnancyId));
+        }
+
+        return true;
+
     }
 }

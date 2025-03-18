@@ -44,6 +44,9 @@ public class FetusController {
     @GetMapping("/user/{userId}")
     public Result getAllFetusOfUser(@PathVariable Long userId) {
         List<Fetus> fetusList = fetusService.findAllByUserId(userId);
+        for(Fetus fetus : fetusList) {
+            fetus.setPregnancy(pregnancyService.findById(fetus.getPregnancy().getId()));
+        }
         List<FetusDto> fetusDtoList = fetusList.stream()
                 .map(this.fetusToDtoConverter::convert)
                 .collect(Collectors.toList());

@@ -15,4 +15,7 @@ public interface PregnancyRepository extends JpaRepository<Pregnancy, Long> {
 
     @Query("SELECT p FROM Pregnancy p WHERE p.user.id = :userId AND p.status = :status")
     List<Pregnancy> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
+
+    boolean existsByUserIdAndStatus(Long userId, String status);
+
 }

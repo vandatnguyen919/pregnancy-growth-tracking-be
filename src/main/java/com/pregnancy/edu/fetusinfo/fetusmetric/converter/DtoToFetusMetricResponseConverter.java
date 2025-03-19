@@ -28,15 +28,10 @@ public class DtoToFetusMetricResponseConverter implements Converter<FetusMetricD
 
         Optional<Standard> standard = standardRepository.findByMetricIdAndWeek(source.metricId(), null);
 
-        Double min = standard.map(Standard::getMin).orElse(null);
-        Double max = standard.map(Standard::getMax).orElse(null);
-
         return new FetusMetricResponse(
                 source.fetusId(),
                 metricName,
-                source.value(),
-                min,
-                max
+                source.value()
         );
     }
 
@@ -47,15 +42,10 @@ public class DtoToFetusMetricResponseConverter implements Converter<FetusMetricD
 
         Optional<Standard> standard = standardRepository.findByMetricIdAndWeek(source.metricId(), week);
 
-        Double min = standard.map(Standard::getMin).orElse(null);
-        Double max = standard.map(Standard::getMax).orElse(null);
-
         return new FetusMetricResponse(
                 source.fetusId(),
                 metricName,
-                source.value(),
-                min,
-                max
+                source.value()
         );
     }
 

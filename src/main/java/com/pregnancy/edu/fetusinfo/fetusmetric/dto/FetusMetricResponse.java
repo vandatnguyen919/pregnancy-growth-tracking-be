@@ -3,8 +3,6 @@ package com.pregnancy.edu.fetusinfo.fetusmetric.dto;
 public record FetusMetricResponse(
         Long fetusId,
         String metricName,
-        Double value,
-        Double min,
-        Double max
+        Double value
 ) {
 }

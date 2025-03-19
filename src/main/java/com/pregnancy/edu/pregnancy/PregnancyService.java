@@ -1,8 +1,11 @@
 package com.pregnancy.edu.pregnancy;
 
+import com.pregnancy.edu.client.ai.chat.ChatClient;
+import com.pregnancy.edu.client.ai.chat.dto.ChatRequest;
+import com.pregnancy.edu.client.ai.chat.dto.ChatResponse;
+import com.pregnancy.edu.client.ai.chat.dto.Message;
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.fetus.FetusRepository;
-import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.springframework.data.domain.Page;
@@ -18,12 +21,15 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
 
     private final PregnancyRepository pregnancyRepository;
     private final FetusRepository fetusRepository;
+    private final ChatClient chatClient;
+
     private static final String STATUS_ONGOING = "ONGOING";
 
     public PregnancyService(PregnancyRepository pregnancyRepository,
-                            FetusRepository fetusRepository) {
+                            FetusRepository fetusRepository, ChatClient chatClient) {
         this.pregnancyRepository = pregnancyRepository;
         this.fetusRepository = fetusRepository;
+        this.chatClient = chatClient;
     }
 
     @Override
@@ -101,6 +107,38 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
 
     public List<Pregnancy> findByUserIdAndStatus(Long userId, String status) {
         return pregnancyRepository.findByUserIdAndStatus(userId, status);
+    }
+
+    public Pregnancy findOngoingPregnancyByUserId(Long userId) {
+        List<Pregnancy> ongoingPregnancies = pregnancyRepository.findByUserIdAndStatus(userId, STATUS_ONGOING);
+        if (ongoingPregnancies.isEmpty()) {
+            return null;
+        }
+        return ongoingPregnancies.get(0);
+    }
+
+    public String getOnGoingWeekInsight(Long userId) {
+        Pregnancy pregnancy = findOngoingPregnancyByUserId(userId);
+        if (pregnancy == null) {
+            return "No ongoing pregnancy found";
+        }
+        int currentGestationalWeek = pregnancy.getCurrentWeek();
+
+        List<Message> messages = List.of(
+                new Message("system", "Based on the provided gestational week information, give a concise 20-30 word insight in this period." +
+                        " If measurements are mentioned (like weight, length, etc.)," +
+                        " please convert them to Vietnamese units (grams to \"gram\", centimeters to \"cm\", inches to \"cm\", pounds to \"kg\")." +
+                        " Keep the main response in English but include Vietnamese unit names. Don't include English unit names."),
+                new Message("user", "Week" + currentGestationalWeek)
+        );
+
+        ChatRequest chatRequest = new ChatRequest("openai-community/gpt2", messages);
+        chatRequest.setMaxTokens(500);
+        chatRequest.setStream(false);
+
+        ChatResponse chatResponse = this.chatClient.generate(chatRequest);
+
+        return chatResponse.choices().get(0).message().content();
     }
 
     public Pregnancy addFetusToPregnancy(Long pregnancyId, Fetus fetus) {

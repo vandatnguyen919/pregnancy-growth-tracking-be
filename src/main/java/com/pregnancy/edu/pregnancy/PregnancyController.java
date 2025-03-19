@@ -83,16 +83,21 @@ public class PregnancyController {
         Jwt jwt = jwtAuthenticationToken.getToken();
         Long userId = jwt.getClaim("userId");
 
-        List<Pregnancy> ongoingPregnancies = pregnancyService.findByUserIdAndStatus(userId, "ONGOING");
+        Pregnancy ongoingPregnancies = pregnancyService.findOngoingPregnancyByUserId(userId);
 
-        if (ongoingPregnancies.isEmpty()) {
+        if (ongoingPregnancies == null) {
             return new Result(false, StatusCode.NOT_FOUND, "No ongoing pregnancy found", null);
         }
 
-        Pregnancy currentPregnancy = ongoingPregnancies.get(0);
-        PregnancyDto pregnancyDto = pregnancyToDtoConverter.convert(currentPregnancy);
-
+        PregnancyDto pregnancyDto = pregnancyToDtoConverter.convert(ongoingPregnancies);
         return new Result(true, StatusCode.SUCCESS, "Current pregnancy found", pregnancyDto);
+    }
+
+    @GetMapping("/me/current/insight")
+    public Result getCurrentPregnancyInsight(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+        return new Result(true, StatusCode.SUCCESS, "Current pregnancy found", pregnancyService.getOnGoingWeekInsight(userId));
     }
 
     @GetMapping

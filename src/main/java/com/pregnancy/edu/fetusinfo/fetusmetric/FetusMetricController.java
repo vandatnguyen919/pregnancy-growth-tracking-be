@@ -64,25 +64,15 @@ public class FetusMetricController {
 
     @PostMapping
     public Result addFetusMetric(@Valid @RequestBody List<FetusMetricDto> newFetusMetricDtos, @RequestParam Integer week) {
-        List<FetusMetric> savedFetusMetrics = new ArrayList<>();
+        List<FetusMetricResponse> responses = new ArrayList<>();
 
         for (FetusMetricDto dto : newFetusMetricDtos) {
-            FetusMetric newFetusMetric = toFetusMetricConverter.convert(dto);
-            newFetusMetric.setFetus(fetusService.findById(dto.fetusId()));
-            newFetusMetric.setMetric(metricService.findById(dto.metricId()));
-            newFetusMetric.setWeek(week);
+            FetusMetric savedFetusMetric = fetusMetricService.saveOrUpdate(dto, week);
 
-            FetusMetric savedFetusMetric = fetusMetricService.save(newFetusMetric);
-            savedFetusMetrics.add(savedFetusMetric);
+            FetusMetricDto savedDto = toFetusMetricDtoConverter.convert(savedFetusMetric);
+            FetusMetricResponse response = dtoToFetusMetricResponseConverter.convert(savedDto, week);
+            responses.add(response);
         }
-
-        List<FetusMetricDto> savedFetusMetricDtos = savedFetusMetrics.stream()
-                .map(metric -> toFetusMetricDtoConverter.convert(metric))
-                .collect(Collectors.toList());
-
-        List<FetusMetricResponse> responses = savedFetusMetricDtos.stream()
-                .map(dto -> dtoToFetusMetricResponseConverter.convert(dto, week))
-                .collect(Collectors.toList());
 
         return new Result(true, StatusCode.SUCCESS, "Added " + responses.size() + " metrics for week " + week, responses);
     }

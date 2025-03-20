@@ -20,6 +20,11 @@ momo:
   createUri: /v2/gateway/api/create
   queryUri:  /v2/gateway/api/query
 
+ai:
+  meta-llama:
+    endpoint: ${AI_META_LLAMA_ENDPOINT:https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct/v1/chat/completions} # environment variable with a default value
+    api-key: ${AI_HUGGING_FACE_API_KEY:YOUR_API_KEY} # environment variable with a default value
+
 spring:
   h2:
     console:

@@ -83,7 +83,7 @@ public class FetusMetricGenerator {
             }
         }
         
-        // If we don't have a standard for this week, interpolate from closest weeks
+        // If we don't have a standard for this week, interpolate from the closest weeks
         return interpolateValue(metric, week);
     }
     

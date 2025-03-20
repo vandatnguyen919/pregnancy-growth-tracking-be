@@ -57,7 +57,8 @@ public class MyUserGenerator {
         u2.setFullName("Eric James Williams");
         u2.setDateOfBirth(LocalDateTime.of(1992, 9, 23, 0, 0));
         u2.setAvatarUrl("https://storage.vivago.ai/image/j_da373917-4d47-4807-97d7-4ffc45c0ced4.jpg?width=512");
-        u2.setGender(true); // Male
+//        u2.setGender(true); // Male
+        u2.setGender(false); // Female
         u2.setBloodType(BloodType.A_NEGATIVE);
         u2.setSymptoms("Occasional headaches, mild hypertension");
         u2.setNationality("British");

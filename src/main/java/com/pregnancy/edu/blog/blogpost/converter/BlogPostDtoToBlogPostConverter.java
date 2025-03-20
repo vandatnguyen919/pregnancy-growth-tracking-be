@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BlogPostDtoToBlogPostConverter implements Converter<BlogPostDto, BlogPost> {
+
     @Override
     public BlogPost convert(BlogPostDto source) {
         BlogPost blogPost = new BlogPost();

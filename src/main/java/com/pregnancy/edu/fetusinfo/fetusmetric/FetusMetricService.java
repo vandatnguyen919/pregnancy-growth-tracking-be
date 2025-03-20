@@ -3,8 +3,12 @@ package com.pregnancy.edu.fetusinfo.fetusmetric;
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.fetus.FetusRepository;
 import com.pregnancy.edu.fetusinfo.fetus.dto.MetricValueRequest;
+import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricDto;
+import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricResponse;
 import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
+import com.pregnancy.edu.fetusinfo.standard.Standard;
+import com.pregnancy.edu.fetusinfo.standard.StandardRepository;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.springframework.data.domain.Page;
@@ -13,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,11 +28,13 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
     private final FetusMetricRepository fetusMetricRepository;
     private final FetusRepository fetusRepository;
     private final MetricRepository metricRepository;
+    private final StandardRepository standardRepository;
 
-    public FetusMetricService(FetusMetricRepository fetusMetricRepository, FetusRepository fetusRepository, MetricRepository metricRepository) {
+    public FetusMetricService(FetusMetricRepository fetusMetricRepository, FetusRepository fetusRepository, MetricRepository metricRepository, StandardRepository standardRepository) {
         this.fetusMetricRepository = fetusMetricRepository;
         this.fetusRepository = fetusRepository;
         this.metricRepository = metricRepository;
+        this.standardRepository = standardRepository;
     }
 
     @Override
@@ -53,6 +62,36 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
         return fetusMetricRepository.findByFetusIdAndMetricIdAndWeek(fetusId, metricId, week).orElseThrow(
                 () -> new ObjectNotFoundException("FetusMetric", ", fetusId: " + fetusId + ", metricId: " + metricId + ", week: " + week)
         );
+    }
+
+    public Set<Integer> findWeeksWithMetricsForFetus(Long fetusId) {
+        fetusRepository.findById(fetusId)
+                .orElseThrow(() -> new ObjectNotFoundException("Fetus", fetusId));
+
+        return fetusMetricRepository.findDistinctWeeksByFetusId(fetusId);
+    }
+
+    public List<FetusMetricResponse> findFetusMetricResponsesByWeek(Long fetusId, Integer week) {
+        fetusRepository.findById(fetusId)
+                .orElseThrow(() -> new ObjectNotFoundException("Fetus", fetusId));
+
+        List<FetusMetric> metrics = fetusMetricRepository.findByFetusIdAndWeek(fetusId, week);
+
+        return metrics.stream()
+                .map(metric -> {
+                    Optional<Standard> standard = standardRepository.findByMetricIdAndWeek(
+                            metric.getMetric().getId(), week);
+
+                    Double min = standard.map(Standard::getMin).orElse(null);
+                    Double max = standard.map(Standard::getMax).orElse(null);
+
+                    return new FetusMetricResponse(
+                            fetusId,
+                            metric.getMetric().getName(),
+                            metric.getValue()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -86,29 +125,24 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
         this.fetusMetricRepository.deleteById(fetusMetricId);
     }
 
-    public void saveMetricValues(Long fetusId, Integer week, List<MetricValueRequest> metricValues) {
-        Fetus fetus = fetusRepository.findById(fetusId)
-                .orElseThrow(() -> new ObjectNotFoundException("Fetus not found with ID: ", fetusId));
+    public FetusMetric saveOrUpdate(FetusMetricDto dto, Integer week) {
+        Optional<FetusMetric> existingMetricOpt =
+                fetusMetricRepository.findByFetusIdAndMetricIdAndWeek(dto.fetusId(), dto.metricId(), week);
 
-        for (MetricValueRequest request : metricValues) {
-            Metric metric = metricRepository.findById(request.metricId())
-                    .orElseThrow(() -> new ObjectNotFoundException("Metric not found with ID: ", request.metricId()));
-
-            FetusMetric existingMetric = fetusMetricRepository.findByFetusMetricAndWeek(
-                    fetus, metric, week);
-
-            if (existingMetric != null) {
-                existingMetric.setValue(request.value());
-                fetusMetricRepository.save(existingMetric);
-            } else {
-                // Create new
-                FetusMetric newMetric = new FetusMetric();
-                newMetric.setFetus(fetus);
-                newMetric.setMetric(metric);
-                newMetric.setValue(request.value());
-                newMetric.setWeek(week);
-                fetusMetricRepository.save(newMetric);
-            }
+        FetusMetric fetusMetric;
+        if (existingMetricOpt.isPresent()) {
+            fetusMetric = existingMetricOpt.get();
+            fetusMetric.setValue(dto.value());
+        } else {
+            fetusMetric = new FetusMetric();
+            fetusMetric.setFetus(fetusRepository.findById(dto.fetusId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Fetus", dto.fetusId())));
+            fetusMetric.setMetric(metricRepository.findById(dto.metricId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Metric", dto.metricId())));
+            fetusMetric.setValue(dto.value());
+            fetusMetric.setWeek(week);
         }
+
+        return fetusMetricRepository.save(fetusMetric);
     }
 }

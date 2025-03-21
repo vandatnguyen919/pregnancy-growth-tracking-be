@@ -93,6 +93,24 @@ public class PregnancyController {
         return new Result(true, StatusCode.SUCCESS, "Current pregnancy found", pregnancyDto);
     }
 
+    @GetMapping("/me/current/fetuses")
+    public Result getCurrentPregnancyFetuses(JwtAuthenticationToken jwtAuthenticationToken) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+
+        Pregnancy ongoingPregnancy = pregnancyService.findOngoingPregnancyByUserId(userId);
+
+        if (ongoingPregnancy == null) {
+            return new Result(false, StatusCode.NOT_FOUND, "No ongoing pregnancy found", null);
+        }
+
+        List<FetusDto> fetusDtos = ongoingPregnancy.getFetuses().stream()
+                .map(this.fetusToDtoConverter::convert)
+                .collect(Collectors.toList());
+
+        return new Result(true, StatusCode.SUCCESS, "Fetuses found for current pregnancy", fetusDtos);
+    }
+
     @GetMapping("/me/current/insight")
     public Result getCurrentPregnancyInsight(JwtAuthenticationToken jwtAuthenticationToken) {
         Jwt jwt = jwtAuthenticationToken.getToken();

@@ -1,14 +1,18 @@
 package com.pregnancy.edu.reminder;
 
+import com.pregnancy.edu.myuser.UserService;
 import com.pregnancy.edu.reminder.converter.ReminderDtoToReminderConverter;
 import com.pregnancy.edu.reminder.converter.ReminderToReminderDtoConverter;
 import com.pregnancy.edu.reminder.dto.ReminderDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
+import com.pregnancy.edu.system.common.ReminderStatus;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,13 +26,15 @@ public class ReminderController {
     private final ReminderService reminderService;
     private final ReminderToReminderDtoConverter reminderToReminderDtoConverter;
     private final ReminderDtoToReminderConverter reminderDtoToReminderConverter;
+    private final UserService userService;
 
     public ReminderController(ReminderService reminderService,
                               ReminderToReminderDtoConverter reminderToReminderDtoConverter,
-                              ReminderDtoToReminderConverter reminderDtoToReminderConverter) {
+                              ReminderDtoToReminderConverter reminderDtoToReminderConverter, UserService userService) {
         this.reminderService = reminderService;
         this.reminderToReminderDtoConverter = reminderToReminderDtoConverter;
         this.reminderDtoToReminderConverter = reminderDtoToReminderConverter;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -36,6 +42,20 @@ public class ReminderController {
         Page<Reminder> reminderPage = reminderService.findAll(pageable);
         Page<ReminderDto> reminderDtoPage = reminderPage.map(this.reminderToReminderDtoConverter::convert);
         return new Result(true, StatusCode.SUCCESS, "Find All Success", reminderDtoPage);
+    }
+
+    @GetMapping("/me")
+    public Result getMyReminders(
+            @RequestParam(name = "reminderDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime reminderDate,
+            JwtAuthenticationToken jwtAuthenticationToken,
+            Pageable pageable
+    ) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+
+        Page<Reminder> reminderPage = reminderService.findByUserId(pageable, userId, reminderDate);
+        Page<ReminderDto> reminderDtoPage = reminderPage.map(this.reminderToReminderDtoConverter::convert);
+        return new Result(true, StatusCode.SUCCESS, "Find My Reminders Success", reminderDtoPage);
     }
 
     @GetMapping("/{reminderId}")
@@ -46,8 +66,8 @@ public class ReminderController {
     }
 
     @GetMapping("/user/{userId}")
-    public Result getRemindersByUserId(@PathVariable Long userId, Pageable pageable) {
-        Page<Reminder> reminderPage = reminderService.findByUserId(userId, pageable);
+    public Result getRemindersByUserId(Pageable pageable, @PathVariable Long userId) {
+        Page<Reminder> reminderPage = reminderService.findByUserId(pageable, userId);
         Page<ReminderDto> reminderDtoPage = reminderPage.map(this.reminderToReminderDtoConverter::convert);
         return new Result(true, StatusCode.SUCCESS, "Find By User Success", reminderDtoPage);
     }
@@ -75,8 +95,14 @@ public class ReminderController {
     }
 
     @PostMapping
-    public Result addReminder(@Valid @RequestBody ReminderDto newReminderDto) {
+    public Result addReminder(
+            @Valid @RequestBody ReminderDto newReminderDto,
+            JwtAuthenticationToken jwtAuthenticationToken
+    ) {
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
         Reminder newReminder = reminderDtoToReminderConverter.convert(newReminderDto);
+        newReminder.setUser(userService.findById(userId));
         Reminder savedReminder = reminderService.save(newReminder);
         ReminderDto savedReminderDto = reminderToReminderDtoConverter.convert(savedReminder);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedReminderDto);
@@ -91,7 +117,7 @@ public class ReminderController {
     }
 
     @PatchMapping("/{reminderId}/status")
-    public Result updateReminderStatus(@PathVariable Long reminderId, @RequestParam String status) {
+    public Result updateReminderStatus(@PathVariable Long reminderId, @RequestParam ReminderStatus status) {
         Reminder updatedReminder = reminderService.updateReminderStatus(reminderId, status);
         ReminderDto updatedReminderDto = reminderToReminderDtoConverter.convert(updatedReminder);
         return new Result(true, StatusCode.SUCCESS, "Status Update Success", updatedReminderDto);

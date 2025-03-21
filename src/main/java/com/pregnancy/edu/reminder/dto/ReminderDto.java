@@ -1,19 +1,22 @@
 package com.pregnancy.edu.reminder.dto;
 
+import com.pregnancy.edu.myuser.dto.UserDto;
+import com.pregnancy.edu.system.common.ReminderStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 public record ReminderDto(
-        Long reminderId,
+        Long id,
+        @NotBlank(message = "Title cannot be blank")
+        String title,
+        String description,
         @NotBlank(message = "Reminder type cannot be blank")
-                String reminderType,
-        @NotBlank(message = "Description cannot be blank")
-                String description,
+        String reminderType,
         @NotNull(message = "Reminder date cannot be null")
         LocalDateTime reminderDate,
-        String status,
+        ReminderStatus status,
         Long userId
 ) {
 }

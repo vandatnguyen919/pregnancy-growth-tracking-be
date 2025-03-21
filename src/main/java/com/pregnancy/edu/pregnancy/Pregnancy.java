@@ -33,8 +33,11 @@ public class Pregnancy {
 
     public int getCurrentWeek() {
         LocalDate today = LocalDate.now();
-        long daysBetween = ChronoUnit.DAYS.between(pregnancyStartDate, today);
-        return (int) (daysBetween / 7) + 1; // Add 1 because first week is week 1, not 0
+        // Assuming a full-term pregnancy is 40 weeks
+        // Calculate weeks between due date and today
+        long weeksBetween = ChronoUnit.WEEKS.between(today, estimatedDueDate);
+        // 40 weeks minus the weeks remaining
+        return 40 - (int)weeksBetween;
     }
 
     public void addFetus(Fetus fetus) {

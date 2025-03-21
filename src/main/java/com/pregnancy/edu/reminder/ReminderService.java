@@ -1,13 +1,16 @@
 package com.pregnancy.edu.reminder;
 
+import com.pregnancy.edu.system.common.ReminderStatus;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -33,6 +36,7 @@ public class ReminderService implements BaseCrudService<Reminder, Long> {
 
     @Override
     public Reminder save(Reminder newReminder) {
+        newReminder.setStatus(ReminderStatus.SCHEDULED);
         return this.reminderRepository.save(newReminder);
     }
 
@@ -40,8 +44,9 @@ public class ReminderService implements BaseCrudService<Reminder, Long> {
     public Reminder update(Long reminderId, Reminder reminder) {
         return this.reminderRepository.findById(reminderId)
                 .map(oldReminder -> {
-                    oldReminder.setReminderType(reminder.getReminderType());
+                    oldReminder.setTitle(reminder.getTitle());
                     oldReminder.setDescription(reminder.getDescription());
+                    oldReminder.setReminderType(reminder.getReminderType());
                     oldReminder.setReminderDate(reminder.getReminderDate());
                     oldReminder.setStatus(reminder.getStatus());
                     return this.reminderRepository.save(oldReminder);
@@ -60,8 +65,17 @@ public class ReminderService implements BaseCrudService<Reminder, Long> {
         return this.reminderRepository.findAll(pageable);
     }
 
-    public Page<Reminder> findByUserId(Long userId, Pageable pageable) {
-        return this.reminderRepository.findByUser_Id(userId, pageable);
+    public Page<Reminder> findByUserId(Pageable pageable, Long userId) {
+        return this.reminderRepository.findByUserId(pageable, userId);
+    }
+
+    public Page<Reminder> findByUserId(Pageable pageable, Long userId, @Nullable LocalDateTime reminderDate) {
+        if (reminderDate == null) {
+            return this.findByUserId(pageable, userId);
+        }
+        LocalDateTime startDate = LocalDateTime.of(reminderDate.toLocalDate(), LocalTime.MIN);
+        LocalDateTime endDate = LocalDateTime.of(reminderDate.toLocalDate(), LocalTime.MAX);
+        return this.reminderRepository.findByUserIdAndReminderDateBetweenOrderByReminderDate(pageable, userId, startDate, endDate);
     }
 
     public List<Reminder> findUpcomingReminders(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -72,7 +86,7 @@ public class ReminderService implements BaseCrudService<Reminder, Long> {
         return this.reminderRepository.findByStatusAndUser_Id(status, userId);
     }
 
-    public Reminder updateReminderStatus(Long reminderId, String status) {
+    public Reminder updateReminderStatus(Long reminderId, ReminderStatus status) {
         return this.reminderRepository.findById(reminderId)
                 .map(reminder -> {
                     reminder.setStatus(status);

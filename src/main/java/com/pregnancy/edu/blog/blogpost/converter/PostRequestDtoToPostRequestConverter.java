@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PostRequestDtoToPostRequestConverter implements Converter<BlogPostRequestDto, BlogPost> {
-    private final BlogPost post = new BlogPost();
 
     @Override
     public BlogPost convert(BlogPostRequestDto source) {
+        BlogPost post = new BlogPost();
         post.setHeading(source.heading());
         post.setContent(source.content());
         post.setPageTitle(source.pageTitle());
@@ -21,5 +21,4 @@ public class PostRequestDtoToPostRequestConverter implements Converter<BlogPostR
         post.setLikes(null);
         return post;
     }
-
 }

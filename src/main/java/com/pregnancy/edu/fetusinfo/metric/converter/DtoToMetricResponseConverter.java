@@ -27,6 +27,7 @@ public class DtoToMetricResponseConverter implements Converter<MetricDto, Metric
         Double max = standard.map(Standard::getMax).orElse(null);
 
         return new MetricResponse(
+                source.id(),
                 metricName,
                 source.unit(),
                 min,
@@ -43,6 +44,7 @@ public class DtoToMetricResponseConverter implements Converter<MetricDto, Metric
         Double max = standard.map(Standard::getMax).orElse(null);
 
         return new MetricResponse(
+                source.id(),
                 metricName,
                 source.unit(),
                 min,

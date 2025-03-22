@@ -1,6 +1,5 @@
 package com.pregnancy.edu.myuser;
 
-import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;

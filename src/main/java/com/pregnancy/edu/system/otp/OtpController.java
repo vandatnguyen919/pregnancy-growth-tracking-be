@@ -2,7 +2,6 @@ package com.pregnancy.edu.system.otp;
 
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

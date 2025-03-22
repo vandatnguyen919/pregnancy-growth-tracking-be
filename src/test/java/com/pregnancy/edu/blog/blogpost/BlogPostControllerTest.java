@@ -1,8 +1,6 @@
 package com.pregnancy.edu.blog.blogpost;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pregnancy.edu.blog.blogpost.BlogPost;
-import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.system.StatusCode;
@@ -29,7 +27,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

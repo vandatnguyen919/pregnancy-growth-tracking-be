@@ -2,7 +2,6 @@ package com.pregnancy.edu.blog.blogpostcomment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pregnancy.edu.blog.blogpost.BlogPost;
-import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpostcomment.dto.CommentDto;
 import com.pregnancy.edu.myuser.MyUser;
 import com.pregnancy.edu.system.StatusCode;

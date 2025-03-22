@@ -1,6 +1,5 @@
 package com.pregnancy.edu.reminder.converter;
 
-import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
 import com.pregnancy.edu.reminder.Reminder;
 import com.pregnancy.edu.reminder.dto.ReminderDto;
 import org.springframework.core.convert.converter.Converter;

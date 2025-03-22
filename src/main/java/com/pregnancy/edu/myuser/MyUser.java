@@ -4,7 +4,6 @@ import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
-import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.membershippackages.order.Order;
 import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.reminder.Reminder;

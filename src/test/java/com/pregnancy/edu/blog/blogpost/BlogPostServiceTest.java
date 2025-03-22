@@ -1,8 +1,5 @@
 package com.pregnancy.edu.blog.blogpost;
 
-import com.pregnancy.edu.blog.blogpost.BlogPost;
-import com.pregnancy.edu.blog.blogpost.BlogPostRepository;
-import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

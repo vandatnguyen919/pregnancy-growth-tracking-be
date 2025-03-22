@@ -1,14 +1,10 @@
 package com.pregnancy.edu.fetusinfo.fetus;
 
-import com.pregnancy.edu.fetusinfo.fetus.dto.MetricValueRequest;
-import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
 import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetricRepository;
 import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
 import com.pregnancy.edu.myuser.UserRepository;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
 import com.pregnancy.edu.system.exception.ObjectNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

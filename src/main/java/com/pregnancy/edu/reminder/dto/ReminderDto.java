@@ -1,6 +1,5 @@
 package com.pregnancy.edu.reminder.dto;
 
-import com.pregnancy.edu.myuser.dto.UserDto;
 import com.pregnancy.edu.system.common.ReminderStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

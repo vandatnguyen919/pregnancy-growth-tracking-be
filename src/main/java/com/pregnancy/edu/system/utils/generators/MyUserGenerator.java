@@ -1,17 +1,13 @@
 package com.pregnancy.edu.system.utils.generators;
 
-import com.pregnancy.edu.fetusinfo.fetus.Fetus;
-import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
-import com.pregnancy.edu.fetusinfo.metric.Metric;
-import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.myuser.MyUser;
-import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.system.common.BloodType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MyUserGenerator {
 

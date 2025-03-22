@@ -12,7 +12,6 @@ import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetric;
 import com.pregnancy.edu.fetusinfo.fetusmetric.FetusMetricService;
 import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricService;
-import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.fetusinfo.standard.StandardService;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlan;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlanService;
@@ -24,7 +23,6 @@ import com.pregnancy.edu.system.utils.generators.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

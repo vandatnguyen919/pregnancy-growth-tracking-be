@@ -1,10 +1,7 @@
 package com.pregnancy.edu.fetusinfo.standard.converter;
 
-import com.pregnancy.edu.fetusinfo.metric.Metric;
-import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
 import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.fetusinfo.standard.dto.StandardDto;
-import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

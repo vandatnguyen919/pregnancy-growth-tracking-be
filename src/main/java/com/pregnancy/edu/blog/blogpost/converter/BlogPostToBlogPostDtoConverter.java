@@ -1,10 +1,10 @@
 package com.pregnancy.edu.blog.blogpost.converter;
 
+import com.pregnancy.edu.blog.blogpost.BlogPost;
+import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import com.pregnancy.edu.blog.tag.Tag;
 import com.pregnancy.edu.myuser.converter.UserToUserDtoConverter;
 import org.springframework.core.convert.converter.Converter;
-import com.pregnancy.edu.blog.blogpost.BlogPost;
-import com.pregnancy.edu.blog.blogpost.dto.BlogPostDto;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;

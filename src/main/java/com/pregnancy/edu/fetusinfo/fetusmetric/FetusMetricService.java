@@ -1,11 +1,8 @@
 package com.pregnancy.edu.fetusinfo.fetusmetric;
 
-import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.fetusinfo.fetus.FetusRepository;
-import com.pregnancy.edu.fetusinfo.fetus.dto.MetricValueRequest;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricDto;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricResponse;
-import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
 import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.fetusinfo.standard.StandardRepository;

@@ -132,7 +132,7 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
                 new Message("user", "Week" + currentGestationalWeek)
         );
 
-        ChatRequest chatRequest = new ChatRequest("openai-community/gpt2", messages);
+        ChatRequest chatRequest = new ChatRequest("meta-llama/Meta-Llama-3-8B-Instruct", messages);
         chatRequest.setMaxTokens(500);
         chatRequest.setStream(false);
 

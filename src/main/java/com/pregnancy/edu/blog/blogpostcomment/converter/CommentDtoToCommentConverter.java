@@ -1,10 +1,7 @@
 package com.pregnancy.edu.blog.blogpostcomment.converter;
 
-import com.pregnancy.edu.blog.blogpost.BlogPostService;
 import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostcomment.dto.CommentDto;
-import com.pregnancy.edu.myuser.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

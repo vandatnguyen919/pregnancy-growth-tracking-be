@@ -8,9 +8,11 @@ import com.pregnancy.edu.fetusinfo.fetus.helper.FetusHelper;
 import com.pregnancy.edu.fetusinfo.metric.Metric;
 import com.pregnancy.edu.fetusinfo.metric.MetricService;
 import com.pregnancy.edu.myuser.UserService;
+import com.pregnancy.edu.pregnancy.Pregnancy;
 import com.pregnancy.edu.pregnancy.PregnancyService;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
+import com.pregnancy.edu.system.exception.ObjectNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,10 +46,21 @@ public class FetusController {
     @GetMapping("/user/{userId}")
     public Result getAllFetusOfUser(@PathVariable Long userId) {
         List<Fetus> fetusList = fetusService.findAllByUserId(userId);
-        for(Fetus fetus : fetusList) {
-            fetus.setPregnancy(pregnancyService.findById(fetus.getPregnancy().getId()));
-        }
-        List<FetusDto> fetusDtoList = fetusList.stream()
+        List<Fetus> processedFetusList = fetusList.stream()
+                .map(fetus -> {
+                    if (fetus.getPregnancy() != null) {
+                        try {
+                            Pregnancy pregnancy = pregnancyService.findById(fetus.getPregnancy().getId());
+                            fetus.setPregnancy(pregnancy);
+                        } catch (ObjectNotFoundException e) {
+                            fetus.setPregnancy(null);
+                        }
+                    }
+                    return fetus;
+                })
+                .collect(Collectors.toList());
+
+        List<FetusDto> fetusDtoList = processedFetusList.stream()
                 .map(this.fetusToDtoConverter::convert)
                 .collect(Collectors.toList());
         return new Result(true, StatusCode.SUCCESS, "Find All User's Fetuses Success", fetusDtoList);

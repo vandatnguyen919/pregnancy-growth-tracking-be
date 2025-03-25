@@ -188,6 +188,7 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
 
         fetus.setNickName(nickName);
         fetus.setGender(gender);
+        fetus.setPregnancy(pregnancy);
 
         return fetusRepository.save(fetus);
     }

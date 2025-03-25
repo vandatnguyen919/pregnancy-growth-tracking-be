@@ -52,7 +52,7 @@ public class MyUserGenerator {
         u2.setPhoneNumber("+44789123456");
         u2.setFullName("Eric James Williams");
         u2.setDateOfBirth(LocalDateTime.of(1992, 9, 23, 0, 0));
-        u2.setAvatarUrl("https://storage.vivago.ai/image/j_da373917-4d47-4807-97d7-4ffc45c0ced4.jpg?width=512");
+        u2.setAvatarUrl("https://1nedrop.com/wp-content/uploads/2024/10/avatar-facebook-37MPlQZI.jpg");
 //        u2.setGender(true); // Male
         u2.setGender(false); // Female
         u2.setBloodType(BloodType.A_NEGATIVE);
@@ -120,7 +120,7 @@ public class MyUserGenerator {
             int days = random.nextInt(28); // Simplified for safety
             user.setDateOfBirth(now.minusYears(years).minusMonths(months).minusDays(days).atStartOfDay());
             
-            user.setAvatarUrl("https://s3.envato.com/files/437230449/63f8b7060d73aa1e07faf27f_withmeta.jpg");
+            user.setAvatarUrl("https://www.cnet.com/a/img/resize/11aa4eb14e5479a9569e7cf4d887f11ab0648512/hub/2020/05/18/5bac8cc1-4bd5-4496-a8c3-66a6cd12d0cb/fb-avatar-2.jpg?auto=webp&width=768");
 
             // Make 95% of users female (gender=false)
             // true=male (5%), false=female (95%)

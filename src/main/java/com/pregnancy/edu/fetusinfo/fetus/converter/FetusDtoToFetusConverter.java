@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class FetusDtoToFetusConverter implements Converter<FetusDto, Fetus> {
 
-    public FetusDtoToFetusConverter() {
-    }
-
     @Override
     public Fetus convert(FetusDto source) {
         Fetus fetus = new Fetus();

@@ -2,7 +2,6 @@ package com.pregnancy.edu.system;
 
 import com.pregnancy.edu.blog.blogpost.BlogPost;
 import com.pregnancy.edu.blog.blogpost.BlogPostService;
-import com.pregnancy.edu.blog.blogpostcomment.BlogPostCommentService;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLikeService;
 import com.pregnancy.edu.blog.tag.Tag;
 import com.pregnancy.edu.blog.tag.TagService;
@@ -32,7 +31,6 @@ public class DBDataInitializer implements CommandLineRunner {
     private final UserService userService;
     private final BlogPostService blogPostService;
     private final BlogPostLikeService blogPostLikeService;
-    private final BlogPostCommentService blogPostCommentService;
     private final TagService tagService;
     private final PregnancyService pregnancyService;
     private final FetusService fetusService;
@@ -43,12 +41,10 @@ public class DBDataInitializer implements CommandLineRunner {
 
     public DBDataInitializer(UserService userService, BlogPostService blogPostService,
                              BlogPostLikeService blogPostLikeService,
-                             BlogPostCommentService blogPostCommentService,
                              TagService tagService, PregnancyService pregnancyService, FetusService fetusService, MetricService metricService, StandardService standardService, FetusMetricService fetusMetricService, FetusMetricService fetusMetricService1, MembershipPlanService membershipPlanService) {
         this.userService = userService;
         this.blogPostService = blogPostService;
         this.blogPostLikeService = blogPostLikeService;
-        this.blogPostCommentService = blogPostCommentService;
         this.tagService = tagService;
         this.pregnancyService = pregnancyService;
         this.fetusService = fetusService;

@@ -1,6 +1,5 @@
 package com.pregnancy.edu.blog.blogpost;
 
-import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.blog.tag.Tag;
 import com.pregnancy.edu.myuser.MyUser;
@@ -50,9 +49,6 @@ public class BlogPost {
 
     @ManyToOne
     private MyUser user;
-
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
-    private List<BlogPostComment> comments = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "blogPost")
     private List<BlogPostLike> likes = new ArrayList<>();

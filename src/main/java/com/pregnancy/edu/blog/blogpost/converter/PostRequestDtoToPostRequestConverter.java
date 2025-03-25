@@ -17,7 +17,6 @@ public class PostRequestDtoToPostRequestConverter implements Converter<BlogPostR
         post.setShortDescription(source.shortDescription());
         post.setFeaturedImageUrl(source.featuredImageUrl());
         post.setVisible(source.isVisible());
-        post.setComments(null);
         post.setLikes(null);
         return post;
     }

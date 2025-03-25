@@ -1,7 +1,6 @@
 package com.pregnancy.edu.myuser;
 
 import com.pregnancy.edu.blog.blogpost.BlogPost;
-import com.pregnancy.edu.blog.blogpostcomment.BlogPostComment;
 import com.pregnancy.edu.blog.blogpostlike.BlogPostLike;
 import com.pregnancy.edu.fetusinfo.fetus.Fetus;
 import com.pregnancy.edu.membershippackages.order.Order;
@@ -74,9 +73,6 @@ public class MyUser {
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
     private List<BlogPost> blogPosts = new ArrayList<>();
-
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
-    private List<BlogPostComment> blogPostComments = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "user")
     private List<BlogPostLike> blogPostLikes = new ArrayList<>();

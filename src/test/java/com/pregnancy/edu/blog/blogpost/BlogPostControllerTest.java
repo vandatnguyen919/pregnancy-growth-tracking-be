@@ -157,7 +157,6 @@ class BlogPostControllerTest {
                 "https://example.com/image4.jpg",
                 true,
                 0,
-                0,
                 List.of("health", "pregnancy"),
                 new UserDto(1L, "user", "example@gmail.com", "user", true, true, "USER", null, null, null, null, null, null, null, null, null)
         );
@@ -170,7 +169,6 @@ class BlogPostControllerTest {
         savedBlogPost.setShortDescription("Short Description 4");
         savedBlogPost.setFeaturedImageUrl("https://example.com/image4.jpg");
         savedBlogPost.setVisible(true);
-        savedBlogPost.setComments(new ArrayList<>());
         savedBlogPost.setLikes(new ArrayList<>());
         savedBlogPost.setTags(new ArrayList<>());
 
@@ -193,7 +191,7 @@ class BlogPostControllerTest {
 
     @Test
     void testUpdateBlogPostSuccess() throws Exception {
-        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true, 2, 2, new ArrayList<>(3),
+        BlogPostDto update = new BlogPostDto(1L, "Updated Post", "Updated Content", "Updated Title", "Updated Description", "Updated URL", true, 2, new ArrayList<>(3),
                 new UserDto(1L, "user", "example@gmail.com", "user", true, true, "USER", null, null, null, null, null, null, null, null, null));
         BlogPost updatedPost = new BlogPost();
         updatedPost.setId(2L);

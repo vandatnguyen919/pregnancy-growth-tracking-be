@@ -81,9 +81,6 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
                     Optional<Standard> standard = standardRepository.findByMetricIdAndWeek(
                             metric.getMetric().getId(), week);
 
-                    Double min = standard.map(Standard::getMin).orElse(null);
-                    Double max = standard.map(Standard::getMax).orElse(null);
-
                     return new FetusMetricResponse(
                             fetusId,
                             metric.getMetric().getName(),

@@ -102,13 +102,10 @@ public class FetusController {
 
     @GetMapping("/{fetusId}/week/{week}")
     public Result getFetusMetricsForWeek(@PathVariable Long fetusId, @PathVariable Integer week) {
-        // Get the fetus
         Fetus fetus = fetusService.findById(fetusId);
 
-        // Get all metrics for  week
         List<Metric> metrics = metricService.findAllByStandardWeek(week);
 
-        // Create response with fetus and metrics data
         FetusWeekMetricsResponse response = fetusHelper.buildFetusWeekResponse(fetus, metrics, week);
 
         return new Result(true, StatusCode.SUCCESS,

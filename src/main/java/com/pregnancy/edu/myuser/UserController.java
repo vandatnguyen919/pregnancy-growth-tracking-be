@@ -55,9 +55,9 @@ public class UserController {
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedUserDto);
     }
 
-    @DeleteMapping("/{userId}")
-    public Result deleteUser(@PathVariable Long userId) {
-        this.userService.delete(userId);
-        return new Result(true, StatusCode.SUCCESS, "Delete Success");
-    }
+//    @DeleteMapping("/{userId}")
+//    public Result deleteUser(@PathVariable Long userId) {
+//        this.userService.delete(userId);
+//        return new Result(true, StatusCode.SUCCESS, "Delete Success");
+//    }
 }

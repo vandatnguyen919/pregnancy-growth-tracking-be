@@ -15,7 +15,7 @@ public class MyUserGenerator {
         MyUser u1 = new MyUser();
 
         // Keeping original values
-        u1.setEmail("john@example.com");
+        u1.setEmail("john@gmail.com");
         u1.setUsername("john");
         u1.setPassword("Trantien12345.");
         u1.setVerified(true);
@@ -41,9 +41,9 @@ public class MyUserGenerator {
         MyUser u2 = new MyUser();
 
         // Keeping original values
-        u2.setEmail("eric@example.com");
+        u2.setEmail("eric@gmail.com");
         u2.setUsername("eric");
-        u2.setPassword("Trantien12345.");
+        u2.setPassword("TienDat12345.");
         u2.setVerified(true);
         u2.setEnabled(true);
         u2.setRole("member");
@@ -68,9 +68,9 @@ public class MyUserGenerator {
         MyUser u3 = new MyUser();
 
         // Keeping original values
-        u3.setEmail("tom@example.com");
+        u3.setEmail("tom@gmail.com");
         u3.setUsername("tom");
-        u3.setPassword("Trantien12345.");
+        u3.setPassword("Vandat12345.");
         u3.setVerified(true);
         u3.setEnabled(true);
         u3.setRole("user");

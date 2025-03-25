@@ -20,7 +20,6 @@ public class TagGenerator {
         for (String tagName : tagNames) {
             Tag tag = new Tag();
             tag.setName(tagName);
-//            tag.setDisplayName(tagNames[i]);
             tags.add(tag);
         }
 

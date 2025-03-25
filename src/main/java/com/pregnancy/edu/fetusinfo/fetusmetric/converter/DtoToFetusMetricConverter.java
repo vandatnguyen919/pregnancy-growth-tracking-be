@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtoToFetusMetricConverter implements Converter<FetusMetricDto, FetusMetric> {
 
-
-    public DtoToFetusMetricConverter() {
-    }
-
     @Override
     public FetusMetric convert(FetusMetricDto source) {
         FetusMetric fetusMetric = new FetusMetric();

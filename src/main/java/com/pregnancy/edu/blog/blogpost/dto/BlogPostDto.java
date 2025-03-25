@@ -14,7 +14,6 @@ public record BlogPostDto(Long id,
                           String shortDescription,
                           String featuredImageUrl,
                           boolean isVisible,
-                          Integer commentQuantity,
                           Integer likeQuantity,
                           List<String> nameTags,
                           UserDto userDto) {

@@ -36,15 +36,6 @@ public class BlogPostController {
         this.userService = userService;
     }
 
-//    @GetMapping
-//    public Result getAllBlogPosts() {
-//        List<BlogPost> blogPosts = blogPostService.findAll();
-//        List<BlogPostDto> blogPostDtos = blogPosts.stream()
-//                .map(blogPostToBlogPostDtoConverter::convert)
-//                .collect(Collectors.toList());
-//        return new Result(true, StatusCode.SUCCESS, "Find All Success", blogPostDtos);
-//    }
-
     @GetMapping
     public Result getAllBlogPosts(Pageable pageable) {
         Page<BlogPost> blogPostPage = blogPostService.findAll(pageable);

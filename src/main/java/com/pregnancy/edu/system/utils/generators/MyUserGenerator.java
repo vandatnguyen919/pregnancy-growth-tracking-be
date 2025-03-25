@@ -70,7 +70,7 @@ public class MyUserGenerator {
         // Keeping original values
         u3.setEmail("tom@example.com");
         u3.setUsername("tom");
-        u3.setPassword("qwerty");
+        u3.setPassword("Trantien12345.");
         u3.setVerified(true);
         u3.setEnabled(true);
         u3.setRole("user");

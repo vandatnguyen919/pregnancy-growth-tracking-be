@@ -36,7 +36,8 @@ public class BlogPostService implements BaseCrudService<BlogPost, Long> {
 
     @Override
     public BlogPost update(Long postId, BlogPost post) {
-        return this.blogPostRepository.findById(postId)
+
+        BlogPost p = blogPostRepository.findById(postId)
                 .map(oldPost -> {
                     oldPost.setContent(post.getContent());
                     oldPost.setHeading(post.getHeading());
@@ -48,6 +49,8 @@ public class BlogPostService implements BaseCrudService<BlogPost, Long> {
                     return this.blogPostRepository.save(oldPost);
                 })
                 .orElseThrow(() -> new ObjectNotFoundException("blogPost", postId));
+
+        return blogPostRepository.save(p);
     }
 
     @Override

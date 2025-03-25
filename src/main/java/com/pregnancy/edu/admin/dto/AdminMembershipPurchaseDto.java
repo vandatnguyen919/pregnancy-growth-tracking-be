@@ -1,4 +1,4 @@
-package com.pregnancy.edu.admin;
+package com.pregnancy.edu.admin.dto;
 
 import java.time.LocalDateTime;
 

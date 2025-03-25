@@ -1,10 +1,11 @@
 package com.pregnancy.edu.admin;
 
+import com.pregnancy.edu.admin.dto.AdminMembershipPurchaseDto;
+import com.pregnancy.edu.admin.dto.MembershipPlanStatsDto;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlan;
 import com.pregnancy.edu.membershippackages.membership.MembershipPlanRepository;
 import com.pregnancy.edu.membershippackages.order.Order;
 import com.pregnancy.edu.membershippackages.order.OrderRepository;
-import com.pregnancy.edu.myuser.MyUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,14 +22,11 @@ import java.util.stream.Collectors;
 public class AdminDashboardService {
 
     private final OrderRepository orderRepository;
-    private final MembershipPlanRepository membershipPlanRepository;
 
     public AdminDashboardService(
-            OrderRepository orderRepository,
-            MembershipPlanRepository membershipPlanRepository
+            OrderRepository orderRepository
     ) {
         this.orderRepository = orderRepository;
-        this.membershipPlanRepository = membershipPlanRepository;
     }
 
     public Page<AdminMembershipPurchaseDto> getMembershipPurchases(Pageable pageable) {
@@ -48,36 +46,17 @@ public class AdminDashboardService {
     public MembershipPlanStatsDto getMembershipPlanStats() {
         List<Order> orders = orderRepository.findAll();
 
-        // Total purchases
         Long totalPurchases = (long) orders.size();
 
-        // Total revenue
         Double totalRevenue = orders.stream()
                 .mapToDouble(order -> order.getMembershipPlan().getPrice())
                 .sum();
 
-        // Plan breakdown
         Map<Long, Long> planCountMap = orders.stream()
                 .collect(Collectors.groupingBy(
                         order -> order.getMembershipPlan().getId(),
                         Collectors.counting()
                 ));
-
-        List<Map<String, Object>> planBreakdown = new ArrayList<>();
-
-        List<MembershipPlan> allPlans = membershipPlanRepository.findAll();
-
-        for (MembershipPlan plan : allPlans) {
-            Map<String, Object> planInfo = new HashMap<>();
-            planInfo.put("planId", plan.getId());
-            planInfo.put("planName", plan.getName());
-            planInfo.put("totalPurchases", planCountMap.getOrDefault(plan.getId(), 0L));
-            planInfo.put("price", plan.getPrice());
-            planInfo.put("durationMonths", plan.getDurationMonths());
-
-            planBreakdown.add(planInfo);
-        }
-
-        return new MembershipPlanStatsDto(totalPurchases, totalRevenue, planBreakdown);
+        return new MembershipPlanStatsDto(totalPurchases, totalRevenue);
     }
 }

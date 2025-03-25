@@ -1,5 +1,7 @@
 package com.pregnancy.edu.admin;
 
+import com.pregnancy.edu.admin.dto.AdminMembershipPurchaseDto;
+import com.pregnancy.edu.admin.dto.MembershipPlanStatsDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import org.springframework.data.domain.Page;

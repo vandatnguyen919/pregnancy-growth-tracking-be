@@ -4,11 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Role {
-<<<<<<< HEAD
     USER("user"),
-=======
-    USER("user"),   
->>>>>>> ddd5ca6315ea80da9b7e62c22eeb04b6003cc784
     ADMIN("admin"),
     MEMBER("member");
 

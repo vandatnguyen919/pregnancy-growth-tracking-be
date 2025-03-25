@@ -18,7 +18,7 @@ public class PregnancyGenerator {
 
                 Random random = new Random();
                 // 90% chance of having a pregnancy for female users
-                if (random.nextDouble() < 0.9) {
+                if (random.nextDouble() < 1) {
                     Pregnancy pregnancy = new Pregnancy();
 
                     // Calculate age from DOB

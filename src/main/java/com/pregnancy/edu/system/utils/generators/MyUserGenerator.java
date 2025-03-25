@@ -26,7 +26,7 @@ public class MyUserGenerator {
         u1.setPhoneNumber("+14155552671");
         u1.setFullName("John Anderson Smith");
         u1.setDateOfBirth(LocalDateTime.of(1980, 5, 15, 0, 0));
-        u1.setAvatarUrl("https://storage.vivago.ai/image/j_da373917-4d47-4807-97d7-4ffc45c0ced4.jpg?width=512");
+        u1.setAvatarUrl("""https""://storage.vivago.ai/image/j_da373917-4d47-4807-97d7-4ffc45c0ced4.jpg?width=512");
         u1.setGender(true); // Male
         u1.setBloodType(BloodType.O_POSITIVE);
         u1.setSymptoms("None");

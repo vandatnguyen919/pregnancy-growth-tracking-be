@@ -17,7 +17,7 @@ public class MyUserGenerator {
         // Keeping original values
         u1.setEmail("john@example.com");
         u1.setUsername("john");
-        u1.setPassword("123456");
+        u1.setPassword("Trantien12345.");
         u1.setVerified(true);
         u1.setEnabled(true);
         u1.setRole("admin");

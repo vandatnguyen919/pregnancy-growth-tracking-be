@@ -4,6 +4,7 @@ import com.pregnancy.edu.fetusinfo.fetus.FetusRepository;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricDto;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricResponse;
 import com.pregnancy.edu.fetusinfo.metric.MetricRepository;
+import com.pregnancy.edu.fetusinfo.metric.dto.MetricDto;
 import com.pregnancy.edu.fetusinfo.standard.Standard;
 import com.pregnancy.edu.fetusinfo.standard.StandardRepository;
 import com.pregnancy.edu.system.common.base.BaseCrudService;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -141,5 +143,25 @@ public class FetusMetricService implements BaseCrudService<FetusMetric, Long> {
         }
 
         return fetusMetricRepository.save(fetusMetric);
+    }
+
+    public List<MetricDto> findAllMetricDtosForFetus(Long fetusId) {
+        fetusRepository.findById(fetusId)
+                .orElseThrow(() -> new ObjectNotFoundException("Fetus", fetusId));
+
+        List<Long> metricIds = fetusMetricRepository.findDistinctMetricIdsByFetusId(fetusId);
+        List<MetricDto> metricDtos = new ArrayList<>();
+
+        for (Long metricId : metricIds) {
+            metricRepository.findById(metricId).ifPresent(metric ->
+                    metricDtos.add(new MetricDto(
+                            metric.getId(),
+                            metric.getName(),
+                            metric.getUnit()
+                    ))
+            );
+        }
+
+        return metricDtos;
     }
 }

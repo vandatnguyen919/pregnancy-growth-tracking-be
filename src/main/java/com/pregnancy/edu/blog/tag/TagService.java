@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,5 +43,9 @@ public class TagService {
         tagRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("tag", id));
         tagRepository.deleteById(id);
+    }
+
+    public Tag findByNameIgnoreCase(String name) {
+        return tagRepository.findByNameIgnoreCase(name);
     }
 }

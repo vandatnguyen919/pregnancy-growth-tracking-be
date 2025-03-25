@@ -7,6 +7,7 @@ import com.pregnancy.edu.fetusinfo.fetusmetric.converter.FetusMetricToDtoConvert
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricDto;
 import com.pregnancy.edu.fetusinfo.fetusmetric.dto.FetusMetricResponse;
 import com.pregnancy.edu.fetusinfo.metric.MetricService;
+import com.pregnancy.edu.fetusinfo.metric.dto.MetricDto;
 import com.pregnancy.edu.system.Result;
 import com.pregnancy.edu.system.StatusCode;
 import jakarta.validation.Valid;
@@ -86,6 +87,12 @@ public class FetusMetricController {
     public Result getFetusMetricsByWeek(@PathVariable Long fetusId, @PathVariable Integer week) {
         List<FetusMetricResponse> responses = fetusMetricService.findFetusMetricResponsesByWeek(fetusId, week);
         return new Result(true, StatusCode.SUCCESS, "Find Metrics By Week Success", responses);
+    }
+
+    @GetMapping("/fetus/{fetusId}/all-metrics")
+    public Result getAllMetricsForFetus(@PathVariable Long fetusId) {
+        List<MetricDto> metricDtos = fetusMetricService.findAllMetricDtosForFetus(fetusId);
+        return new Result(true, StatusCode.SUCCESS, "Find All Metrics With Values Success", metricDtos);
     }
 
     @PutMapping("/{fetusMetricId}")

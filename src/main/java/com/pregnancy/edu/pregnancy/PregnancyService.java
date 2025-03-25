@@ -175,8 +175,21 @@ public class PregnancyService implements BaseCrudService<Pregnancy, Long> {
             return ongoingPregnancies.stream()
                     .anyMatch(pregnancy -> !pregnancy.getId().equals(currentPregnancyId));
         }
-
         return true;
+    }
 
+    public Fetus updateFetusInPregnancy(Long pregnancyId, Long fetusId, String nickName, String gender) {
+        Pregnancy pregnancy = findById(pregnancyId);
+
+        Fetus fetus = pregnancy.getFetuses().stream()
+                .filter(f -> f.getId().equals(fetusId))
+                .findFirst()
+                .orElseThrow(() -> new ObjectNotFoundException("fetus", fetusId));
+
+        fetus.setNickName(nickName);
+        fetus.setGender(gender);
+        fetus.setPregnancy(pregnancy);
+
+        return fetusRepository.save(fetus);
     }
 }

@@ -205,4 +205,25 @@ public class PregnancyController {
         PregnancyDto updatedPregnancyDto = pregnancyToDtoConverter.convert(updatedPregnancy);
         return new Result(true, StatusCode.SUCCESS, "Remove Fetus Success", updatedPregnancyDto);
     }
+
+    @PutMapping("/{pregnancyId}/fetuses/{fetusId}")
+    public Result updateFetusInPregnancy(
+            @PathVariable Long pregnancyId,
+            @PathVariable Long fetusId,
+            @Valid @RequestBody FetusDto fetusDto,
+            JwtAuthenticationToken jwtAuthenticationToken) {
+
+        Jwt jwt = jwtAuthenticationToken.getToken();
+        Long userId = jwt.getClaim("userId");
+
+        Pregnancy pregnancy = pregnancyService.findById(pregnancyId);
+        if (!Objects.equals(pregnancy.getUser().getId(), userId)) {
+            return new Result(false, StatusCode.FORBIDDEN, "You don't have permission to update this pregnancy", null);
+        }
+
+        Fetus updatedFetus = pregnancyService.updateFetusInPregnancy(pregnancyId, fetusId, fetusDto.nickName(), fetusDto.gender());
+        FetusDto updatedFetusDto = fetusToDtoConverter.convert(updatedFetus);
+
+        return new Result(true, StatusCode.SUCCESS, "Fetus updated successfully", updatedFetusDto);
+    }
 }

@@ -30,4 +30,6 @@ public interface FetusMetricRepository extends JpaRepository<FetusMetric, Long> 
     @Query("SELECT DISTINCT fm.week FROM FetusMetric fm WHERE fm.fetus.id = :fetusId ORDER BY fm.week")
     Set<Integer> findDistinctWeeksByFetusId(@Param("fetusId") Long fetusId);
 
+    @Query("SELECT DISTINCT fm.metric.id FROM FetusMetric fm WHERE fm.fetus.id = :fetusId")
+    List<Long> findDistinctMetricIdsByFetusId(@Param("fetusId") Long fetusId);
 }

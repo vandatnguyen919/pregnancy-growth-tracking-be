@@ -43,7 +43,7 @@ public class MyUserGenerator {
         // Keeping original values
         u2.setEmail("eric@example.com");
         u2.setUsername("eric");
-        u2.setPassword("654321");
+        u2.setPassword("Trantien12345.");
         u2.setVerified(true);
         u2.setEnabled(true);
         u2.setRole("member");
